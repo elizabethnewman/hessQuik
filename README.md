@@ -3,18 +3,7 @@
 
 ## Installation
 
-
-[comment]: <> (From terminal,)
-
-[comment]: <> (```html)
-
-[comment]: <> (git clone https://github.com/elizabethnewman/hessQuik.git)
-
-[comment]: <> (cd hessQuik)
-
-[comment]: <> (```)
-
-Recommended: create virtual environment first
+Create virtual environment
 
 ```html
 virtualenv -p python env_name
@@ -24,6 +13,7 @@ source env_name/bin/activate
 
 Install package
 
+[comment]: <> (https://adamj.eu/tech/2019/03/11/pip-install-from-a-git-repository/)
 ```html
 pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
