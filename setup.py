@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='hessQuik',
@@ -9,6 +9,6 @@ setup(
     author='Elizabeth Newman',
     author_email='elizabeth.newman@emory.edu',
     description='AD-free gradient and Hessian computations',
-    install_requires=['torch>=1.10.0', 'numpy>=1.20.0'],
+    install_requires=['torch>=1.9.0', 'numpy>=1.20.0'],
     extras_require={'interactive': ['matplotlib>=2.2.0']}
 )
