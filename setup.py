@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='hessQuik',
     version='0.0.1',
-    packages=['hessQuik'],
+    packages=find_packages(include=['hessQuik']),
     url='https://github.com/elizabethnewman/hessQuik',
     license='MIT',
     author='Elizabeth Newman',
