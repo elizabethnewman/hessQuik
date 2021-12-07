@@ -3,15 +3,16 @@
 
 ## Installation
 
-```html
-pip install git+https://github.com/elizabethnewman/hessQuik.git
-```
 
-From terminal,
-```html
-git clone https://github.com/elizabethnewman/hessQuik.git
-cd hessQuik
-```
+[comment]: <> (From terminal,)
+
+[comment]: <> (```html)
+
+[comment]: <> (git clone https://github.com/elizabethnewman/hessQuik.git)
+
+[comment]: <> (cd hessQuik)
+
+[comment]: <> (```)
 
 Recommended: create virtual environment first
 
@@ -20,10 +21,11 @@ virtualenv -p python env_name
 source env_name/bin/activate
 ```
 
+
 Install package
 
 ```html
-pip install 
+pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
 
 When finished, deactivate virtual environment.
