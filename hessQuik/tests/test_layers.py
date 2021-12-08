@@ -2,7 +2,7 @@ import unittest
 import torch
 import hessQuik.layers.activation_functions as act
 import hessQuik.layers as lay
-from hessQuik.test_utils import DerivativeCheckTestsNetwork
+from hessQuik.tests.utils import DerivativeCheckTestsNetwork
 
 
 class TestLayer(unittest.TestCase):

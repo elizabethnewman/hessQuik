@@ -156,6 +156,16 @@ class DerivativeCheckTests:
         assert hess_check
 
 
+class DerivativeCheckTestsActivationFunction(DerivativeCheckTests):
+    def get_directional_derivatives(self, dx, df0, d2f0=None):
+        dfdx = df0 * dx
+        if d2f0 is None:
+            return dfdx
+        else:
+            curvx = torch.sum(dx.unsqueeze(0) * d2f0 * dx.unsqueeze(0), dim=0)
+            return dfdx, curvx
+
+
 class DerivativeCheckTestsNetwork(DerivativeCheckTests):
     def get_directional_derivatives(self, dx, df0, d2f0=None):
         dfdx = torch.matmul(df0.transpose(1, 2), dx.unsqueeze(2)).squeeze(2)
@@ -164,4 +174,6 @@ class DerivativeCheckTestsNetwork(DerivativeCheckTests):
         else:
             curvx = torch.sum(dx.unsqueeze(2).unsqueeze(3) * d2f0 * dx.unsqueeze(1).unsqueeze(3), dim=(1, 2))
             return dfdx, curvx
+
+
 

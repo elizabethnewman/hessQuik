@@ -1,7 +1,7 @@
 import unittest
 import torch
 import hessQuik.layers.activation_functions as act
-from hessQuik.test_utils import DerivativeCheckTestsActivationFunction
+from hessQuik.tests.utils import DerivativeCheckTestsActivationFunction
 
 
 class TestActivation(unittest.TestCase):
