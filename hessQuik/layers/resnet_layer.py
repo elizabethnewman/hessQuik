@@ -92,3 +92,24 @@ class resnetLayer(hessQuikLayer):
 
     def extra_repr(self) -> str:
         return 'width={}, h={}'.format(self.width, self.h)
+
+
+if __name__ == '__main__':
+    from hessQuik.tests.utils import DerivativeCheckTestsNetwork
+    torch.set_default_dtype(torch.float64)
+
+    nex = 11  # no. of examples
+    width = 4  # no. of input features
+    h = 0.25
+    x = torch.randn(nex, width)
+    dx = torch.randn_like(x)
+    f = resnetLayer(width, h=h, act=act.softplusActivation())
+
+    # forward tests
+    derivativeTests = DerivativeCheckTestsNetwork()
+
+    print('======= FORWARD =======')
+    derivativeTests.run_forward_hessian_test(f, x, dx, verbose=True)
+
+    print('======= BACKWARD =======')
+    derivativeTests.run_backward_hessian_test(f, x, dx, verbose=True)
