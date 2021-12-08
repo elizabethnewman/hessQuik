@@ -39,20 +39,20 @@ class TestLayer(unittest.TestCase):
         print(type(f))
         self.run_test(f, x, dx)
 
-    # def test_ICNNLayer(self):
-    #     nex = 11  # no. of examples
-    #     input_dim = 4
-    #     in_features = 3
-    #     out_features = 5
-    #
-    #     x = torch.randn(nex, input_dim)
-    #     u = torch.zeros(nex, in_features)
-    #     dx = torch.randn_like(x)
-    #     du = torch.zeros_like(u)
-    #
-    #     f = lay.ICNNLayer2(input_dim, in_features, out_features, act=act.softplusActivation())
-    #     print(type(f))
-    #     self.run_test(f, torch.cat((u, x), dim=1), torch.cat((du, dx), dim=1))
+    def test_ICNNLayer(self):
+        nex = 11  # no. of examples
+        input_dim = 4
+        in_features = 3
+        out_features = 5
+
+        x = torch.randn(nex, input_dim)
+        u = torch.zeros(nex, in_features)
+        dx = torch.randn_like(x)
+        du = torch.zeros_like(u)
+
+        f = lay.ICNNLayer(input_dim, in_features, out_features, act=act.softplusActivation())
+        print(type(f))
+        self.run_test(f, torch.cat((u, x), dim=1), torch.cat((du, dx), dim=1))
 
 
 if __name__ == '__main__':
