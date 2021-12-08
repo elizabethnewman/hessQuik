@@ -24,6 +24,13 @@ python -m pip install git+ssh://git@github.com/elizabethnewman/hessQuik.git
 
 Make sure to import torch before importing hessQuik (this is a bug currently)
 
+If hessQuik updated, reinstall via one of the following:
+```html
+pip install --upgrade --force-reinstall <package>
+pip install -I <package>
+pip install --ignore-installed <package>
+```
+
 When finished, deactivate virtual environment.
 
 ```html

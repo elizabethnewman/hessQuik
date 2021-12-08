@@ -63,6 +63,19 @@ class TestLayer(unittest.TestCase):
         print(self)
         self.run_test(f, x, dx)
 
+    def test_quadraticICNNLayer(self):
+        # problem setup
+        nex = 11  # no. of examples
+        d = 3  # no. of input features
+        m = 5  # no. of output features
+
+        x = torch.randn(nex, d)
+        dx = torch.randn_like(x)
+        f = lay.quadraticICNNLayer(d, None, m)
+
+        print(self)
+        self.run_test(f, x, dx)
+
 
 if __name__ == '__main__':
     torch.set_default_dtype(torch.float64)

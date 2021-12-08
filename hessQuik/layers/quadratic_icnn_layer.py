@@ -116,7 +116,6 @@ class quadraticICNNLayer(nn.Module):
             d2f[:, -self.input_dim:, -self.input_dim:] = e * AtA
             d2f = d2f.unsqueeze(-1)
 
-
         return df.unsqueeze(-1), d2f
 
 
