@@ -15,7 +15,7 @@ Install package
 
 [comment]: <> (https://adamj.eu/tech/2019/03/11/pip-install-from-a-git-repository/)
 ```html
-pip install git+https://github.com/elizabethnewman/hessQuik.git
+python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
 
 When finished, deactivate virtual environment.
