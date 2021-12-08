@@ -32,7 +32,7 @@ class antiTanhActivation(activationFunction):
 
 
 if __name__ == '__main__':
-    from hessQuik.tests.utils import DerivativeCheckTestsActivationFunction
+    from hessQuik.tests import DerivativeCheckTestsActivationFunction
     torch.set_default_dtype(torch.float64)
 
     nex = 11  # no. of examples
@@ -50,4 +50,3 @@ if __name__ == '__main__':
 
     print('======= BACKWARD =======')
     derivativeTests.run_backward_hessian_test(f, x, dx, verbose=True)
-    
