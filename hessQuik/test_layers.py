@@ -1,25 +1,15 @@
 import unittest
 import torch
-import activations as act
+import hessQuik.activation_functions as act
 import layers as lay
-from test_utils import DerivativeCheckTests
-
-
-class DerivativeCheckTestsLayer(DerivativeCheckTests):
-    def get_directional_derivatives(self, dx, df0, d2f0=None):
-        dfdx = torch.matmul(df0.transpose(1, 2), dx.unsqueeze(2)).squeeze(2)
-        if d2f0 is None:
-            return dfdx
-        else:
-            curvx = torch.sum(dx.unsqueeze(2).unsqueeze(3) * d2f0 * dx.unsqueeze(1).unsqueeze(3), dim=(1, 2))
-            return dfdx, curvx
+from test_utils import DerivativeCheckTestsNetwork
 
 
 class TestLayer(unittest.TestCase):
 
     @staticmethod
     def run_test(f, x, dx):
-        derivativeTests = DerivativeCheckTestsLayer()
+        derivativeTests = DerivativeCheckTestsNetwork()
 
         # forward tests
         derivativeTests.run_forward_gradient_test(f, x, dx)
