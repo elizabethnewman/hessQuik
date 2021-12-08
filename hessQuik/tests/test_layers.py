@@ -26,7 +26,7 @@ class TestLayer(unittest.TestCase):
         dx = torch.randn_like(x)
         f = lay.singleLayer(d, m, act=act.softplusActivation())
 
-        print(type(f))
+        print(self)
         self.run_test(f, x, dx)
 
     def test_resnetLayer(self):
@@ -36,7 +36,7 @@ class TestLayer(unittest.TestCase):
         x = torch.randn(nex, width)
         dx = torch.randn_like(x)
         f = lay.resnetLayer(width, h=h, act=act.softplusActivation())
-        print(type(f))
+        print(self)
         self.run_test(f, x, dx)
 
     def test_ICNNLayer(self):
@@ -48,7 +48,19 @@ class TestLayer(unittest.TestCase):
         dx = torch.randn_like(x)
         f = lay.ICNNLayer(d, None, m, act=act.softplusActivation())
 
-        print(type(f))
+        print(self)
+        self.run_test(f, x, dx)
+
+    def test_quadraticLayer(self):
+        # problem setup
+        nex = 11  # no. of examples
+        d = 4  # no. of input dimensiona features
+        m = 7  # rank
+        x = torch.randn(nex, d)
+        dx = torch.randn_like(x)
+        f = lay.quadraticLayer(d, m)
+
+        print(self)
         self.run_test(f, x, dx)
 
 
