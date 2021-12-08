@@ -1,6 +1,7 @@
 import torch
 from hessQuik.layers.layer_types import hessQuikLayer
 import hessQuik.layers.activation_functions as act
+from hessQuik.layers.single_layer import singleLayer
 
 
 class resnetLayer(hessQuikLayer):
