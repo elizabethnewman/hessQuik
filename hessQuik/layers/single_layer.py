@@ -1,7 +1,7 @@
 import torch
 import math
 from layer_types import hessQuikLayer, activationFunction
-from hessQuik import activation_functions as act
+import activation_functions as act
 
 
 class singleLayer(hessQuikLayer):
