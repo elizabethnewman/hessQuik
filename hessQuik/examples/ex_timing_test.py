@@ -20,7 +20,7 @@ parser.add_argument('--num-trials', type=int, default=10, metavar='N', help='num
 parser.add_argument('--seed', type=int, default=42, metavar='s', help='random seed (default: 42)')
 parser.add_argument('--width', type=int, default=20, metavar='w', help='width of network (default: 20)')
 parser.add_argument('--depth', type=int, default=4, metavar='d', help='depth of network (default: 4)')
-parser.add_argument('--network-type', type=str, default='hessQuik', metavar='t',
+parser.add_argument('--network-type', type=str, default='PytorchAD', metavar='t',
                     help='type of network (default: "hessQuiK"), '
                          'options include ("hessQuiK", "PytorchAD", "PytorchHessian")')
 parser.add_argument('--reverse-mode', action='store_true', default=False,
@@ -33,7 +33,7 @@ args = parser.parse_args()
 # setup
 in_feature_range = (2 ** torch.arange(0, args.num_input)).tolist()
 out_feature_range = (2 ** torch.arange(0, args.num_output)).tolist()
-nex_range = (10 * torch.arange(0, args.num_examples)).tolist()
+nex_range = (10 * torch.arange(1, args.num_examples + 1)).tolist()
 width = args.width
 depth = args.depth
 num_trials = args.num_trials
