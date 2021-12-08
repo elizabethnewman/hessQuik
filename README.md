@@ -17,6 +17,11 @@ Install package
 ```html
 python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
+If the repository is private, use
+```html
+python -m pip install git+ssh://git@github.com/elizabethnewman/hessQuik.git
+
+```
 
 When finished, deactivate virtual environment.
 
