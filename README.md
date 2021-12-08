@@ -22,7 +22,7 @@ If the repository is private, use
 python -m pip install git+ssh://git@github.com/elizabethnewman/hessQuik.git
 ```
 
-Make sure to import torch before importing hessQuik (this is a bug currently)
+[comment]: <> (Make sure to import torch before importing hessQuik &#40;this is a bug currently&#41;)
 
 If hessQuik updated, reinstall via one of the following:
 ```html
