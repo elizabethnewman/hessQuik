@@ -34,8 +34,7 @@ class NNPytorchAD(nn.Module):
         (df, d2f) = (None, None)
         f, *_ = self.net(x)
 
-        if reverse_mode and (do_gradient or do_Hessian):
-            print('here')
+        if reverse_mode:
             self.ctx = (f, x)
 
         if not reverse_mode and (do_gradient or do_Hessian):
@@ -94,19 +93,33 @@ class NNPytorchHessian(nn.Module):
     def __init__(self, net):
         super(NNPytorchHessian, self).__init__()
         self.net = net
+        self.ctx = None
 
     def forward(self, x, do_gradient=False, do_Hessian=False, reverse_mode=False):
         (df, d2f) = (None, None)
-        f, *_ = self.net(x)
+        f, *_ = self.net(x, do_gradient=False, do_Hessian=False, reverse_mode=reverse_mode)
 
         if f.squeeze().ndim > 1:
-            raise ValueError("NN_ADmv must have scalar outputs per example")
+            raise ValueError(type(self), " must have scalar outputs per example")
 
-        if do_gradient and not reverse_mode:
+        if reverse_mode:
+            self.ctx = (f, x)
+
+        if not reverse_mode and (do_gradient or do_Hessian):
             df = grad(f.sum(), x)[0]
 
-        if do_Hessian and not reverse_mode:
-            d2f = hessian(lambda x: self.net(x)[0].sum(), x).sum(dim=2)
+            if do_Hessian:
+                d2f = hessian(lambda x: self.net(x)[0].sum(), x).sum(dim=2)
 
         return f, df, d2f
+
+    def backward(self, do_Hessian=False):
+        d2f = None
+        f, x = self.ctx
+        df = grad(f.sum(), x)[0]
+
+        if do_Hessian:
+            d2f = hessian(lambda x: self.net(x)[0].sum(), x).sum(dim=2)
+
+        return df, d2f
 
