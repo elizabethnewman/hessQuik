@@ -3,8 +3,6 @@ from torch import Tensor
 from typing import Union, Tuple
 
 
-
-
 class activationFunction(nn.Module):
 
     def __init__(self) -> None:
