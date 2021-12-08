@@ -44,10 +44,6 @@ class TestActivation(unittest.TestCase):
         self.run_test(f)
 
 
-def main():
+if __name__ == '__main__':
     torch.set_default_dtype(torch.float64)
     unittest.main()
-
-
-if __name__ == '__main__':
-    main()
