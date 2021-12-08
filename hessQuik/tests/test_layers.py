@@ -1,9 +1,7 @@
 import unittest
 import torch
-import hessQuik.layers.activation_functions as act
-from hessQuik.layers.single_layer import singleLayer
-from hessQuik.layers.resnet_layer import resnetLayer
-from hessQuik.layers.icnn_layer import ICNNLayer
+import hessQuik.activations as act
+import hessQuik.layers as lay
 from hessQuik.tests.utils import DerivativeCheckTestsNetwork
 
 
@@ -26,7 +24,7 @@ class TestLayer(unittest.TestCase):
         m = 7  # no. of output features
         x = torch.randn(nex, d)
         dx = torch.randn_like(x)
-        f = singleLayer(d, m, act=act.softplusActivation())
+        f = lay.singleLayer(d, m, act=act.softplusActivation())
 
         print(type(f))
         self.run_test(f, x, dx)
@@ -37,7 +35,7 @@ class TestLayer(unittest.TestCase):
         h = 0.25
         x = torch.randn(nex, width)
         dx = torch.randn_like(x)
-        f = resnetLayer(width, h=h, act=act.softplusActivation())
+        f = lay.resnetLayer(width, h=h, act=act.softplusActivation())
         print(type(f))
         self.run_test(f, x, dx)
 
@@ -48,7 +46,7 @@ class TestLayer(unittest.TestCase):
         m = 5  # no. of output features
         x = torch.randn(nex, d)
         dx = torch.randn_like(x)
-        f = ICNNLayer(d, None, m, act=act.softplusActivation())
+        f = lay.ICNNLayer(d, None, m, act=act.softplusActivation())
 
         print(type(f))
         self.run_test(f, x, dx)

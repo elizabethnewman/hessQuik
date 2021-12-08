@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from hessQuik.layers.layer_types import hessQuikLayer
-import hessQuik.layers.activation_functions as act
+from hessQuik.layers import hessQuikLayer
+import hessQuik.activations as act
 
 
 class ICNNLayer(hessQuikLayer):

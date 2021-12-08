@@ -1,6 +1,6 @@
 import unittest
 import torch
-import hessQuik.layers.activation_functions as act
+import hessQuik.activations as act
 from hessQuik.tests.utils import DerivativeCheckTestsActivationFunction
 
 

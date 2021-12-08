@@ -1,7 +1,7 @@
 import torch
 from hessQuik.layers.layer_types import activationFunction
 
-
+# TODO: create separate activations folder and file for each function?
 class antiTanhActivation(activationFunction):
 
     def __init__(self):

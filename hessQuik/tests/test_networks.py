@@ -1,11 +1,9 @@
 
 import unittest
 import torch
-import hessQuik.layers.activation_functions as act
-from hessQuik.layers.single_layer import singleLayer
-from hessQuik.layers.resnet_layer import resnetLayer
-from hessQuik.layers.icnn_layer import ICNNLayer
-from hessQuik.networks.network_wrapper import NN
+import hessQuik.activations as act
+import hessQuik.layers as lay
+from hessQuik.networks import NN
 from hessQuik.tests.utils import DerivativeCheckTestsNetwork
 
 
@@ -18,12 +16,12 @@ class TestNetwork(unittest.TestCase):
         ms = [2, 7, 5]
         x = torch.randn(nex, d)
 
-        f = NN(singleLayer(d, ms[0], act=act.softplusActivation()),
-               singleLayer(ms[0], ms[1], act=act.softplusActivation()),
-               resnetLayer(ms[1], h=0.25, act=act.antiTanhActivation()),
-               singleLayer(ms[1], ms[2], act=act.softplusActivation()),
-               resnetLayer(ms[2], h=0.5, act=act.quadraticActivation()),
-               singleLayer(ms[2], m, act=act.softplusActivation()))
+        f = NN(lay.singleLayer(d, ms[0], act=act.softplusActivation()),
+               lay.singleLayer(ms[0], ms[1], act=act.softplusActivation()),
+               lay.resnetLayer(ms[1], h=0.25, act=act.antiTanhActivation()),
+               lay.singleLayer(ms[1], ms[2], act=act.softplusActivation()),
+               lay.resnetLayer(ms[2], h=0.5, act=act.quadraticActivation()),
+               lay.singleLayer(ms[2], m, act=act.softplusActivation()))
 
         return f, x
 
@@ -67,9 +65,9 @@ class TestICNNNetwork(unittest.TestCase):
         ms = [None, 5, 2, 7]  # no. of output features
         x = torch.randn(nex, d)
 
-        f = NN(ICNNLayer(d, ms[0], ms[1], act=act.softplusActivation()),
-               ICNNLayer(d, ms[1], ms[2], act=act.softplusActivation()),
-               ICNNLayer(d, ms[2], ms[3], act=act.softplusActivation()))
+        f = NN(lay.ICNNLayer(d, ms[0], ms[1], act=act.softplusActivation()),
+               lay.ICNNLayer(d, ms[1], ms[2], act=act.softplusActivation()),
+               lay.ICNNLayer(d, ms[2], ms[3], act=act.softplusActivation()))
 
         return f, x
 
