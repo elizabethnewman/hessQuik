@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch import Tensor
 from typing import Union, Tuple
 import math
-import activation_functions as act
+import hessQuik.activation_functions as act
 
 
 class hessQuikLayer(nn.Module):
