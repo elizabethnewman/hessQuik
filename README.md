@@ -20,8 +20,9 @@ python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 If the repository is private, use
 ```html
 python -m pip install git+ssh://git@github.com/elizabethnewman/hessQuik.git
-
 ```
+
+Make sure to import torch before importing hessQuik (this is a bug currently)
 
 When finished, deactivate virtual environment.
 
