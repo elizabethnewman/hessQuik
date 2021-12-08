@@ -6,7 +6,7 @@ from hessQuik.layers.layer_types import hessQuikLayer
 import hessQuik.layers.activation_functions as act
 
 
-class ICNNlayer(hessQuikLayer):
+class ICNNLayer(hessQuikLayer):
     """
     layer of an input convex neural network f : R^{min} x R^d \to R^{mout} where
 
@@ -29,7 +29,7 @@ class ICNNlayer(hessQuikLayer):
     def __init__(self, input_dim, in_features, out_features, act: act.activationFunction = act.softplusActivation(),
                  device=None, dtype=None):
         factory_kwargs = {'device': device, 'dtype': dtype}
-        super(ICNNlayer, self).__init__()
+        super(ICNNLayer, self).__init__()
 
         self.input_dim = input_dim
         self.in_features = in_features
