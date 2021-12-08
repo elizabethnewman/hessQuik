@@ -1,9 +1,9 @@
 import unittest
 import torch
 import hessQuik.layers.activation_functions as act
-import hessQuik.layers.single_layer as singleLayer
-import hessQuik.layers.resnet_layer as resnetLayer
-import hessQuik.layers.icnn_layer as ICNNLayer
+from hessQuik.layers.single_layer import singleLayer
+from hessQuik.layers.resnet_layer import resnetLayer
+from hessQuik.layers.icnn_layer import ICNNLayer
 from hessQuik.tests.utils import DerivativeCheckTestsNetwork
 
 
