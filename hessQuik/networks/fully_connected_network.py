@@ -1,8 +1,8 @@
-import torch
 from hessQuik.networks import NN
 from hessQuik.layers import singleLayer
 import hessQuik.activations as act
 from typing import Union, Tuple, List
+from copy import deepcopy
 
 
 class fullyConnectedNN(NN):
@@ -13,10 +13,11 @@ class fullyConnectedNN(NN):
         super(fullyConnectedNN, self).__init__()
 
         for i, w in enumerate(range(len(widths) - 1)):
-            self.add_module(str(i), singleLayer(widths[i], widths[i + 1], act=act, **factory_kwargs))
+            self.add_module(str(i), singleLayer(widths[i], widths[i + 1], act=deepcopy(act), **factory_kwargs))
 
 
 if __name__ == '__main__':
+    import torch
     from hessQuik.tests.utils import DerivativeCheckTestsNetwork
     torch.set_default_dtype(torch.float64)
 
@@ -26,7 +27,7 @@ if __name__ == '__main__':
     x = torch.randn(nex, d)
     dx = torch.randn_like(x)
 
-    f = fullyConnectedNN([d, 2, 7, 5], act=act.softplusActivation())
+    f = fullyConnectedNN([d, 2, 5], act=act.softplusActivation())
 
     # forward tests
     derivativeTests = DerivativeCheckTestsNetwork()
