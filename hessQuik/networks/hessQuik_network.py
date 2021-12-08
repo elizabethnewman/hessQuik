@@ -11,11 +11,11 @@ class NN(nn.Sequential):
     def __init__(self, *args):
         super(NN, self).__init__(*args)
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, dfdx=None, d2fd2x=None, reverse_mode=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, reverse_mode=False):
         for module in self:
-            x, dfdx, d2fd2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dfdx, d2ud2x=d2fd2x,
+            x, dudx, d2ud2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x,
                                      reverse_mode=reverse_mode)
-        return x, dfdx, d2fd2x
+        return x, dudx, d2ud2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
         for i in range(len(self) - 1, -1, -1):

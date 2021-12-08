@@ -20,7 +20,7 @@ def run_test(f, x, dx, requires_grad=False):
     derivativeTests.run_backward_hessian_test(f, x, dx)
 
 
-class TestNetwork(unittest.TestCase):
+class TestNN(unittest.TestCase):
 
     @staticmethod
     def setup_network(m):
@@ -61,10 +61,11 @@ class TestFullyConnectedNN(unittest.TestCase):
     def test_fullyConnectedNN(self):
         nex = 11
         d = 3
-        ms = [d, 2, 7, 5]
-        x = torch.randn(nex, d)
+        widths = [2, 7, 5]
 
-        f = fullyConnectedNN(ms, act=act.antiTanhActivation())
+        f = fullyConnectedNN([d] + widths, act=act.antiTanhActivation())
+
+        x = torch.randn(nex, d)
         dx = torch.randn_like(x)
 
         print(self)
@@ -75,10 +76,11 @@ class TestResnetNN(unittest.TestCase):
 
     def test_resnetNN(self):
         nex = 11
-        d = 3
-        x = torch.randn(nex, d)
+        width = 3
+        depth = 4
+        f = resnetNN(width, depth, h=0.25, act=act.quadraticActivation())
 
-        f = resnetNN(d, 4, h=0.25, act=act.quadraticActivation())
+        x = torch.randn(nex, width)
         dx = torch.randn_like(x)
 
         print(self)
@@ -111,6 +113,27 @@ class TestICNNNetwork(unittest.TestCase):
 
         x = torch.randn(nex, d)
         dx = torch.randn_like(x)
+
+        print(self)
+        run_test(f, x, dx, requires_grad=False)
+
+
+class TestBlockNetwork(unittest.TestCase):
+
+    def test_blockFullyConnectedNN(self):
+        nex = 11
+        d = 3
+        widths1 = [2, 3]
+        widths2 = [4, 5]
+        widths3 = [7, 6, 1]
+
+        x = torch.randn(nex, d)
+        dx = torch.randn_like(x)
+
+        f = NN(fullyConnectedNN([d] + widths1, act=act.antiTanhActivation()),
+               fullyConnectedNN([widths1[-1]] + widths2, act=act.identityActivation()),
+               fullyConnectedNN([widths2[-1]] + widths3, act=act.softplusActivation())
+               )
 
         print(self)
         run_test(f, x, dx, requires_grad=False)
