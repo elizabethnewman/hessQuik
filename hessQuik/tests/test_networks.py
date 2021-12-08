@@ -45,7 +45,7 @@ class TestNetwork(unittest.TestCase):
         f, x = self.setup_network(1)
         dx = torch.randn_like(x)
 
-        print(type(f), ': scalar output')
+        print(self, ': scalar output')
         self.run_test(f, x, dx, requires_grad=False)
 
     def test_NN_vector_output(self):
@@ -54,7 +54,7 @@ class TestNetwork(unittest.TestCase):
         f, x = self.setup_network(m)
         dx = torch.randn_like(x)
 
-        print(type(f), ': vector output')
+        print(self, ': vector output')
         self.run_test(f, x, dx, requires_grad=False)
 
 
@@ -89,7 +89,7 @@ class TestICNNNetwork(unittest.TestCase):
         f, x = self.setup_network(1)
         dx = torch.randn_like(x)
 
-        print(type(f), ': scalar output')
+        print(self, ': vector output')
         self.run_test(f, x, dx, requires_grad=False)
 
 
