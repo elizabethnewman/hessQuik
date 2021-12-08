@@ -127,13 +127,46 @@ class TestBlockNetwork(unittest.TestCase):
         widths2 = [4, 5]
         widths3 = [7, 6, 1]
 
-        x = torch.randn(nex, d)
-        dx = torch.randn_like(x)
-
         f = NN(fullyConnectedNN([d] + widths1, act=act.antiTanhActivation()),
                fullyConnectedNN([widths1[-1]] + widths2, act=act.identityActivation()),
                fullyConnectedNN([widths2[-1]] + widths3, act=act.softplusActivation())
                )
+
+
+        x = torch.randn(nex, d)
+        dx = torch.randn_like(x)
+
+        print(self)
+        run_test(f, x, dx, requires_grad=False)
+
+    def test_blockResnetNN(self):
+        nex = 11
+        d = 3
+        width = 7
+        depth = 8
+
+        f = NN(lay.singleLayer(d, width, act=act.antiTanhActivation()),
+               resnetNN(width, depth, h=0.8, act=act.softplusActivation()),
+               lay.quadraticLayer(width, 6)
+               )
+
+        x = torch.randn(nex, d)
+        dx = torch.randn_like(x)
+
+        print(self)
+        run_test(f, x, dx, requires_grad=False)
+
+    def test_blockICNN(self):
+        nex = 11  # no. of examples
+        d = 3  # no. of input features
+        m = 4
+        ms = [5, 2, 7]  # no. of output features
+
+        f = NN(ICNN(d, [None, m] + ms, act=act.softplusActivation()),
+               lay.quadraticICNNLayer(d, ms[-1], 2))
+
+        x = torch.randn(nex, d)
+        dx = torch.randn_like(x)
 
         print(self)
         run_test(f, x, dx, requires_grad=False)
