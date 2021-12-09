@@ -3,7 +3,7 @@ import pickle
 from examples.timing_test import timing_test
 import argparse
 from datetime import datetime
-
+import os
 
 parser = argparse.ArgumentParser(description='hessQuik-timing')
 
@@ -63,4 +63,9 @@ results = timing_test(in_feature_range, out_feature_range, nex_range,
                       reverse_mode=reverse_mode)
 
 if args.save:
-    pickle.dump(results, open(my_date + '--' + filename + ".p", "wb"))
+
+    dir_name = 'results/'
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+    pickle.dump(results, open(dir_name + my_date + '--' + filename + ".p", "wb"))
+    
