@@ -43,6 +43,11 @@ class TestActivation(unittest.TestCase):
         print(type(f))
         self.run_test(f)
 
+    def test_tanhActivation(self):
+        f = act.tanhActivation()
+        print(type(f))
+        self.run_test(f)
+
 
 if __name__ == '__main__':
     torch.set_default_dtype(torch.float64)
