@@ -1,10 +1,10 @@
 #!/bin/sh
 
 num_input=3
-num_output=1
+num_output=3
 num_examples=1
 
-for type in hessQuik PytorchAD PytorchHessian
+for type in hessQuik PytorchAD
 do
   echo $type
   echo "forward"
