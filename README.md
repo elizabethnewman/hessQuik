@@ -37,5 +37,31 @@ When finished, deactivate virtual environment.
 deactivate
 ```
 
-## Test Importing
+## Getting Started
+
+Once you have installed hessQuik, you can import as follows:
+```python
+import hessQuik.activations as act
+import hessQuik.layers as lay
+import hessQuik.networks as net
+```
+
+You can construct a hessQuik network from layers as follows:
+```python
+d = 10 # dimension of the input features
+widths = [32, 64] # hidden channel dimensions
+f = net.NN(lay.singleLayer(d, widths[0], act.antiTanhActivation()), 
+           lay.resnetLayer(widths[0], h=1.0, act.softplusActivation()),
+           lay.singleLayer(widths[0], widths[1], act.quadraticActivation())
+           )
+```
+
+Once you have constructed the network, you can run forward propagation and obtain the gradient and Hessian as follows:
+```python
+nex = 20 # number of examples
+x = torch.randn(nex, d)
+fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
+```
+
+## Examples
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1GCUSR9fGhQ9PoqfPxv8qRfqf88_ibyUA?usp=sharing) Peaks Hermite Interpolation
