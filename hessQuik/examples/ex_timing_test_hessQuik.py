@@ -13,7 +13,7 @@ seed = 1234
 torch.manual_seed(seed)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-network_type = 'PytorchHessian'
+network_type = 'hessQuik'
 reverse_mode = False
 
 results = timing_test(in_feature_range, out_feature_range, nex_range,

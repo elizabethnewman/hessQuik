@@ -32,7 +32,7 @@ def timing_test_forward(in_features, out_features, nex, num_trials=10,
                         width=20, depth=4, network_type='hessQuik', device='cpu', clear_memory=True):
     # initialize network and input
     f, x_requires_grad = create_network(in_features, out_features, width, depth,
-                                        network_type=network_type, device='cpu')
+                                        network_type=network_type, device=device)
     x = torch.randn(nex, in_features, device=device)
     x.requires_grad = x_requires_grad
 
@@ -55,7 +55,7 @@ def timing_test_backward(in_features, out_features, nex, num_trials=10,
                          width=20, depth=4, network_type='hessQuik', device='cpu', clear_memory=True):
     # initialize network and input
     f, x_requires_grad = create_network(in_features, out_features, width, depth,
-                                        network_type=network_type, device='cpu')
+                                        network_type=network_type, device=device)
     x = torch.randn(nex, in_features, device=device)
     x.requires_grad = x_requires_grad
 
