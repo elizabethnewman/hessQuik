@@ -75,9 +75,9 @@ x_test, y_test = x[idx[n_train + n_val:]], y[idx[n_train + n_val:]]
 # %% create network
 width = 32
 depth = 8
-f = net.NN(lay.singleLayer(2, width, act=act.antiTanhActivation()),
-           net.resnetNN(width, depth, h=1.0, act=act.antiTanhActivation()),
-           lay.singleLayer(width, 1, act=act.antiTanhActivation()))
+f = net.NN(lay.singleLayer(2, width, act=act.tanhActivation()),
+           net.resnetNN(width, depth, h=1.0, act=act.tanhActivation()),
+           lay.singleLayer(width, 1, act=act.tanhActivation()))
 
 # define optimizer
 optimizer = torch.optim.Adam(f.parameters(), lr=1e-3)
