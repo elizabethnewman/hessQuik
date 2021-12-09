@@ -1,5 +1,5 @@
 import torch
-from hessQuik.examples.timing_test import timing_test
+from examples.timing_test import timing_test
 
 in_feature_range = (2 ** torch.arange(1, 6)).tolist()
 out_feature_range = (2 ** torch.arange(0, 1)).tolist()
