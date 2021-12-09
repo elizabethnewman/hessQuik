@@ -1,6 +1,6 @@
 import torch
 import pickle
-from examples.timing_test import timing_test
+from hessQuik.examples.timing_test import timing_test
 import argparse
 from datetime import datetime
 import os
