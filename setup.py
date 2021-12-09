@@ -1,9 +1,11 @@
 from setuptools import setup, find_packages
+# from glob import glob
 
 setup(
     name='hessQuik',
     version='0.0.1',
     packages=find_packages(),
+    scripts=['examples/hello_world.py'],
     url='https://github.com/elizabethnewman/hessQuik',
     license='MIT',
     author='Elizabeth Newman',

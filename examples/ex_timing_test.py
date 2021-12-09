@@ -1,6 +1,6 @@
 import torch
 import pickle
-from hessQuik.examples import timing_test
+from examples import timing_test
 import argparse
 from datetime import datetime
 
@@ -20,7 +20,7 @@ parser.add_argument('--num-trials', type=int, default=10, metavar='N', help='num
 parser.add_argument('--seed', type=int, default=42, metavar='s', help='random seed (default: 42)')
 parser.add_argument('--width', type=int, default=20, metavar='w', help='width of network (default: 20)')
 parser.add_argument('--depth', type=int, default=4, metavar='d', help='depth of network (default: 4)')
-parser.add_argument('--network-type', type=str, default='PytorchAD', metavar='t',
+parser.add_argument('--network-type', type=str, default='hessQuik', metavar='t',
                     help='type of network (default: "hessQuiK"), '
                          'options include ("hessQuiK", "PytorchAD", "PytorchHessian")')
 parser.add_argument('--reverse-mode', action='store_true', default=False,
