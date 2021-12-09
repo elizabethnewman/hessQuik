@@ -1,6 +1,6 @@
 import torch
 import pickle
-from examples.timing_test import timing_test
+from hessQuik.examples.timing_test import timing_test
 import argparse
 from datetime import datetime
 import os
@@ -68,4 +68,4 @@ if args.save:
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
     pickle.dump(results, open(dir_name + my_date + '--' + filename + ".p", "wb"))
-    
+
