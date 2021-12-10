@@ -5,16 +5,17 @@
 ### For Users: Install with **pip**
 
 ```console
-virtualenv -p python env_name
-source env_name/bin/activate
 python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
+
+[comment]: <> (virtualenv -p python env_name)
+
+[comment]: <> (source env_name/bin/activate)
 
 ### For Contributors: Clone with **git**
 
 ```console
 git clone https://github.com/elizabethnewman/hessQuik.git
-cd hessQuik
 ```
 
 
