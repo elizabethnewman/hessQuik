@@ -160,7 +160,7 @@ class ICNNLayer(hessQuikLayer):
 
 
 if __name__ == '__main__':
-    from hessQuik.tests import DerivativeCheckTestsNetwork
+    from hessQuik.tests.utils import DerivativeCheckTestsNetwork
     torch.set_default_dtype(torch.float64)
 
     nex = 11  # no. of examples

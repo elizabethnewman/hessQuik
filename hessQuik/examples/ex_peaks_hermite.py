@@ -2,7 +2,7 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
-from peaks import peaks
+from hessQuik.examples.peaks import peaks
 
 
 # %% training functions
@@ -27,8 +27,8 @@ def train_one_epoch(f, x, y, optimizer, batch_size=5, loss_weights=(1.0, 1.0, 1.
         loss = loss_weights[0] * loss_f + loss_weights[1] * loss_df + loss_weights[2] * loss_d2f
 
         # store running loss
-        running_loss_f += loss_f.item()
-        running_loss_df += loss_df.item()
+        running_loss_f += b * loss_f.item()
+        running_loss_df += b * loss_df.item()
         running_loss_d2f += b * loss_d2f.item()
         running_loss += b * loss.item()
 
@@ -73,7 +73,7 @@ x_val, y_val = x[idx[n_train:n_train + n_val]], y[idx[n_train:n_train + n_val]]
 x_test, y_test = x[idx[n_train + n_val:]], y[idx[n_train + n_val:]]
 
 # %% create network
-width = 32
+width = 8
 depth = 8
 f = net.NN(lay.singleLayer(2, width, act=act.tanhActivation()),
            net.resnetNN(width, depth, h=1.0, act=act.tanhActivation()),
@@ -97,7 +97,7 @@ print(('{:<15s}{:<15s}' + 3 * tmp).format(*printouts))
 
 max_epochs = 50
 batch_size = 5
-loss_weights = (0, 0, 1.0)
+loss_weights = (1.0, 0, 0)
 
 # initial evaluation
 loss_train = test(f, x_train, y_train, loss_weights=loss_weights)

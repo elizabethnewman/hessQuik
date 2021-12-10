@@ -52,7 +52,7 @@ class softplusActivation(activationFunction):
 
 
 if __name__ == '__main__':
-    from hessQuik.tests import DerivativeCheckTestsActivationFunction
+    from hessQuik.tests.utils import DerivativeCheckTestsActivationFunction
     torch.set_default_dtype(torch.float64)
 
     nex = 11  # no. of examples
