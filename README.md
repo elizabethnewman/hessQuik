@@ -1,41 +1,63 @@
 # hessQuik
 
-
 ## Installation
 
-Create virtual environment
+### For Users: Install with **pip**
 
-```html
+```console
 virtualenv -p python env_name
 source env_name/bin/activate
-```
-
-
-Install package
-
-[comment]: <> (https://adamj.eu/tech/2019/03/11/pip-install-from-a-git-repository/)
-```html
 python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
-If the repository is private, use
-```html
-python -m pip install git+ssh://git@github.com/elizabethnewman/hessQuik.git
+
+### For Contributors: Clone with **git**
+
+```console
+git clone https://github.com/elizabethnewman/hessQuik.git
+cd hessQuik
 ```
+
+
+
+[comment]: <> (Install package)
+
+[comment]: <> ([comment]: <> &#40;https://adamj.eu/tech/2019/03/11/pip-install-from-a-git-repository/&#41;)
+
+[comment]: <> (```html)
+
+[comment]: <> (python -m pip install git+https://github.com/elizabethnewman/hessQuik.git)
+
+[comment]: <> (```)
+
+[comment]: <> (If the repository is private, use)
+
+[comment]: <> (```html)
+
+[comment]: <> (python -m pip install git+ssh://git@github.com/elizabethnewman/hessQuik.git)
+
+[comment]: <> (```)
 
 [comment]: <> (Make sure to import torch before importing hessQuik &#40;this is a bug currently&#41;)
 
-If hessQuik updated, reinstall via one of the following:
-```html
-pip install --upgrade --force-reinstall <package>
-pip install -I <package>
-pip install --ignore-installed <package>
-```
+[comment]: <> (If hessQuik updated, reinstall via one of the following:)
 
-When finished, deactivate virtual environment.
+[comment]: <> (```html)
 
-```html
-deactivate
-```
+[comment]: <> (pip install --upgrade --force-reinstall <package>)
+
+[comment]: <> (pip install -I <package>)
+
+[comment]: <> (pip install --ignore-installed <package>)
+
+[comment]: <> (```)
+
+[comment]: <> (When finished, deactivate virtual environment.)
+
+[comment]: <> (```html)
+
+[comment]: <> (deactivate)
+
+[comment]: <> (```)
 
 ## Getting Started
 
