@@ -79,12 +79,21 @@ f = net.NN(lay.singleLayer(d, widths[0], act.antiTanhActivation()),
            )
 ```
 
-Once you have constructed the network, you can run forward propagation and obtain the gradient and Hessian as follows:
+You can obtain gradients and Hessians in forward more via
 ```python
 nex = 20 # number of examples
 x = torch.randn(nex, d)
 fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
 ```
+
+or in backward mode via
+```python
+nex = 20 # number of examples
+x = torch.randn(nex, d)
+fx, *_ = f(x, reverse_mode=True)
+dfx, d2fx = f.backward(do_Hessian=True)
+```
+
 
 ## Examples
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1GCUSR9fGhQ9PoqfPxv8qRfqf88_ibyUA?usp=sharing) Peaks Hermite Interpolation
