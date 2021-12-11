@@ -50,7 +50,7 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
 
         f = net.NN(net.ICNN(d, [None, m] + ms, act=act.tanhActivation()),
                    lay.quadraticICNNLayer(d, ms[-1], 2))
-        
+
         network_derivative_check(f, x, do_Hessian=True)
 
 
