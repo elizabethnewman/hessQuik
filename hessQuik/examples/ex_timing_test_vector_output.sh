@@ -1,6 +1,6 @@
 #!/bin/sh
 
-num_input=3
+num_input=10
 num_output=3
 num_examples=1
 
