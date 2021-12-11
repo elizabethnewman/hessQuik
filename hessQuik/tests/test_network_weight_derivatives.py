@@ -42,6 +42,17 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
 
         network_derivative_check(f, x, do_Hessian=True)
 
+    def test_ICNN(self):
+        x = self.setup_data()
+        d = x.shape[1]
+        m = 4
+        ms = [5, 2, 7]  # no. of output features
+
+        f = net.NN(net.ICNN(d, [None, m] + ms, act=act.tanhActivation()),
+                   lay.quadraticICNNLayer(d, ms[-1], 2))
+        
+        network_derivative_check(f, x, do_Hessian=True)
+
 
 if __name__ == '__main__':
     torch.set_default_dtype(torch.float32)
