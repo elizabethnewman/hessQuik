@@ -73,6 +73,7 @@ class TestResnetNN(unittest.TestCase):
 class TestICNNNetwork(unittest.TestCase):
 
     def test_ICNNNetworkLayers(self):
+        torch.set_default_dtype(torch.float64)
         nex = 11  # no. of examples
         d = 3  # no. of input features
         ms = [None, 5, 2, 7]  # no. of output features
@@ -87,6 +88,7 @@ class TestICNNNetwork(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_ICNN(self):
+        torch.set_default_dtype(torch.float64)
         nex = 11  # no. of examples
         d = 3  # no. of input features
         ms = [None, 5, 2, 7]  # no. of output features
@@ -96,14 +98,21 @@ class TestICNNNetwork(unittest.TestCase):
         x = torch.randn(nex, d)
 
         print(self)
-        run_all_tests(f, x, verbose=True)
+        run_all_tests(f, x)
 
 
 class TestBlockNetwork(unittest.TestCase):
 
-    def test_blockFullyConnectedNN(self):
+    @staticmethod
+    def setup_network():
         nex = 11
         d = 3
+        x = torch.randn(nex, d)
+        return x
+
+    def test_blockFullyConnectedNN(self):
+        x = self.setup_network()
+        d = x.shape[1]
         widths1 = [2, 3]
         widths2 = [4, 5]
         widths3 = [7, 6, 1]
@@ -113,37 +122,32 @@ class TestBlockNetwork(unittest.TestCase):
                fullyConnectedNN([widths2[-1]] + widths3, act=act.softplusActivation())
                )
 
-        x = torch.randn(nex, d)
-
         print(self)
         run_all_tests(f, x)
 
     def test_blockResnetNN(self):
-        nex = 11
-        d = 3
+        x = self.setup_network()
+        d = x.shape[1]
         width = 7
         depth = 8
 
         f = NN(lay.singleLayer(d, width, act=act.antiTanhActivation()),
                resnetNN(width, depth, h=0.8, act=act.softplusActivation()),
-               lay.quadraticLayer(width, 6)
+               lay.quadraticLayer(width, 2)
                )
-
-        x = torch.randn(nex, d)
 
         print(self)
         run_all_tests(f, x)
 
     def test_blockICNN(self):
-        nex = 11  # no. of examples
-        d = 3  # no. of input features
+        x = self.setup_network()
+        print(x.dtype)
+        d = x.shape[1]
         m = 4
         ms = [5, 2, 7]  # no. of output features
 
         f = NN(ICNN(d, [None, m] + ms, act=act.tanhActivation()),
                lay.quadraticICNNLayer(d, ms[-1], 2))
-
-        x = torch.randn(nex, d)
 
         print(self)
         run_all_tests(f, x)

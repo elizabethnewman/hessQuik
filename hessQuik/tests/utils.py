@@ -1,11 +1,8 @@
-import torch
-from math import log2, floor
-from hessQuik.utils import input_derivative_check, convert_to_base
+from hessQuik.utils import input_derivative_check
 
 
-def run_forward_gradient_test(f, x, num_test=15, base=2, tol=0.1, verbose=False):
-    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=False, reverse_mode=False,
-                                                    num_test=num_test, base=base, tol=tol, verbose=verbose)
+def run_forward_gradient_test(f, x, **kwargs):
+    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=False, reverse_mode=False, **kwargs)
 
     if grad_check:
         out = 'PASSED'
@@ -15,9 +12,8 @@ def run_forward_gradient_test(f, x, num_test=15, base=2, tol=0.1, verbose=False)
     assert grad_check
 
 
-def run_forward_hessian_test(f, x, num_test=15, base=2, tol=0.1, verbose=False):
-    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=True, reverse_mode=False,
-                                                    num_test=num_test, base=base, tol=tol, verbose=verbose)
+def run_forward_hessian_test(f, x, **kwargs):
+    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=True, reverse_mode=False, **kwargs)
 
     if grad_check:
         out = 'PASSED'
@@ -34,9 +30,8 @@ def run_forward_hessian_test(f, x, num_test=15, base=2, tol=0.1, verbose=False):
     assert hess_check
 
 
-def run_backward_gradient_test(f, x, num_test=15, base=2, tol=0.1, verbose=False):
-    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=False, reverse_mode=True,
-                                                    num_test=num_test, base=base, tol=tol, verbose=verbose)
+def run_backward_gradient_test(f, x, **kwargs):
+    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=False, reverse_mode=True, **kwargs)
 
     if grad_check:
         out = 'PASSED'
@@ -46,9 +41,8 @@ def run_backward_gradient_test(f, x, num_test=15, base=2, tol=0.1, verbose=False
     assert grad_check
 
 
-def run_backward_hessian_test(f, x, num_test=15, base=2, tol=0.1, verbose=False):
-    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=True, reverse_mode=True,
-                                                    num_test=num_test, base=base, tol=tol, verbose=verbose)
+def run_backward_hessian_test(f, x, **kwargs):
+    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=True, reverse_mode=True, **kwargs)
 
     if grad_check:
         out = 'PASSED'
@@ -65,7 +59,7 @@ def run_backward_hessian_test(f, x, num_test=15, base=2, tol=0.1, verbose=False)
     assert hess_check
 
 
-def run_all_tests(f, x, num_test=15, base=2, tol=0.1, verbose=False):
+def run_all_tests(f, x, num_test=15, base=2.0, tol=0.1, verbose=False):
     run_forward_gradient_test(f, x, num_test=num_test, base=base, tol=tol, verbose=verbose)
     run_forward_hessian_test(f, x, num_test=num_test, base=base, tol=tol, verbose=verbose)
     run_backward_gradient_test(f, x, num_test=num_test, base=base, tol=tol, verbose=verbose)

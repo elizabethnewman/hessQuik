@@ -18,7 +18,7 @@ class resnetNN(NN):
 if __name__ == '__main__':
     import torch
     from hessQuik.utils import input_derivative_check
-    torch.set_default_dtype(torch.float64)
+    torch.set_default_dtype(torch.float32)
 
     # problem setup
     nex = 11
