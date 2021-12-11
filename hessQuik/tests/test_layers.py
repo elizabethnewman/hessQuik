@@ -2,7 +2,7 @@ import unittest
 import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
-from hessQuik.tests.utils import run_all_tests
+from utils import run_all_tests
 
 
 class TestLayer(unittest.TestCase):

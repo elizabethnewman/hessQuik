@@ -84,7 +84,7 @@ if __name__ == '__main__':
     torch.set_default_dtype(torch.float32)
 
     nex = 11  # no. of examples
-    d = 4  # no. of input features
+    d = 2  # no. of input features
 
     x = torch.randn(nex, d)
     dx = torch.randn_like(x)
@@ -92,13 +92,19 @@ if __name__ == '__main__':
     # f = net.NN(lay.singleLayer(d, 7, act=act.softplusActivation()),
     #            lay.singleLayer(7, 5, act=act.identityActivation()))
 
-    width = 7
+    width = 8
+    depth = 8
     f = net.NN(lay.singleLayer(d, width, act=act.tanhActivation()),
-               net.resnetNN(width, 4, act=act.softplusActivation()),
-               net.fullyConnectedNN([width, 13, 5], act=act.quadraticActivation()),
-               lay.singleLayer(5, 3, act=act.identityActivation()),
-               lay.quadraticLayer(3, 2)
-               )
+               net.resnetNN(width, depth, h=1.0, act=act.tanhActivation()),
+               lay.singleLayer(width, 1, act=act.identityActivation()))
+
+    # width = 7
+    # f = net.NN(lay.singleLayer(d, width, act=act.tanhActivation()),
+    #            net.resnetNN(width, 4, act=act.softplusActivation()),
+    #            net.fullyConnectedNN([width, 13, 5], act=act.quadraticActivation()),
+    #            lay.singleLayer(5, 3, act=act.identityActivation()),
+    #            lay.quadraticLayer(3, 2)
+    #            )
 
     network_derivative_check(f, x, do_Hessian=True, verbose=True)
 
