@@ -1,27 +1,17 @@
 import unittest
 import torch
 import hessQuik.activations as act
-from hessQuik.tests.utils import DerivativeCheckTestsActivationFunction
+from hessQuik.tests.utils import run_all_tests
 
 
 class TestActivation(unittest.TestCase):
 
     @staticmethod
     def run_test(f):
-        # problem setup
-        nex = 11  # no. of examples
-        d = 4  # no. of input features
-
+        nex = 11
+        d = 7
         x = torch.randn(nex, d)
-        dx = torch.randn_like(x)
-
-        derivativeTests = DerivativeCheckTestsActivationFunction()
-
-        # forward tests
-        derivativeTests.run_forward_gradient_test(f, x, dx)
-        derivativeTests.run_forward_hessian_test(f, x, dx)
-        derivativeTests.run_backward_gradient_test(f, x, dx)
-        derivativeTests.run_backward_hessian_test(f, x, dx)
+        run_all_tests(f, x)
 
     def test_antiTanhActivation(self):
         f = act.antiTanhActivation()
