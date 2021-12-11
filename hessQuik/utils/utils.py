@@ -53,7 +53,7 @@ def convert_to_base(a, b=2.0):
     for i in range(len(a)):
         if a[i] <= 0:
             # catch case when equal to 0
-            c, d = 0, 0
+            c, d = -1, 0
         else:
             d = floor(log2(a[i]) / log2(b))
             c = b ** (log2(a[i]) / log2(b) - d)

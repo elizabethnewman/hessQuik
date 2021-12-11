@@ -55,10 +55,10 @@ def network_derivative_check(f, x, do_Hessian=False, num_test=15, base=2, tol=0.
 
 
 if __name__ == '__main__':
-    from hessQuik.networks import NN
-    from hessQuik.layers import singleLayer
-    from hessQuik.activations import softplusActivation
-    torch.set_default_dtype(torch.float64)
+    import hessQuik.networks as net
+    import hessQuik.layers as lay
+    import hessQuik.activations as act
+    torch.set_default_dtype(torch.float32)
 
     nex = 11  # no. of examples
     d = 4  # no. of input features
@@ -66,8 +66,15 @@ if __name__ == '__main__':
     x = torch.randn(nex, d)
     dx = torch.randn_like(x)
 
-    f = NN(singleLayer(d, 7, act=softplusActivation()),
-           singleLayer(7, 5, act=softplusActivation()))
+    # f = net.NN(lay.singleLayer(d, 7, act=act.softplusActivation()), lay.singleLayer(7, 5, act=act.identityActivation()))
+
+    width = 7
+    f = net.NN(lay.singleLayer(d, width, act=act.tanhActivation()),
+               net.resnetNN(width, 4, act=act.softplusActivation()),
+               net.fullyConnectedNN([width, 13, 5], act=act.quadraticActivation()),
+               lay.singleLayer(5, 3, act=act.identityActivation()),
+               lay.quadraticLayer(3, 2)
+               )
 
     network_derivative_check(f, x, do_Hessian=True, verbose=True)
 
