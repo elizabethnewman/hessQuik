@@ -1,6 +1,6 @@
 import torch
 import pickle
-from hessQuik.examples.timing_test import timing_test
+from timing_test import timing_test
 import argparse
 from datetime import datetime
 import os
@@ -14,7 +14,7 @@ parser.add_argument('--num-output', type=int, default=1, metavar='m',
                     help='number of different output features, given by powers of 2 starting from 2^0 '
                          '(default: 1 giving output features (1,)')
 parser.add_argument('--num-examples', type=int, default=1, metavar='e',
-                    help='number of examples, given by multiples of of 10, starting with 10'
+                    help='number of examples, given by powers of of 10, starting with 10'
                          '(default: 1 giving number of examples (10,)')
 parser.add_argument('--num-trials', type=int, default=10, metavar='N', help='number of trials (default: 10)')
 parser.add_argument('--seed', type=int, default=42, metavar='s', help='random seed (default: 42)')
@@ -33,7 +33,7 @@ args = parser.parse_args()
 # setup
 in_feature_range = (2 ** torch.arange(0, args.num_input)).tolist()
 out_feature_range = (2 ** torch.arange(0, args.num_output)).tolist()
-nex_range = (10 * torch.arange(1, args.num_examples + 1)).tolist()
+nex_range = (10 ** torch.arange(0, args.num_examples)).tolist()
 width = args.width
 depth = args.depth
 num_trials = args.num_trials

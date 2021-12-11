@@ -6,10 +6,12 @@ from time import perf_counter, process_time
 import gc
 
 
-def create_network(in_features, out_features, width, depth, network_type='hessQuik', device='cpu'):
+def create_network(in_features, out_features, width=20, depth=4,
+                   network_type='hessQuik', device='cpu'):
+
     f = net.NN(lay.singleLayer(in_features, width, act=act.antiTanhActivation()),
                net.resnetNN(width, depth, h=0.5, act=act.softplusActivation()),
-               lay.singleLayer(width, out_features)).to(device)
+               lay.singleLayer(width, out_features, act=act.identityActivation())).to(device)
 
     if network_type == 'hessQuik':
         x_requires_grad = False
@@ -28,13 +30,7 @@ def create_network(in_features, out_features, width, depth, network_type='hessQu
     return f, x_requires_grad
 
 
-def timing_test_forward(in_features, out_features, nex, num_trials=10,
-                        width=20, depth=4, network_type='hessQuik', device='cpu', clear_memory=True):
-    # initialize network and input
-    f, x_requires_grad = create_network(in_features, out_features, width, depth,
-                                        network_type=network_type, device=device)
-    x = torch.randn(nex, in_features, device=device)
-    x.requires_grad = x_requires_grad
+def timing_test_forward(f, x, num_trials=10, clear_memory=True):
 
     total_time = 0.0
     for _ in range(num_trials):
@@ -51,13 +47,8 @@ def timing_test_forward(in_features, out_features, nex, num_trials=10,
     return total_time / num_trials
 
 
-def timing_test_backward(in_features, out_features, nex, num_trials=10,
-                         width=20, depth=4, network_type='hessQuik', device='cpu', clear_memory=True):
+def timing_test_backward(f, x, num_trials=10, clear_memory=True):
     # initialize network and input
-    f, x_requires_grad = create_network(in_features, out_features, width, depth,
-                                        network_type=network_type, device=device)
-    x = torch.randn(nex, in_features, device=device)
-    x.requires_grad = x_requires_grad
 
     total_time = 0.0
     for _ in range(num_trials):
@@ -69,8 +60,6 @@ def timing_test_backward(in_features, out_features, nex, num_trials=10,
 
     if clear_memory:
         torch.cuda.empty_cache()
-        del f, x
-        gc.collect()
 
     return total_time / num_trials
 
@@ -83,16 +72,20 @@ def timing_test(in_feature_range, out_feature_range, nex_range, num_trials=10, w
         for idx_in, in_features in enumerate(in_feature_range):
             for idx_nex, nex in enumerate(nex_range):
 
-                if not reverse_mode:
-                    mean_time = timing_test_forward(in_features, out_features, nex, num_trials=num_trials,
-                                                    width=width, depth=depth, network_type=network_type, device=device,
-                                                    clear_memory=clear_memory)
-                else:
-                    mean_time = timing_test_backward(in_features, out_features, nex, num_trials=num_trials,
-                                                     width=width, depth=depth, network_type=network_type, device=device,
-                                                     clear_memory=clear_memory)
+              f, x_requires_grad = create_network(in_features, out_features, width, depth,
+                                                  network_type=network_type, device=device)
+              x = torch.randn(nex, in_features, device=device)
+              x.requires_grad = x_requires_grad
 
-                timing_trials_mean[idx_in, idx_out, idx_nex] = mean_time
+              if not reverse_mode:
+                  mean_time = timing_test_forward(f, x, num_trials=num_trials, clear_memory=clear_memory)
+              else:
+                  mean_time = timing_test_backward(f, x, num_trials=num_trials, clear_memory=clear_memory)
+
+              timing_trials_mean[idx_in, idx_out, idx_nex] = mean_time
+
+              del f, x
+              gc.collect()
 
     results = {'timing_trials_mean': timing_trials_mean,
                'in_feature_range': in_feature_range,
@@ -100,4 +93,3 @@ def timing_test(in_feature_range, out_feature_range, nex_range, num_trials=10, w
                'nex_range': nex_range,
                'num_trials': num_trials}
     return results
-
