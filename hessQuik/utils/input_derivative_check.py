@@ -1,5 +1,5 @@
 import torch
-from math import log2, floor
+from math import log2
 import hessQuik
 from hessQuik.utils import convert_to_base
 
@@ -49,13 +49,12 @@ def input_derivative_check(f, x, do_Hessian=False, reverse_mode=False, num_test=
 
     # ---------------------------------------------------------------------------------------------------------------- #
     # check if order is 2 at least half of the time
-    grad_check = sum((torch.log2(E1[:-1] / E1[1:]) / log2(base)) > (2 - tol)) > num_test / 2
-    grad_check = (grad_check or sum(E1) / len(E1) < 1e-8)
+    grad_check = (sum((torch.log2(E1[:-1] / E1[1:]) / log2(base)) > (2 - tol))
+                  + sum(E1 < 100 * torch.finfo(x.dtype).eps) > num_test / 2)
 
     if curvx is not None:
-        # check if order is 3 at least half of the time
-        hess_check = sum((torch.log2(E2[:-1] / E2[1:]) / log2(base)) > (3 - tol)) > num_test / 2
-        hess_check = (hess_check or sum(E2) / len(E1) < 1e-8)
+        hess_check = ((sum((torch.log2(E2[:-1] / E2[1:]) / log2(base)) > (3 - tol))
+                      + sum(E2 < 100 * torch.finfo(x.dtype).eps)) > num_test / 2)
 
     if verbose:
         if grad_check:
@@ -76,7 +75,7 @@ if __name__ == '__main__':
     from hessQuik.networks import NN
     from hessQuik.layers import singleLayer
     from hessQuik.activations import softplusActivation
-    torch.set_default_dtype(torch.float64)
+    torch.set_default_dtype(torch.float32)
 
     nex = 11  # no. of examples
     d = 4  # no. of input features

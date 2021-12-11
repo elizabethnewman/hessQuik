@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
+from hessQuik.layers import hessQuikLayer
 
 
-class quadraticICNNLayer(nn.Module):
+class quadraticICNNLayer(hessQuikLayer):
     """
     f(x) = u @ nonneg(w) + x @ v + 0.5 * x.t() @ A.t() @ A @ x + mu
     """
@@ -120,7 +121,7 @@ class quadraticICNNLayer(nn.Module):
 
 
 if __name__ == '__main__':
-    from hessQuik.tests.utils import DerivativeCheckTestsNetwork
+    from hessQuik.utils import input_derivative_check
     torch.set_default_dtype(torch.float64)
 
     nex = 11  # no. of examples
@@ -128,14 +129,10 @@ if __name__ == '__main__':
     in_feat = 5
     m = 13  # rank
     x = torch.randn(nex, d)
-    dx = torch.randn_like(x)
     f = quadraticICNNLayer(d, None, m)
 
-    # forward tests
-    derivativeTests = DerivativeCheckTestsNetwork()
-
     print('======= FORWARD =======')
-    derivativeTests.run_forward_hessian_test(f, x, dx, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
 
     print('======= BACKWARD =======')
-    derivativeTests.run_backward_hessian_test(f, x, dx, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)

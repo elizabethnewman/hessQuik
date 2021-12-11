@@ -4,20 +4,7 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 from hessQuik.networks import NN, fullyConnectedNN, resnetNN, ICNN
-from hessQuik.tests.utils import DerivativeCheckTestsNetwork
-
-
-def run_test(f, x, dx, requires_grad=False):
-    x.requires_grad = requires_grad
-
-    derivativeTests = DerivativeCheckTestsNetwork()
-
-    # forward tests
-    derivativeTests.run_forward_gradient_test(f, x, dx)
-    derivativeTests.run_forward_hessian_test(f, x, dx)
-
-    derivativeTests.run_backward_gradient_test(f, x, dx)
-    derivativeTests.run_backward_hessian_test(f, x, dx)
+from hessQuik.tests.utils import run_all_tests
 
 
 class TestNN(unittest.TestCase):
@@ -41,19 +28,17 @@ class TestNN(unittest.TestCase):
     def test_NN_scalar_output(self):
         # problem setup
         f, x = self.setup_network(1)
-        dx = torch.randn_like(x)
 
         print(self, ': scalar output')
-        run_test(f, x, dx, requires_grad=False)
+        run_all_tests(f, x)
 
     def test_NN_vector_output(self):
         # problem setup
         m = 3
         f, x = self.setup_network(m)
-        dx = torch.randn_like(x)
 
         print(self, ': vector output')
-        run_test(f, x, dx, requires_grad=False)
+        run_all_tests(f, x)
 
 
 class TestFullyConnectedNN(unittest.TestCase):
@@ -66,10 +51,9 @@ class TestFullyConnectedNN(unittest.TestCase):
         f = fullyConnectedNN([d] + widths, act=act.antiTanhActivation())
 
         x = torch.randn(nex, d)
-        dx = torch.randn_like(x)
 
         print(self)
-        run_test(f, x, dx, requires_grad=False)
+        run_all_tests(f, x)
 
 
 class TestResnetNN(unittest.TestCase):
@@ -81,10 +65,9 @@ class TestResnetNN(unittest.TestCase):
         f = resnetNN(width, depth, h=0.25, act=act.quadraticActivation())
 
         x = torch.randn(nex, width)
-        dx = torch.randn_like(x)
 
         print(self)
-        run_test(f, x, dx, requires_grad=False)
+        run_all_tests(f, x)
 
 
 class TestICNNNetwork(unittest.TestCase):
@@ -99,10 +82,9 @@ class TestICNNNetwork(unittest.TestCase):
                lay.ICNNLayer(d, ms[2], ms[3], act=act.softplusActivation()))
 
         x = torch.randn(nex, d)
-        dx = torch.randn_like(x)
 
         print(self)
-        run_test(f, x, dx, requires_grad=False)
+        run_all_tests(f, x)
 
     def test_ICNN(self):
         nex = 11  # no. of examples
@@ -112,10 +94,9 @@ class TestICNNNetwork(unittest.TestCase):
         f = ICNN(d, ms, act=act.softplusActivation())
 
         x = torch.randn(nex, d)
-        dx = torch.randn_like(x)
 
         print(self)
-        run_test(f, x, dx, requires_grad=False)
+        run_all_tests(f, x, verbose=True)
 
 
 class TestBlockNetwork(unittest.TestCase):
@@ -132,12 +113,10 @@ class TestBlockNetwork(unittest.TestCase):
                fullyConnectedNN([widths2[-1]] + widths3, act=act.softplusActivation())
                )
 
-
         x = torch.randn(nex, d)
-        dx = torch.randn_like(x)
 
         print(self)
-        run_test(f, x, dx, requires_grad=False)
+        run_all_tests(f, x)
 
     def test_blockResnetNN(self):
         nex = 11
@@ -151,10 +130,9 @@ class TestBlockNetwork(unittest.TestCase):
                )
 
         x = torch.randn(nex, d)
-        dx = torch.randn_like(x)
 
         print(self)
-        run_test(f, x, dx, requires_grad=False)
+        run_all_tests(f, x)
 
     def test_blockICNN(self):
         nex = 11  # no. of examples
@@ -162,14 +140,13 @@ class TestBlockNetwork(unittest.TestCase):
         m = 4
         ms = [5, 2, 7]  # no. of output features
 
-        f = NN(ICNN(d, [None, m] + ms, act=act.softplusActivation()),
+        f = NN(ICNN(d, [None, m] + ms, act=act.tanhActivation()),
                lay.quadraticICNNLayer(d, ms[-1], 2))
 
         x = torch.randn(nex, d)
-        dx = torch.randn_like(x)
 
         print(self)
-        run_test(f, x, dx, requires_grad=False)
+        run_all_tests(f, x)
 
 
 if __name__ == '__main__':

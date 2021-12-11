@@ -103,21 +103,17 @@ class singleLayer(hessQuikLayer):
 
 
 if __name__ == '__main__':
-    from hessQuik.tests.utils import DerivativeCheckTestsNetwork
+    from hessQuik.utils import input_derivative_check
     torch.set_default_dtype(torch.float64)
 
     nex = 11  # no. of examples
     d = 4  # no. of input features
     m = 7  # no. of output features
     x = torch.randn(nex, d)
-    dx = torch.randn_like(x)
     f = singleLayer(d, m, act=act.softplusActivation())
 
-    # forward tests
-    derivativeTests = DerivativeCheckTestsNetwork()
-
     print('======= FORWARD =======')
-    derivativeTests.run_forward_hessian_test(f, x, dx, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
 
     print('======= BACKWARD =======')
-    derivativeTests.run_backward_hessian_test(f, x, dx, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)

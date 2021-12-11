@@ -17,23 +17,19 @@ class resnetNN(NN):
 
 if __name__ == '__main__':
     import torch
-    from hessQuik.tests.utils import DerivativeCheckTestsNetwork
+    from hessQuik.utils import input_derivative_check
     torch.set_default_dtype(torch.float64)
 
     # problem setup
     nex = 11
     d = 3
     x = torch.randn(nex, d)
-    dx = torch.randn_like(x)
 
     f = resnetNN(d, 4, h=0.5, act=act.softplusActivation())
 
-    # forward tests
-    derivativeTests = DerivativeCheckTestsNetwork()
-
     print('======= FORWARD =======')
-    derivativeTests.run_forward_hessian_test(f, x, dx, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
 
     print('======= BACKWARD =======')
-    derivativeTests.run_backward_hessian_test(f, x, dx, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
 
