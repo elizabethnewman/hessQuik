@@ -53,6 +53,10 @@ class singleLayer(hessQuikLayer):
             if do_Hessian:
                 d2fd2x = (d2sig.unsqueeze(1) * self.K).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
 
+                # TODO: compare alternative computation - roughly the same amount of time to compute
+                # d2fd2x = (d2sig.unsqueeze(-1).unsqueeze(-1) * (self.K.T.unsqueeze(-1) @ self.K.T.unsqueeze(1)))
+                # d2fd2x = d2fd2x.permute(0, 2, 3, 1)
+
                 # Gauss-Newton approximation
                 if dudx is not None:
                     d2fd2x = dudx.unsqueeze(1) @ (d2fd2x.permute(0, 3, 1, 2) @ dudx.unsqueeze(1).permute(0, 1, 3, 2))
@@ -75,8 +79,12 @@ class singleLayer(hessQuikLayer):
         dgdx = dsig.unsqueeze(1) * self.K
 
         if do_Hessian:
-            # TODO: change order of operations, multiply K's first; check if logic with better naming
             d2gd2x = (d2sig.unsqueeze(1) * self.K.unsqueeze(0)).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
+
+            # TODO: compare alternative computation - roughly the same amount of time to compute
+            # d2gd2x = (d2sig.unsqueeze(-1).unsqueeze(-1) * (self.K.T.unsqueeze(-1) @ self.K.T.unsqueeze(1)))
+            # d2gd2x = d2gd2x.permute(0, 2, 3, 1)
+
             if d2gd2f is not None:
                 # Gauss-Newton approximation
                 h1 = (dgdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ dgdx.permute(0, 2, 1).unsqueeze(1))
