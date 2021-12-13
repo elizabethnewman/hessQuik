@@ -4,12 +4,10 @@ import hessQuik
 from hessQuik.utils import convert_to_base
 
 
-def input_derivative_check(f, x, do_Hessian=False, reverse_mode=False, num_test=15, base=2.0, tol=0.1, verbose=False):
+def input_derivative_check(f, x, do_Hessian=False, num_test=15, base=2.0, tol=0.1, verbose=False):
 
     # initial evaluation
-    f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=do_Hessian, reverse_mode=reverse_mode)
-    if reverse_mode:
-        df0, d2f0 = f.backward(do_Hessian=do_Hessian)
+    f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=do_Hessian)
 
     # ---------------------------------------------------------------------------------------------------------------- #
     # directional derivatives
@@ -85,7 +83,7 @@ if __name__ == '__main__':
     dx = torch.randn_like(x)
 
     f = NN(singleLayer(d, 7, act=softplusActivation()),
-           singleLayer(7, 5, act=softplusActivation()))
+           singleLayer(7, 5, act=softplusActivation()), reverse_mode=False)
 
     input_derivative_check(f, x, do_Hessian=True, verbose=True)
 

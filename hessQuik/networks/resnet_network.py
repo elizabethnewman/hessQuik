@@ -7,12 +7,14 @@ from copy import deepcopy
 class resnetNN(NN):
 
     def __init__(self, width: int, depth: int, h: float = 1.0, act: act.activationFunction = act.identityActivation(),
-                 device=None, dtype=None):
+                 device=None, dtype=None, **kwargs):
         factory_kwargs = {'device': device, 'dtype': dtype}
-        super(resnetNN, self).__init__()
 
+        args = ()
         for i in range(depth):
-            self.add_module(str(i), resnetLayer(width, h=h, act=deepcopy(act), **factory_kwargs))
+            args += (resnetLayer(width, h=h, act=deepcopy(act), **factory_kwargs),)
+
+        super(resnetNN, self).__init__(*args, **kwargs)
 
 
 if __name__ == '__main__':
@@ -25,11 +27,11 @@ if __name__ == '__main__':
     d = 3
     x = torch.randn(nex, d)
 
-    f = resnetNN(d, 4, h=0.5, act=act.softplusActivation())
-
     print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
+    f = resnetNN(d, 4, h=0.5, act=act.softplusActivation(), reverse_mode=False)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
+    f = resnetNN(d, 4, h=0.5, act=act.softplusActivation(), reverse_mode=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 

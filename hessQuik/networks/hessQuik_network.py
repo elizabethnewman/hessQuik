@@ -8,13 +8,45 @@ class NN(nn.Sequential):
     """
     Forward propagation through network composed of forward Hessian layers
     """
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
+
         super(NN, self).__init__(*args)
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, reverse_mode=False):
+        # setup reverse mode
+        if not ('reverse_mode' in kwargs.keys()):
+            if self.dim_input() < self.dim_output():
+                reverse_mode = False  # must compute the derivatives in forward mode
+            else:
+                reverse_mode = None  # store necessary info, but do not compute derivatives until backward call
+
+            kwargs['reverse_mode'] = reverse_mode
+
+        self.reverse_mode = (kwargs['reverse_mode'] is not False)  # backward call only if reverse_mode is True
+
+    def dim_input(self):
+        return self[0].dim_input()
+
+    def dim_output(self):
+        return self[-1].dim_output()
+
+    @property
+    def reverse_mode(self):
+        return self._reverse_mode
+
+    @reverse_mode.setter
+    def reverse_mode(self, reverse_mode):
+        self._reverse_mode = reverse_mode
+        for i, _ in enumerate(self):
+            self[i].reverse_mode = False if reverse_mode is False else None
+
+    def forward(self, x, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+
         for module in self:
-            x, dudx, d2ud2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x,
-                                     reverse_mode=reverse_mode)
+            x, dudx, d2ud2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x)
+
+        if self._reverse_mode is True:
+            dudx, d2ud2x = self.backward(do_Hessian=do_Hessian)
+
         return x, dudx, d2ud2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
@@ -123,3 +155,31 @@ class NNPytorchHessian(nn.Module):
 
         return df, d2f
 
+
+if __name__ == '__main__':
+    import torch
+    import hessQuik.activations as act
+    import hessQuik.layers as lay
+    from hessQuik.utils import input_derivative_check
+    torch.set_default_dtype(torch.float64)
+
+    # problem setup
+    nex = 11
+    d = 3
+    ms = [2, 7, 5]
+    m = 8
+    x = torch.randn(nex, d)
+
+    f = NN(lay.singleLayer(d, ms[0], act=act.softplusActivation()),
+           lay.singleLayer(ms[0], ms[1], act=act.softplusActivation()),
+           lay.singleLayer(ms[1], ms[2], act=act.softplusActivation()),
+           lay.singleLayer(ms[2], m, act=act.softplusActivation()))
+
+    print('======= FORWARD =======')
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+
+    print('======= BACKWARD =======')
+    f.reverse_mode = True
+
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)

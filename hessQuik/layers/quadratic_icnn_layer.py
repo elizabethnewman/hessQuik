@@ -10,7 +10,8 @@ class quadraticICNNLayer(hessQuikLayer):
     f(x) = u @ nonneg(w) + x @ v + 0.5 * x.t() @ A.t() @ A @ x + mu
     """
 
-    def __init__(self, input_dim, in_features, rank):
+    def __init__(self, input_dim, in_features, rank, device=None, dtype=None):
+        factory_kwargs = {'device': device, 'dtype': dtype}
         super(quadraticICNNLayer, self).__init__()
 
         self.input_dim = input_dim
@@ -22,13 +23,13 @@ class quadraticICNNLayer(hessQuikLayer):
         # create final layer
 
         if in_features is not None:
-            self.w = nn.Parameter(torch.empty(in_features))
+            self.w = nn.Parameter(torch.empty(in_features, **factory_kwargs))
         else:
             self.register_parameter('w', None)
 
-        self.v = nn.Parameter(torch.empty(input_dim))
-        self.mu = nn.Parameter(torch.empty(1))
-        self.A = nn.Parameter(torch.empty(rank, input_dim))
+        self.v = nn.Parameter(torch.empty(input_dim, **factory_kwargs))
+        self.mu = nn.Parameter(torch.empty(1, **factory_kwargs))
+        self.A = nn.Parameter(torch.empty(rank, input_dim, **factory_kwargs))
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -43,6 +44,12 @@ class quadraticICNNLayer(hessQuikLayer):
         nn.init.uniform_(self.mu)
         bound = 1 / math.sqrt(self.input_dim)
         nn.init.uniform_(self.A, a=-bound, b=bound)
+
+    def dim_input(self):
+        return self.in_features + self.input_dim
+
+    def dim_output(self):
+        return 1
 
     def forward(self, ux, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, reverse_mode=False):
 

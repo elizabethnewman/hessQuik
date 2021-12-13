@@ -21,13 +21,14 @@ class singleLayer(hessQuikLayer):
     """
 
     def __init__(self, in_features, out_features, act: act.activationFunction = act.identityActivation(),
-                 device=None, dtype=None):
+                 device=None, dtype=None, reverse_mode=False):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(singleLayer, self).__init__()
 
         self.in_features = in_features
         self.out_features = out_features
         self.act = act
+        self._reverse_mode = reverse_mode
 
         self.K = nn.Parameter(torch.empty(in_features, out_features, **factory_kwargs))
         self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))
@@ -40,15 +41,29 @@ class singleLayer(hessQuikLayer):
         bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
         nn.init.uniform_(self.b, -bound, bound)
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, reverse_mode=False):
+    def dim_input(self):
+        return self.in_features
+
+    def dim_output(self):
+        return self.out_features
+
+    @property
+    def reverse_mode(self):
+        return self._reverse_mode
+
+    @reverse_mode.setter
+    def reverse_mode(self, reverse_mode):
+        self._reverse_mode = reverse_mode
+
+    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
 
         (dfdx, d2fd2x) = (None, None)
         f, dsig, d2sig = self.act.forward(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian,
-                                          reverse_mode=reverse_mode)
+                                          reverse_mode=self.reverse_mode is not False)
 
-        if (do_gradient or do_Hessian) and not reverse_mode:
+        if (do_gradient or do_Hessian) and self.reverse_mode is False:
+            print('here1')
             dfdx = dsig.unsqueeze(1) * self.K
-
             # -------------------------------------------------------------------------------------------------------- #
             if do_Hessian:
                 d2fd2x = (d2sig.unsqueeze(1) * self.K).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
@@ -70,10 +85,13 @@ class singleLayer(hessQuikLayer):
             if dudx is not None:
                 dfdx = dudx @ dfdx
 
+        if (do_gradient or do_Hessian) and self.reverse_mode is True:
+            dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
+
         return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-
+        print('here2')
         d2gd2x = None
         dsig, d2sig = self.act.backward(do_Hessian=do_Hessian)
         dgdx = dsig.unsqueeze(1) * self.K
@@ -118,10 +136,13 @@ if __name__ == '__main__':
     d = 4  # no. of input features
     m = 7  # no. of output features
     x = torch.randn(nex, d)
-    f = singleLayer(d, m, act=act.softplusActivation())
 
     print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
+    f = singleLayer(d, m, act=act.softplusActivation())
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
+    f = singleLayer(d, m, act=act.softplusActivation())
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)

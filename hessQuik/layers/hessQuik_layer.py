@@ -8,9 +8,20 @@ class hessQuikLayer(nn.Module):
     def __init__(self, *args, **kwargs):
         super(hessQuikLayer, self).__init__()
 
+    def dim_input(self) -> int:
+        """
+        Dimension of input features
+        """
+        raise NotImplementedError
+
+    def dim_output(self) -> int:
+        """
+        Dimension of output features
+        """
+        raise NotImplementedError
+
     def forward(self, u: Tensor, do_gradient: bool = False, do_Hessian: bool = False,
-                dudx: Union[Tensor, None] = None, d2ud2x: Union[Tensor, None] = None,
-                reverse_mode: bool = False) \
+                dudx: Union[Tensor, None] = None, d2ud2x: Union[Tensor, None] = None) \
             -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
         """
         Forward propagate through singleLayer

@@ -42,7 +42,8 @@ def run_backward_gradient_test(f, x, **kwargs):
 
 
 def run_backward_hessian_test(f, x, **kwargs):
-    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=True, reverse_mode=True, **kwargs)
+    f.reverse_mode = True
+    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=True, **kwargs)
 
     if grad_check:
         out = 'PASSED'

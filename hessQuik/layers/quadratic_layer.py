@@ -9,7 +9,8 @@ class quadraticLayer(hessQuikLayer):
     f(x) = x @ v + 0.5 * x.t() @ A.t() @ A @ x + mu
     """
 
-    def __init__(self, in_features, rank):
+    def __init__(self, in_features, rank, device=None, dtype=None):
+        factory_kwargs = {'device': device, 'dtype': dtype}
         super(quadraticLayer, self).__init__()
 
         self.in_features = in_features
@@ -17,9 +18,9 @@ class quadraticLayer(hessQuikLayer):
         self.ctx = None
 
         # create final layer
-        self.v = nn.Parameter(torch.empty(self.in_features))
-        self.mu = nn.Parameter(torch.empty(1))
-        self.A = nn.Parameter(torch.empty(self.rank, self.in_features))
+        self.v = nn.Parameter(torch.empty(self.in_features, **factory_kwargs))
+        self.mu = nn.Parameter(torch.empty(1, **factory_kwargs))
+        self.A = nn.Parameter(torch.empty(self.rank, self.in_features, **factory_kwargs))
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -28,6 +29,12 @@ class quadraticLayer(hessQuikLayer):
         nn.init.uniform_(self.mu)
         bound = 1 / math.sqrt(self.in_features)
         nn.init.uniform_(self.A, a=-bound, b=bound)
+
+    def dim_input(self):
+        return self.in_features
+
+    def dim_output(self):
+        return 1
 
     def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, reverse_mode=False):
 

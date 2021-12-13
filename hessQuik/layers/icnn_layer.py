@@ -61,6 +61,12 @@ class ICNNLayer(hessQuikLayer):
         bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
         nn.init.uniform_(self.b, -bound, bound)
 
+    def dim_input(self):
+        return self.in_features + self.input_dim
+
+    def dim_output(self):
+        return self.out_features + self.input_dim
+
     def forward(self, ux, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, reverse_mode=False):
 
         (dfdx, d2fd2x) = (None, None)

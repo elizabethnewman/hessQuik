@@ -19,34 +19,53 @@ class resnetLayer(hessQuikLayer):
     where N is the number of examples and d is the number of input features into the network.
     """
 
-    def __init__(self, width, h=1.0, act: act.activationFunction = act.identityActivation(), device=None, dtype=None):
+    def __init__(self, width, h=1.0, act: act.activationFunction = act.identityActivation(),
+                 device=None, dtype=None, reverse_mode=None):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(resnetLayer, self).__init__()
 
         self.width = width
         self.h = h
         self.layer = singleLayer(width, width, act=act, **factory_kwargs)
+        self.reverse_mode = reverse_mode
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, reverse_mode=False):
+    def dim_input(self):
+        return self.width
+
+    def dim_output(self):
+        return self.width
+
+    @property
+    def reverse_mode(self):
+        return self._reverse_mode
+
+    @reverse_mode.setter
+    def reverse_mode(self, reverse_mode):
+        self._reverse_mode = reverse_mode
+        self.layer.reverse_mode = reverse_mode
+
+    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
 
         (dfdx, d2fd2x) = (None, None)
-        fi, dfi, d2fi = self.layer(u, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x,
-                                   reverse_mode=reverse_mode)
+        fi, dfi, d2fi = self.layer(u, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x)
 
         # skip connection
         f = u + self.h * fi
 
-        if do_gradient and not reverse_mode:
+        if do_gradient and self.reverse_mode is False:
 
             if dudx is None:
                 dfdx = torch.eye(self.width, dtype=dfi.dtype, device=dfi.device) + self.h * dfi
             else:
                 dfdx = dudx + self.h * dfi
 
-        if do_Hessian and not reverse_mode:
+        if do_Hessian and self.reverse_mode is False:
             d2fd2x = self.h * d2fi
             if d2ud2x is not None:
                 d2fd2x += d2ud2x
+
+        if (do_gradient or do_Hessian) and self.reverse_mode is True:
+            dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
 
         return f, dfdx, d2fd2x
 
@@ -105,7 +124,9 @@ if __name__ == '__main__':
     f = resnetLayer(width, h=h, act=act.softplusActivation())
 
     print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)

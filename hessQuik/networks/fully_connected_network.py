@@ -8,12 +8,13 @@ from copy import deepcopy
 class fullyConnectedNN(NN):
 
     def __init__(self, widths: Union[Tuple, List], act: act.activationFunction = act.identityActivation(),
-                 device=None, dtype=None):
+                 device=None, dtype=None, **kwargs):
         factory_kwargs = {'device': device, 'dtype': dtype}
-        super(fullyConnectedNN, self).__init__()
+        args = ()
+        for i in range(len(widths) - 1):
+            args += (singleLayer(widths[i], widths[i + 1], act=deepcopy(act), **factory_kwargs),)
 
-        for i, w in enumerate(range(len(widths) - 1)):
-            self.add_module(str(i), singleLayer(widths[i], widths[i + 1], act=deepcopy(act), **factory_kwargs))
+        super(fullyConnectedNN, self).__init__(*args, **kwargs)
 
 
 if __name__ == '__main__':
@@ -26,10 +27,19 @@ if __name__ == '__main__':
     d = 3
     x = torch.randn(nex, d)
 
-    f = fullyConnectedNN([d, 2, 5], act=act.softplusActivation())
+    # print('======= FORWARD =======')
+    # f = fullyConnectedNN([d, 2, 5], act=act.softplusActivation(), reverse_mode=False)
+    # input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    #
+    # print('======= BACKWARD =======')
+    # f = fullyConnectedNN([d, 2, 5, 1], act=act.softplusActivation())
+    # input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
-    print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
+    widths1 = [2, 3]
+    widths2 = [4, 5]
+    widths3 = [7, 6, 2]
 
-    print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
+    f = NN(fullyConnectedNN([d] + widths1, act=act.antiTanhActivation()),
+           fullyConnectedNN([widths1[-1]] + widths2, act=act.identityActivation()),
+           fullyConnectedNN([widths2[-1]] + widths3, act=act.softplusActivation()))
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
