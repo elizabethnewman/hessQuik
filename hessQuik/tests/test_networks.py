@@ -32,6 +32,26 @@ class TestNN(unittest.TestCase):
         print(self, ': scalar output')
         run_all_tests(f, x)
 
+    def test_NNPytorchAD_scalar_output(self):
+        # problem setup
+        f, x = self.setup_network(1)
+
+        f = net.NNPytorchAD(f)
+        x.requires_grad = True
+
+        print(self, ': scalar output')
+        run_all_tests(f, x)
+
+    def test_NNPytorchHessian_scalar_output(self):
+        # problem setup
+        f, x = self.setup_network(1)
+
+        f = net.NNPytorchHessian(f)
+        x.requires_grad = True
+
+        print(self, ': scalar output')
+        run_all_tests(f, x)
+
     def test_NN_vector_output(self):
         # problem setup
         m = 3

@@ -101,7 +101,7 @@ class NNPytorchHessian(nn.Module):
         self.net = net
         self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, reverse_mode=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False):
         (df, d2f) = (None, None)
         f, *_ = self.net(x, do_gradient=False, do_Hessian=False, reverse_mode=reverse_mode)
 
