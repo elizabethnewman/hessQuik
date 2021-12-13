@@ -49,11 +49,6 @@ class TestNN(unittest.TestCase):
         f = net.NNPytorchHessian(f)
         x.requires_grad = True
 
-        f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=False)
-        print(f0.shape)
-        print(df0.shape)
-        print(d2f0.shape)
-
         print(self, ': scalar output')
         run_all_tests(f, x)
 

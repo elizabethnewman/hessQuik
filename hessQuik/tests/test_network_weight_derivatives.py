@@ -20,6 +20,7 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
         d = x.shape[1]
         f = lay.singleLayer(d, 7, act=act.softplusActivation())
 
+        print(self)
         network_derivative_check(f, x, do_Hessian=True)
 
     def test_resnetNN(self):
@@ -27,6 +28,7 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
         d = x.shape[1]
         f = net.resnetNN(d, 4, act=act.softplusActivation())
 
+        print(self)
         network_derivative_check(f, x, do_Hessian=True)
 
     def test_blockNN(self):
@@ -40,6 +42,7 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
                    lay.quadraticLayer(3, 2)
                    )
 
+        print(self)
         network_derivative_check(f, x, do_Hessian=True)
 
     def test_ICNN(self):
@@ -51,6 +54,7 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
         f = net.NN(net.ICNN(d, [None, m] + ms, act=act.tanhActivation()),
                    lay.quadraticICNNLayer(d, ms[-1], 2))
 
+        print(self)
         network_derivative_check(f, x, do_Hessian=True)
 
 
