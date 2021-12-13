@@ -51,7 +51,7 @@ my_date = now.strftime("%m-%d-%Y--")
 mode = 'forward'
 if reverse_mode:
     mode = 'backward'
-filename = network_type + '-' + mode + '-' + device
+filename = network_type + '-' + mode + '-' + device + '-w' + str(width) + '-d' + str(depth)
 print(my_date + filename)
 
 
@@ -67,5 +67,7 @@ if args.save:
     dir_name = 'results/'
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
-    pickle.dump(results, open(dir_name + my_date + '--' + filename + ".p", "wb"))
+
+    results = {'results': results, 'args': args}
+    pickle.dump(results, open(dir_name + my_date + '-' + filename + ".p", "wb"))
 

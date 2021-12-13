@@ -44,7 +44,7 @@ def timing_test_forward(f, x, num_trials=10, clear_memory=True):
         del f, x
         gc.collect()
 
-    return torch.mean(total_time).item(), torch.std(total_time).item()
+    return total_time
 
 
 def timing_test_backward(f, x, num_trials=10, clear_memory=True):
@@ -61,35 +61,39 @@ def timing_test_backward(f, x, num_trials=10, clear_memory=True):
     if clear_memory:
         torch.cuda.empty_cache()
 
-    return torch.mean(total_time).item(), torch.std(total_time).item()
+    return total_time
 
 
 def timing_test(in_feature_range, out_feature_range, nex_range, num_trials=10, width=20, depth=4,
                              network_type='hessQuik', device='cpu', clear_memory=True, reverse_mode=False):
 
+    # initialize
+    timing_trials = torch.zeros(len(in_feature_range), len(out_feature_range), len(nex_range), num_trials)
     timing_trials_mean = torch.zeros(len(in_feature_range), len(out_feature_range), len(nex_range))
     timing_trials_std = torch.zeros_like(timing_trials_mean)
+
     for idx_out, out_features in enumerate(out_feature_range):
         for idx_in, in_features in enumerate(in_feature_range):
             for idx_nex, nex in enumerate(nex_range):
+                f, x_requires_grad = create_network(in_features, out_features, width, depth,
+                                                    network_type=network_type, device=device)
+                x = torch.randn(nex, in_features, device=device)
+                x.requires_grad = x_requires_grad
 
-              f, x_requires_grad = create_network(in_features, out_features, width, depth,
-                                                  network_type=network_type, device=device)
-              x = torch.randn(nex, in_features, device=device)
-              x.requires_grad = x_requires_grad
+                if not reverse_mode:
+                    total_time = timing_test_forward(f, x, num_trials=num_trials, clear_memory=clear_memory)
+                else:
+                    total_time = timing_test_backward(f, x, num_trials=num_trials, clear_memory=clear_memory)
 
-              if not reverse_mode:
-                  mean_time, std_time = timing_test_forward(f, x, num_trials=num_trials, clear_memory=clear_memory)
-              else:
-                  mean_time, std_time  = timing_test_backward(f, x, num_trials=num_trials, clear_memory=clear_memory)
+                timing_trials[idx_in, idx_out, idx_nex] = total_time
+                timing_trials_mean[idx_in, idx_out, idx_nex] = torch.mean(total_time).item()
+                timing_trials_std[idx_in, idx_out, idx_nex] = torch.std(total_time).item()
 
-              timing_trials_mean[idx_in, idx_out, idx_nex] = mean_time
-              timing_trials_std[idx_in, idx_out, idx_nex] = std_time
+                del f, x
+                gc.collect()
 
-              del f, x
-              gc.collect()
-
-    results = {'timing_trials_mean': timing_trials_mean,
+    results = {'timing_trials': timing_trials,
+               'timing_trials_mean': timing_trials_mean,
                'timing_trials_std': timing_trials_std,
                'in_feature_range': in_feature_range,
                'out_feature_range': out_feature_range,

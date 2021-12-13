@@ -69,7 +69,7 @@ class resnetLayer(hessQuikLayer):
 
             d2gd2x = self.h * d2fd2x
             if d2gd2f is not None:
-                # TODO: compare timings for h_dfdx
+                # TODO: compare timings for h_dfdx on CPU and GPU
                 h_dfdx = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
 
                 # h_dfdx = self.h * dfdx
