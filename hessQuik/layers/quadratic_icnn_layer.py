@@ -10,7 +10,7 @@ class quadraticICNNLayer(hessQuikLayer):
     f(x) = u @ nonneg(w) + x @ v + 0.5 * x.t() @ A.t() @ A @ x + mu
     """
 
-    def __init__(self, input_dim, in_features, rank, device=None, dtype=None):
+    def __init__(self, input_dim, in_features, rank, device=None, dtype=None, reverse_mode=False):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(quadraticICNNLayer, self).__init__()
 
@@ -19,6 +19,7 @@ class quadraticICNNLayer(hessQuikLayer):
         self.rank = rank
         self.ctx = None
         self.nonneg = F.softplus
+        self.reverse_mode = reverse_mode
 
         # create final layer
 
@@ -51,7 +52,15 @@ class quadraticICNNLayer(hessQuikLayer):
     def dim_output(self):
         return 1
 
-    def forward(self, ux, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, reverse_mode=False):
+    @property
+    def reverse_mode(self):
+        return self._reverse_mode
+
+    @reverse_mode.setter
+    def reverse_mode(self, reverse_mode):
+        self._reverse_mode = reverse_mode
+
+    def forward(self, ux, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
 
         (df, d2f) = (None, None)
         AtA = self.A.t() @ self.A
@@ -67,12 +76,12 @@ class quadraticICNNLayer(hessQuikLayer):
         # forward propagate
         f = ux @ wv + 0.5 * torch.sum((x @ AtA) * x, dim=1) + self.mu
 
-        if reverse_mode:
+        if self.reverse_mode is not False:
             self.ctx = (ux,)
 
         # ------------------------------------------------------------------------------------------------------------ #
-        if (do_gradient or do_Hessian) and not reverse_mode:
-
+        if (do_gradient or do_Hessian) and self.reverse_mode is False:
+            print('here1')
             if self.in_features is None:
                 z = torch.empty(ux.shape[0], 0)
             else:
@@ -99,9 +108,13 @@ class quadraticICNNLayer(hessQuikLayer):
 
             df = df.unsqueeze(-1)
 
+        if (do_gradient or do_Hessian) and self.reverse_mode is True:
+            df, d2f = self.backward(do_Hessian=do_Hessian)
+
         return f.unsqueeze(-1), df, d2f
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+        print('here2')
         d2f = None
 
         ux = self.ctx[0]
@@ -139,7 +152,9 @@ if __name__ == '__main__':
     f = quadraticICNNLayer(d, None, m)
 
     print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)

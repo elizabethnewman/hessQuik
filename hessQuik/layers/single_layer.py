@@ -28,7 +28,7 @@ class singleLayer(hessQuikLayer):
         self.in_features = in_features
         self.out_features = out_features
         self.act = act
-        self._reverse_mode = reverse_mode
+        self.reverse_mode = reverse_mode
 
         self.K = nn.Parameter(torch.empty(in_features, out_features, **factory_kwargs))
         self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))

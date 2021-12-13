@@ -93,32 +93,6 @@ class NNPytorchAD(nn.Module):
 
         return f, df, d2f
 
-    def backward(self, do_Hessian=False):
-        f, x = self.ctx
-
-        f = f.view(x.shape[0], -1)
-        df, d2f = [], None
-        for j in range(f.shape[1]):
-            df.append(grad(f[:, j].sum(), x, create_graph=True, retain_graph=True)[0])
-        df = torch.stack(df, dim=2)
-
-        if do_Hessian:
-            df = df.reshape(x.shape[0], -1)
-            d2f = []
-            for j in range(df.shape[1]):
-                d2f.append(grad(df[:, j].sum(), x, create_graph=True, retain_graph=True)[0])
-            d2f = torch.stack(d2f, dim=2)
-            d2f = d2f.reshape(x.shape[0], x.shape[1], x.shape[1], -1).squeeze(-1)
-            if d2f.dim() < 4:
-                d2f = d2f.unsqueeze(-1)
-
-        df = df.reshape(x.shape[0], x.shape[1], -1).squeeze(-1)
-
-        if df.dim() < 3:
-            df = df.unsqueeze(-1)
-
-        return df, d2f
-
 
 class NNPytorchHessian(nn.Module):
 
@@ -144,16 +118,6 @@ class NNPytorchHessian(nn.Module):
                 d2f = hessian(lambda x: self.net(x)[0].sum(), x).sum(dim=2)
 
         return f, df, d2f
-
-    def backward(self, do_Hessian=False):
-        d2f = None
-        f, x = self.ctx
-        df = grad(f.sum(), x)[0]
-
-        if do_Hessian:
-            d2f = hessian(lambda x: self.net(x)[0].sum(), x).sum(dim=2)
-
-        return df, d2f
 
 
 if __name__ == '__main__':

@@ -20,6 +20,14 @@ class hessQuikLayer(nn.Module):
         """
         raise NotImplementedError
 
+    @property
+    def reverse_mode(self):
+        raise NotImplementedError
+
+    @reverse_mode.setter
+    def reverse_mode(self, reverse_mode):
+        raise NotImplementedError
+
     def forward(self, u: Tensor, do_gradient: bool = False, do_Hessian: bool = False,
                 dudx: Union[Tensor, None] = None, d2ud2x: Union[Tensor, None] = None) \
             -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:

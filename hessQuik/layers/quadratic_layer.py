@@ -9,13 +9,14 @@ class quadraticLayer(hessQuikLayer):
     f(x) = x @ v + 0.5 * x.t() @ A.t() @ A @ x + mu
     """
 
-    def __init__(self, in_features, rank, device=None, dtype=None):
+    def __init__(self, in_features, rank, device=None, dtype=None, reverse_mode=False):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(quadraticLayer, self).__init__()
 
         self.in_features = in_features
         self.rank = rank
         self.ctx = None
+        self.reverse_mode = reverse_mode
 
         # create final layer
         self.v = nn.Parameter(torch.empty(self.in_features, **factory_kwargs))
@@ -36,16 +37,25 @@ class quadraticLayer(hessQuikLayer):
     def dim_output(self):
         return 1
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, reverse_mode=False):
+    @property
+    def reverse_mode(self):
+        return self._reverse_mode
+
+    @reverse_mode.setter
+    def reverse_mode(self, reverse_mode):
+        self._reverse_mode = reverse_mode
+
+    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
 
         (df, d2f) = (None, None)
         AtA = self.A.t() @ self.A
         f = u @ self.v + 0.5 * torch.sum((u @ AtA) * u, dim=1) + self.mu
 
-        if reverse_mode:
+        if self.reverse_mode is not False:
             self.ctx = (u,)
 
-        if (do_gradient or do_Hessian) and not reverse_mode:
+        if (do_gradient or do_Hessian) and self.reverse_mode is False:
+            print('here1')
             df = self.v.unsqueeze(0) + u @ AtA
 
             if do_Hessian:
@@ -63,9 +73,13 @@ class quadraticLayer(hessQuikLayer):
             if dudx is not None:
                 df = dudx @ df
 
+        if (do_gradient or do_Hessian) and self.reverse_mode is True:
+            df, d2f = self.backward(do_Hessian=do_Hessian)
+
         return f.unsqueeze(-1), df, d2f
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+        print('here2')
         d2f = None
 
         x = self.ctx[0]
@@ -90,11 +104,12 @@ if __name__ == '__main__':
     x = torch.randn(nex, d)
     f = quadraticLayer(d, m)
 
-
     print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
 

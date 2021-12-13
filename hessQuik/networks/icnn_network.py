@@ -9,12 +9,18 @@ from copy import deepcopy
 class ICNN(NN):
 
     def __init__(self, input_dim: int, widths: Union[Tuple, List], act: act.activationFunction = act.identityActivation(),
-                 device=None, dtype=None):
+                 device=None, dtype=None, **kwargs):
         factory_kwargs = {'device': device, 'dtype': dtype}
-        super(ICNN, self).__init__()
 
+        args = ()
         for i, w in enumerate(range(1, len(widths))):
-            self.add_module(str(i), ICNNLayer(input_dim, widths[i], widths[i + 1], act=deepcopy(act), **factory_kwargs))
+            args += (ICNNLayer(input_dim, widths[i], widths[i + 1], act=deepcopy(act), **factory_kwargs),)
+
+        super(ICNN, self).__init__(*args, **kwargs)
+
+        # for i, w in enumerate(range(1, len(widths))):
+        #     self.add_module(str(i), ICNNLayer(input_dim, widths[i], widths[i + 1], act=deepcopy(act), **factory_kwargs))
+        #
 
 
 if __name__ == '__main__':
@@ -32,7 +38,9 @@ if __name__ == '__main__':
 
 
     print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)

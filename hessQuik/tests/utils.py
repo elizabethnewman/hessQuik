@@ -2,7 +2,8 @@ from hessQuik.utils import input_derivative_check
 
 
 def run_forward_gradient_test(f, x, **kwargs):
-    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=False, reverse_mode=False, **kwargs)
+    f.reverse_mode = False
+    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=False, **kwargs)
 
     if grad_check:
         out = 'PASSED'
@@ -13,7 +14,8 @@ def run_forward_gradient_test(f, x, **kwargs):
 
 
 def run_forward_hessian_test(f, x, **kwargs):
-    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=True, reverse_mode=False, **kwargs)
+    f.reverse_mode = False
+    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=True, **kwargs)
 
     if grad_check:
         out = 'PASSED'
@@ -31,7 +33,8 @@ def run_forward_hessian_test(f, x, **kwargs):
 
 
 def run_backward_gradient_test(f, x, **kwargs):
-    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=False, reverse_mode=True, **kwargs)
+    f.reverse_mode = True
+    grad_check, hess_check = input_derivative_check(f, x, do_Hessian=False, **kwargs)
 
     if grad_check:
         out = 'PASSED'
