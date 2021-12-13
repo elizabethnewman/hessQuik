@@ -92,7 +92,6 @@ class ICNNLayer(hessQuikLayer):
         f = torch.cat((f, ux[:, -self.input_dim:]), dim=1)
 
         if (do_gradient or do_Hessian) and self.reverse_mode is False:
-            print('here1')
             dfdx = dsig.unsqueeze(1) * M
 
             # -------------------------------------------------------------------------------------------------------- #
@@ -128,7 +127,6 @@ class ICNNLayer(hessQuikLayer):
         return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-        print('here2')
         M = self.K
         if self.L is not None:
             M = torch.cat((self.nonneg(self.L), M), dim=0)

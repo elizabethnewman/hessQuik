@@ -55,7 +55,6 @@ class quadraticLayer(hessQuikLayer):
             self.ctx = (u,)
 
         if (do_gradient or do_Hessian) and self.reverse_mode is False:
-            print('here1')
             df = self.v.unsqueeze(0) + u @ AtA
 
             if do_Hessian:
@@ -79,7 +78,6 @@ class quadraticLayer(hessQuikLayer):
         return f.unsqueeze(-1), df, d2f
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-        print('here2')
         d2f = None
 
         x = self.ctx[0]

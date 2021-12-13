@@ -18,10 +18,6 @@ class ICNN(NN):
 
         super(ICNN, self).__init__(*args, **kwargs)
 
-        # for i, w in enumerate(range(1, len(widths))):
-        #     self.add_module(str(i), ICNNLayer(input_dim, widths[i], widths[i + 1], act=deepcopy(act), **factory_kwargs))
-        #
-
 
 if __name__ == '__main__':
     import torch
@@ -35,7 +31,6 @@ if __name__ == '__main__':
     x = torch.randn(nex, d)
 
     f = ICNN(d, ms, act=act.quadraticActivation())
-
 
     print('======= FORWARD =======')
     f.reverse_mode = False

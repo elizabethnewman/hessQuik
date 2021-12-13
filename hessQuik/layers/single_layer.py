@@ -62,7 +62,6 @@ class singleLayer(hessQuikLayer):
                                           reverse_mode=self.reverse_mode is not False)
 
         if (do_gradient or do_Hessian) and self.reverse_mode is False:
-            print('here1')
             dfdx = dsig.unsqueeze(1) * self.K
             # -------------------------------------------------------------------------------------------------------- #
             if do_Hessian:
@@ -91,7 +90,6 @@ class singleLayer(hessQuikLayer):
         return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-        print('here2')
         d2gd2x = None
         dsig, d2sig = self.act.backward(do_Hessian=do_Hessian)
         dgdx = dsig.unsqueeze(1) * self.K

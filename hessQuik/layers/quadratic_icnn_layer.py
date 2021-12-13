@@ -81,7 +81,6 @@ class quadraticICNNLayer(hessQuikLayer):
 
         # ------------------------------------------------------------------------------------------------------------ #
         if (do_gradient or do_Hessian) and self.reverse_mode is False:
-            print('here1')
             if self.in_features is None:
                 z = torch.empty(ux.shape[0], 0)
             else:
@@ -114,7 +113,6 @@ class quadraticICNNLayer(hessQuikLayer):
         return f.unsqueeze(-1), df, d2f
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-        print('here2')
         d2f = None
 
         ux = self.ctx[0]
