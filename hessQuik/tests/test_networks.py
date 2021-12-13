@@ -49,6 +49,11 @@ class TestNN(unittest.TestCase):
         f = net.NNPytorchHessian(f)
         x.requires_grad = True
 
+        f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=False)
+        print(f0.shape)
+        print(df0.shape)
+        print(d2f0.shape)
+
         print(self, ': scalar output')
         run_all_tests(f, x)
 
@@ -58,6 +63,16 @@ class TestNN(unittest.TestCase):
         f, x = self.setup_network(m)
 
         print(self, ': vector output')
+        run_all_tests(f, x)
+
+    def test_NNPytorchAD_vector_output(self):
+        # problem setup
+        f, x = self.setup_network(8)
+
+        f = net.NNPytorchAD(f)
+        x.requires_grad = True
+
+        print(self, ': scalar output')
         run_all_tests(f, x)
 
 

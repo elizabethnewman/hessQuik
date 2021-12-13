@@ -108,12 +108,13 @@ class NNPytorchHessian(nn.Module):
         if f.squeeze().ndim > 1:
             raise ValueError(type(self), " must have scalar outputs per example")
 
-
-        if do_gradient or do_Hessian:
+        if do_gradient:
             df = grad(f.sum(), x)[0]
+            df = df.unsqueeze(-1)
 
-            if do_Hessian:
-                d2f = hessian(lambda x: self.net(x)[0].sum(), x).sum(dim=2)
+        if do_Hessian:
+            d2f = hessian(lambda x: self.net(x)[0].sum(), x).sum(dim=2)
+            d2f = d2f.unsqueeze(-1)
 
         return f, df, d2f
 
@@ -129,7 +130,7 @@ if __name__ == '__main__':
     nex = 11
     d = 3
     ms = [2, 7, 5]
-    m = 8
+    m = 1
     x = torch.randn(nex, d)
 
     f = NN(lay.singleLayer(d, ms[0], act=act.softplusActivation()),
@@ -137,11 +138,13 @@ if __name__ == '__main__':
            lay.singleLayer(ms[1], ms[2], act=act.softplusActivation()),
            lay.singleLayer(ms[2], m, act=act.softplusActivation()))
 
+    f = NNPytorchHessian(f)
+    x.requires_grad = True
     print('======= FORWARD =======')
-    f.reverse_mode = False
+    # f.reverse_mode = False
     input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    f.reverse_mode = True
+    # f.reverse_mode = True
 
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    # input_derivative_check(f, x, do_Hessian=True, verbose=True)
