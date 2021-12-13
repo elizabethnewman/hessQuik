@@ -1,6 +1,6 @@
 import torch
 import pickle
-from timing_test import timing_test
+from setup_timing_test import timing_test
 import argparse
 from datetime import datetime
 import os
@@ -23,9 +23,6 @@ parser.add_argument('--depth', type=int, default=4, metavar='d', help='depth of 
 parser.add_argument('--network-type', type=str, default='hessQuik', metavar='t',
                     help='type of network (default: "hessQuiK"), '
                          'options include ("hessQuiK", "PytorchAD", "PytorchHessian")')
-parser.add_argument('--reverse-mode', action='store_true', default=False,
-                    help='type of network (default: "hessQuik"), '
-                         'options include ("hessQuik", "PytorchAD", "PytorchHessian")')
 parser.add_argument('--save', action='store_true', default=False, help='save results')
 
 args = parser.parse_args()
@@ -41,17 +38,13 @@ seed = args.seed
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 network_type = args.network_type
-reverse_mode = args.reverse_mode
 
 
 # filename
 now = datetime.now()
 my_date = now.strftime("%m-%d-%Y--")
 
-mode = 'forward'
-if reverse_mode:
-    mode = 'backward'
-filename = network_type + '-' + mode + '-' + device + '-w' + str(width) + '-d' + str(depth)
+filename = network_type + '-' + device + '-w' + str(width) + '-d' + str(depth)
 print(my_date + filename)
 
 
@@ -59,8 +52,7 @@ print(my_date + filename)
 torch.manual_seed(seed)
 results = timing_test(in_feature_range, out_feature_range, nex_range,
                       num_trials=num_trials, width=width, depth=depth,
-                      network_type=network_type, device=device, clear_memory=True,
-                      reverse_mode=reverse_mode)
+                      network_type=network_type, device=device, clear_memory=True)
 
 if args.save:
 

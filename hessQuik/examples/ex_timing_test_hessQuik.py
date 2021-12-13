@@ -1,5 +1,5 @@
 import torch
-from hessQuik.examples.timing_test import timing_test
+from setup_timing_test import timing_test
 
 in_feature_range = (2 ** torch.arange(1, 4)).tolist()
 out_feature_range = (2 ** torch.arange(0, 1)).tolist()
@@ -18,7 +18,6 @@ reverse_mode = False
 
 results = timing_test(in_feature_range, out_feature_range, nex_range,
                       num_trials=num_trials, width=width, depth=depth,
-                      network_type=network_type, device=device, clear_memory=True,
-                      reverse_mode=reverse_mode)
+                      network_type=network_type, device=device, clear_memory=True)
 
 print(results['timing_trials_mean'].squeeze())
