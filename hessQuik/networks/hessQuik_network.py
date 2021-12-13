@@ -103,15 +103,13 @@ class NNPytorchHessian(nn.Module):
 
     def forward(self, x, do_gradient=False, do_Hessian=False):
         (df, d2f) = (None, None)
-        f, *_ = self.net(x, do_gradient=False, do_Hessian=False, reverse_mode=reverse_mode)
+        f, *_ = self.net(x, do_gradient=False, do_Hessian=False)
 
         if f.squeeze().ndim > 1:
             raise ValueError(type(self), " must have scalar outputs per example")
 
-        if reverse_mode:
-            self.ctx = (f, x)
 
-        if not reverse_mode and (do_gradient or do_Hessian):
+        if do_gradient or do_Hessian:
             df = grad(f.sum(), x)[0]
 
             if do_Hessian:
