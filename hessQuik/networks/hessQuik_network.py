@@ -18,7 +18,6 @@ class NN(nn.Sequential):
                 reverse_mode = False  # must compute the derivatives in forward mode
             else:
                 reverse_mode = None  # store necessary info, but do not compute derivatives until backward call
-
             kwargs['reverse_mode'] = reverse_mode
 
         self.reverse_mode = (kwargs['reverse_mode'] is not False)  # backward call only if reverse_mode is True
@@ -44,7 +43,7 @@ class NN(nn.Sequential):
         for module in self:
             x, dudx, d2ud2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x)
 
-        if self._reverse_mode is True:
+        if self.reverse_mode is True:
             dudx, d2ud2x = self.backward(do_Hessian=do_Hessian)
 
         return x, dudx, d2ud2x

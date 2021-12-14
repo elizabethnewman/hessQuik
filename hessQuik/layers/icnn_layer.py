@@ -63,7 +63,7 @@ class ICNNLayer(hessQuikLayer):
         nn.init.uniform_(self.b, -bound, bound)
 
     def dim_input(self):
-        return (self.in_features is not None) + self.input_dim
+        return (self.in_features is not None) * self.in_features + self.input_dim
 
     def dim_output(self):
         return self.out_features + self.input_dim
