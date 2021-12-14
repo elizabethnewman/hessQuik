@@ -7,7 +7,7 @@ from hessQuik.utils import convert_to_base
 def input_derivative_check(f, x, do_Hessian=False, num_test=15, base=2.0, tol=0.1, verbose=False):
 
     # initial evaluation
-    f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=do_Hessian)
+    f0, df0, d2f0, _ = f(x, do_gradient=True, do_Hessian=do_Hessian)
 
     # ---------------------------------------------------------------------------------------------------------------- #
     # directional derivatives

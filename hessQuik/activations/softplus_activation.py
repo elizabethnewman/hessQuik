@@ -10,7 +10,7 @@ class softplusActivation(hessQuikActivationFunction):
         self.beta = beta
         self.threshold = threshold
 
-    def forward(self, x, do_gradient=False, do_Hessian=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -19,21 +19,21 @@ class softplusActivation(hessQuikActivationFunction):
         # compute derivatives
         if do_gradient or do_Hessian:
             if self.reverse_mode is not None:
-                dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian)
+                dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
             else:
                 # backward mode, but do not compute yet
                 self.ctx = (x,)
 
         return sigma, dsigma, d2sigma
 
-    def compute_derivatives(self, *args, do_Hessian=False):
+    def compute_derivatives(self, *args, do_Hessian=False, do_Laplacian=False):
         x = args[0]
         d2sigma = None
         idx = self.beta * x < self.threshold
         dsigma = torch.ones_like(x)
         dsigma[idx] = torch.exp(self.beta * x[idx]) / (1 + torch.exp(self.beta * x[idx]))
 
-        if do_Hessian:
+        if do_Hessian or do_Laplacian:
             d2sigma = torch.zeros_like(x)
             d2sigma[idx] = self.beta * torch.exp(self.beta * x[idx]) / ((1 + torch.exp(self.beta * x[idx])) ** 2)
 

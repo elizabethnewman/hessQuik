@@ -44,10 +44,11 @@ class resnetLayer(hessQuikLayer):
         self._reverse_mode = reverse_mode
         self.layer.reverse_mode = reverse_mode
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+    def forward(self, u, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
 
-        (dfdx, d2fd2x) = (None, None)
-        fi, dfi, d2fi = self.layer(u, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x)
+        (dfdx, d2fd2x, lap_f) = (None, None, None)
+        fi, dfi, d2fi, lap_fi = self.layer(u, do_gradient=do_gradient, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian,
+                                           dudx=dudx, d2ud2x=d2ud2x, lap_u=lap_u)
 
         # skip connection
         f = u + self.h * fi
@@ -65,22 +66,24 @@ class resnetLayer(hessQuikLayer):
                 d2fd2x += d2ud2x
 
         if (do_gradient or do_Hessian) and self.reverse_mode is True:
-            dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
+            dfdx, d2fd2x, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
 
-        return f, dfdx, d2fd2x
+        return f, dfdx, d2fd2x, lap_f
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
         d2gd2x = None
         if not do_Hessian:
 
-            dgdx = self.layer.backward(do_Hessian=False, dgdf=dgdf, d2gd2f=None)[0]
+            dgdx = self.layer.backward(do_Hessian=False, do_Laplacian=do_Laplacian,
+                                       dgdf=dgdf, d2gd2f=None, lap_g=None)[0]
 
             if dgdf is None:
                 dgdx = torch.eye(self.width, dtype=dgdx.dtype, device=dgdx.device) + self.h * dgdx
             else:
                 dgdx = dgdf + self.h * dgdx
         else:
-            dfdx, d2fd2x = self.layer.backward(do_Hessian=do_Hessian, dgdf=None, d2gd2f=None)[:2]
+            dfdx, d2fd2x = self.layer.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian,
+                                               dgdf=None, d2gd2f=None, lap_g=None)[:2]
 
             dgdx = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
             if dgdf is not None:
@@ -107,7 +110,7 @@ class resnetLayer(hessQuikLayer):
                 # combine
                 d2gd2x = h1 + h2
 
-        return dgdx, d2gd2x
+        return dgdx, d2gd2x, lap_g
 
     def extra_repr(self) -> str:
         return 'width={}, h={}'.format(self.width, self.h)

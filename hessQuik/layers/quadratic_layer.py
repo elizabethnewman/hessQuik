@@ -45,9 +45,9 @@ class quadraticLayer(hessQuikLayer):
     def reverse_mode(self, reverse_mode):
         self._reverse_mode = reverse_mode
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+    def forward(self, u, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
 
-        (df, d2f) = (None, None)
+        (df, d2f, lap_f) = (None, None, None)
         AtA = self.A.t() @ self.A
         f = u @ self.v + 0.5 * torch.sum((u @ AtA) * u, dim=1) + self.mu
 
@@ -73,12 +73,12 @@ class quadraticLayer(hessQuikLayer):
                 df = dudx @ df
 
         if (do_gradient or do_Hessian) and self.reverse_mode is True:
-            df, d2f = self.backward(do_Hessian=do_Hessian)
+            df, d2f, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
 
-        return f.unsqueeze(-1), df, d2f
+        return f.unsqueeze(-1), df, d2f, lap_f
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-        d2f = None
+    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
+        (d2f, lap_f) = (None, None)
 
         x = self.ctx[0]
         AtA = self.A.t() @ self.A  # TODO: recompute this or store it?
@@ -88,7 +88,7 @@ class quadraticLayer(hessQuikLayer):
             # TODO: improve wasteful storage
             d2f = (torch.ones(x.shape[0], 1, 1, dtype=AtA.dtype, device=AtA.device) * AtA).unsqueeze(-1)
 
-        return df.unsqueeze(-1), d2f
+        return df.unsqueeze(-1), d2f, lap_f
 
 
 if __name__ == '__main__':

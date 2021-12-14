@@ -39,20 +39,23 @@ class NN(nn.Sequential):
         for i, _ in enumerate(self):
             self[i].reverse_mode = False if reverse_mode is False else None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
 
         for module in self:
-            x, dudx, d2ud2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x)
+            x, dudx, d2ud2x, lap_u = module(x,
+                                            do_gradient=do_gradient, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian,
+                                            dudx=dudx, d2ud2x=d2ud2x, lap_u=lap_u)
 
         if self._reverse_mode is True:
-            dudx, d2ud2x = self.backward(do_Hessian=do_Hessian)
+            dudx, d2ud2x, lap_u = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
 
-        return x, dudx, d2ud2x
+        return x, dudx, d2ud2x, lap_u
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
         for i in range(len(self) - 1, -1, -1):
-            dgdf, d2gd2f = self[i].backward(do_Hessian=do_Hessian, dgdf=dgdf, d2gd2f=d2gd2f)
-        return dgdf, d2gd2f
+            dgdf, d2gd2f, lap_g = self[i].backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian,
+                                                   dgdf=dgdf, d2gd2f=d2gd2f, lap_g=lap_g)
+        return dgdf, d2gd2f, lap_g
 
 
 class NNPytorchAD(nn.Module):
@@ -125,7 +128,7 @@ if __name__ == '__main__':
     import torch
     import hessQuik.activations as act
     import hessQuik.layers as lay
-    from hessQuik.utils import input_derivative_check
+    from hessQuik.utils import input_derivative_check, laplcian_check_using_hessian
     torch.set_default_dtype(torch.float64)
 
     # problem setup
@@ -140,13 +143,16 @@ if __name__ == '__main__':
            lay.singleLayer(ms[1], ms[2], act=act.softplusActivation()),
            lay.singleLayer(ms[2], m, act=act.softplusActivation()))
 
-    f = NNPytorchAD(f)
-    x.requires_grad = True
+    # f = NNPytorchAD(f)
+    # x.requires_grad = True
     print('======= FORWARD =======')
-    # f.reverse_mode = False
+    f.reverse_mode = False
     input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    # f.reverse_mode = True
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
-    # input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    print('======= LAPLACIAN =======')
+    f.reverse_mode = False
+    laplcian_check_using_hessian(f, x)

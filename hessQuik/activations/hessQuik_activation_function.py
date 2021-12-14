@@ -18,14 +18,15 @@ class hessQuikActivationFunction(nn.Module):
     def reverse_mode(self, reverse_mode):
         self._reverse_mode = reverse_mode
 
-    def forward(self, x: Tensor, do_gradient: bool = False, do_Hessian: bool = False) -> \
+    def forward(self, x: Tensor, do_gradient: bool = False, do_Hessian: bool = False, do_Laplacian: bool = False) -> \
             Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
         raise NotImplementedError
 
-    def backward(self, do_Hessian: bool = False) -> Tuple[Tensor, Union[Tensor, None]]:
-        dsigma, d2sigma = self.compute_derivatives(*self.ctx, do_Hessian=do_Hessian)
+    def backward(self, do_Hessian: bool = False, do_Laplacian: bool = False) -> Tuple[Tensor, Union[Tensor, None]]:
+        dsigma, d2sigma = self.compute_derivatives(*self.ctx, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
 
         return dsigma, d2sigma
 
-    def compute_derivatives(self, *args, do_Hessian: bool = False) -> Tuple[Tensor, Union[Tensor, None]]:
+    def compute_derivatives(self, *args, do_Hessian: bool = False,  do_Laplacian: bool = False) \
+            -> Tuple[Tensor, Union[Tensor, None]]:
         raise NotImplementedError

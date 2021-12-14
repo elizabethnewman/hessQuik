@@ -60,9 +60,9 @@ class quadraticICNNLayer(hessQuikLayer):
     def reverse_mode(self, reverse_mode):
         self._reverse_mode = reverse_mode
 
-    def forward(self, ux, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+    def forward(self, ux, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
 
-        (df, d2f) = (None, None)
+        (df, d2f, lap_f) = (None, None, None)
         AtA = self.A.t() @ self.A
 
         if self.w is None:
@@ -107,12 +107,12 @@ class quadraticICNNLayer(hessQuikLayer):
             df = df.unsqueeze(-1)
 
         if (do_gradient or do_Hessian) and self.reverse_mode is True:
-            df, d2f = self.backward(do_Hessian=do_Hessian)
+            df, d2f, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
 
-        return f.unsqueeze(-1), df, d2f
+        return f.unsqueeze(-1), df, d2f, lap_f
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-        d2f = None
+    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
+        (d2f, lap_f) = (None, None)
 
         ux = self.ctx[0]
         x = ux[:, -self.input_dim:]
@@ -134,7 +134,7 @@ class quadraticICNNLayer(hessQuikLayer):
             d2f[:, -self.input_dim:, -self.input_dim:] = e * AtA
             d2f = d2f.unsqueeze(-1)
 
-        return df.unsqueeze(-1), d2f
+        return df.unsqueeze(-1), d2f, lap_f
 
 
 if __name__ == '__main__':

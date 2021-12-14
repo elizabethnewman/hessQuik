@@ -28,9 +28,10 @@ class hessQuikLayer(nn.Module):
     def reverse_mode(self, reverse_mode):
         raise NotImplementedError
 
-    def forward(self, u: Tensor, do_gradient: bool = False, do_Hessian: bool = False,
-                dudx: Union[Tensor, None] = None, d2ud2x: Union[Tensor, None] = None) \
-            -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
+    def forward(self, u: Tensor, do_gradient: bool = False, do_Hessian: bool = False, do_Laplacian: bool = False,
+                dudx: Union[Tensor, None] = None, d2ud2x: Union[Tensor, None] = None,
+                lap_u: Union[Tensor, None] = None) \
+            -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None], Union[Tensor, None]]:
         """
         Forward propagate through singleLayer
 
@@ -55,12 +56,14 @@ class hessQuikLayer(nn.Module):
             Gradient of the output of the layer, f(u(x)), with respect to the network inputs, x
         d2fd2x : (N, d, d, out_features)
             Hessian of the output of the layer, f(u(x)), with respect to the network inputs, x
+        lap_f  : (N, out_features)
+            Laplacian of the output of the layer, f(u(x)), with respect to the network inputs, x
         """
         raise NotImplementedError
 
-    def backward(self, do_Hessian: bool = False,
-                 dgdf: Union[Tensor, None] = None, d2gd2f: Union[Tensor, None] = None) \
-            -> Tuple[Tensor, Union[Tensor, None]]:
+    def backward(self, do_Hessian: bool = False, do_Laplcian: bool = False, dgdf: Union[Tensor, None] = None,
+                 d2gd2f: Union[Tensor, None] = None, lap_g: Union[Tensor, None] = None) \
+            -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
         """
         Backward propagate through singleLayer
 
@@ -79,6 +82,8 @@ class hessQuikLayer(nn.Module):
             Gradient of the output of the layer, g(f(x)), with respect to the network inputs, x
         d2gd2x : (N, d, d, in_features)
             Hessian of the output of the layer, g(f(x)), with respect to the network inputs, x
+        lap_g : (N, in_features)
+            Laplacian of the output of the layer, g(f(x)), with respect to the network inputs, x
         """
         raise NotImplementedError
 

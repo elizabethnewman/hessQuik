@@ -6,7 +6,7 @@ class quadraticActivation(hessQuikActivationFunction):
     def __init__(self):
         super(quadraticActivation, self).__init__()
 
-    def forward(self, x, do_gradient=False, do_Hessian=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -15,16 +15,16 @@ class quadraticActivation(hessQuikActivationFunction):
         # compute derivatives
         if do_gradient or do_Hessian:
             if self.reverse_mode is not None:
-                dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian)
+                dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
             else:
                 self.ctx = (x,)
 
         return sigma, dsigma, d2sigma
 
-    def compute_derivatives(self, *args, do_Hessian=False):
+    def compute_derivatives(self, *args, do_Hessian=False, do_Laplacian=False):
         dsigma = args[0]
         d2sigma = None
-        if do_Hessian:
+        if do_Hessian or do_Laplacian:
             d2sigma = torch.ones_like(dsigma)
 
         return dsigma, d2sigma
