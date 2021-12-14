@@ -5,20 +5,19 @@ from hessQuik.utils import convert_to_base
 
 
 def input_derivative_check(f, x, do_Hessian=False, num_test=15, base=2.0, tol=0.1, verbose=False):
-
-    # initial evaluation
-    f0, df0, d2f0, _ = f(x, do_gradient=True, do_Hessian=do_Hessian)
-
-    # ---------------------------------------------------------------------------------------------------------------- #
-    # directional derivatives
     dx = torch.randn_like(x)
     curvx = None
+
+    # initial evaluation
     if isinstance(f, hessQuik.activations.hessQuikActivationFunction):
+        f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=do_Hessian)
         dfdx = df0 * dx
 
         if d2f0 is not None:
             curvx = torch.sum(dx.unsqueeze(0) * d2f0 * dx.unsqueeze(0), dim=0)
+
     else:
+        f0, df0, d2f0, _ = f(x, do_gradient=True, do_Hessian=do_Hessian)
         dfdx = torch.matmul(df0.transpose(1, 2), dx.unsqueeze(2)).squeeze(2)
 
         if d2f0 is not None:
