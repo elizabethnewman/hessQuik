@@ -5,20 +5,11 @@ from typing import Union, Tuple
 
 class hessQuikActivationFunction(nn.Module):
 
-    def __init__(self, reverse_mode=False) -> None:
+    def __init__(self) -> None:
         super(hessQuikActivationFunction, self).__init__()
         self.ctx = None  # context variable
-        self.reverse_mode = reverse_mode
 
-    @property
-    def reverse_mode(self):
-        return self._reverse_mode
-
-    @reverse_mode.setter
-    def reverse_mode(self, reverse_mode):
-        self._reverse_mode = reverse_mode
-
-    def forward(self, x: Tensor, do_gradient: bool = False, do_Hessian: bool = False) -> \
+    def forward(self, x: Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True) -> \
             Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
         raise NotImplementedError
 

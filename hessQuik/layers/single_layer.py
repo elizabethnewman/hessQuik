@@ -47,23 +47,15 @@ class singleLayer(hessQuikLayer):
     def dim_output(self):
         return self.out_features
 
-    @property
-    def reverse_mode(self):
-        return self._reverse_mode
-
-    @reverse_mode.setter
-    def reverse_mode(self, reverse_mode):
-        self._reverse_mode = reverse_mode
-        self.act.reverse_mode = False if reverse_mode is False else None
-
-    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+    def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
 
         (dfdx, d2fd2x) = (None, None)
-        f, dsig, d2sig = self.act.forward(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian)
+        f, dsig, d2sig = self.act.forward(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian,
+                                          forward_mode=True if forward_mode is True else None)
 
         # ------------------------------------------------------------------------------------------------------------ #
         # forward mode
-        if (do_gradient or do_Hessian) and self.reverse_mode is False:
+        if (do_gradient or do_Hessian) and forward_mode is True:
             dfdx = dsig.unsqueeze(1) * self.K
             # -------------------------------------------------------------------------------------------------------- #
             if do_Hessian:
@@ -88,7 +80,7 @@ class singleLayer(hessQuikLayer):
 
         # ------------------------------------------------------------------------------------------------------------ #
         # backward mode (if layer is not wrapped in NN)
-        if (do_gradient or do_Hessian) and self.reverse_mode is True:
+        if (do_gradient or do_Hessian) and forward_mode is False:
             dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
 
         return f, dfdx, d2fd2x
@@ -139,12 +131,10 @@ if __name__ == '__main__':
     m = 7  # no. of output features
     x = torch.randn(nex, d)
 
-    print('======= FORWARD =======')
     f = singleLayer(d, m, act=act.softplusActivation())
-    f.reverse_mode = False
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+
+    print('======= FORWARD =======')
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
     print('======= BACKWARD =======')
-    f = singleLayer(d, m, act=act.softplusActivation())
-    f.reverse_mode = True
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)

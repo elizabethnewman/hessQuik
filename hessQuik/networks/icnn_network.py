@@ -16,7 +16,7 @@ class ICNN(NN):
         for i, w in enumerate(range(1, len(widths))):
             args += (ICNNLayer(input_dim, widths[i], widths[i + 1], act=deepcopy(act), **factory_kwargs),)
 
-        super(ICNN, self).__init__(*args, **kwargs)
+        super(ICNN, self).__init__(*args)
 
 
 if __name__ == '__main__':
@@ -33,9 +33,7 @@ if __name__ == '__main__':
     f = ICNN(d, ms, act=act.quadraticActivation())
 
     print('======= FORWARD =======')
-    f.reverse_mode = False
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
     print('======= BACKWARD =======')
-    f.reverse_mode = True
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)

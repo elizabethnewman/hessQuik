@@ -44,27 +44,28 @@ class resnetLayer(hessQuikLayer):
         self._reverse_mode = reverse_mode
         self.layer.reverse_mode = reverse_mode
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+    def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
 
         (dfdx, d2fd2x) = (None, None)
-        fi, dfi, d2fi = self.layer(u, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x)
+        fi, dfi, d2fi = self.layer(u, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x,
+                                   forward_mode=True if forward_mode is True else None)
 
         # skip connection
         f = u + self.h * fi
 
-        if do_gradient and self.reverse_mode is False:
+        if do_gradient and forward_mode is True:
 
             if dudx is None:
                 dfdx = torch.eye(self.width, dtype=dfi.dtype, device=dfi.device) + self.h * dfi
             else:
                 dfdx = dudx + self.h * dfi
 
-        if do_Hessian and self.reverse_mode is False:
+        if do_Hessian and forward_mode is True:
             d2fd2x = self.h * d2fi
             if d2ud2x is not None:
                 d2fd2x += d2ud2x
 
-        if (do_gradient or do_Hessian) and self.reverse_mode is True:
+        if (do_gradient or do_Hessian) and forward_mode is False:
             dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
 
         return f, dfdx, d2fd2x
@@ -124,9 +125,7 @@ if __name__ == '__main__':
     f = resnetLayer(width, h=h, act=act.softplusActivation())
 
     print('======= FORWARD =======')
-    f.reverse_mode = False
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
     print('======= BACKWARD =======')
-    f.reverse_mode = True
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)

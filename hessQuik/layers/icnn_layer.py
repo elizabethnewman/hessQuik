@@ -27,7 +27,7 @@ class ICNNLayer(hessQuikLayer):
     """
 
     def __init__(self, input_dim, in_features, out_features, act: act.hessQuikActivationFunction = act.softplusActivation(),
-                 device=None, dtype=None, reverse_mode=False):
+                 device=None, dtype=None):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(ICNNLayer, self).__init__()
 
@@ -35,7 +35,6 @@ class ICNNLayer(hessQuikLayer):
         self.in_features = in_features
         self.out_features = out_features
         self.act = act
-        self.reverse_mode = reverse_mode
 
         # extract nonnegative weights
         self.nonneg = F.softplus
@@ -63,21 +62,15 @@ class ICNNLayer(hessQuikLayer):
         nn.init.uniform_(self.b, -bound, bound)
 
     def dim_input(self):
-        return (self.in_features is not None) * self.in_features + self.input_dim
+        n = self.input_dim
+        if self.in_features is not None:
+            n += self.in_features
+        return n
 
     def dim_output(self):
         return self.out_features + self.input_dim
 
-    @property
-    def reverse_mode(self):
-        return self._reverse_mode
-
-    @reverse_mode.setter
-    def reverse_mode(self, reverse_mode):
-        self._reverse_mode = reverse_mode
-        self.act.reverse_mode = False if reverse_mode is False else None
-
-    def forward(self, ux, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+    def forward(self, ux, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
 
         (dfdx, d2fd2x) = (None, None)
 
@@ -88,10 +81,11 @@ class ICNNLayer(hessQuikLayer):
         z = ux @ M + self.b
 
         # forward pass
-        f, dsig, d2sig = self.act.forward(z, do_gradient=do_gradient, do_Hessian=do_Hessian)
+        f, dsig, d2sig = self.act.forward(z, do_gradient=do_gradient, do_Hessian=do_Hessian,
+                                          forward_mode=True if forward_mode is True else None)
         f = torch.cat((f, ux[:, -self.input_dim:]), dim=1)
 
-        if (do_gradient or do_Hessian) and self.reverse_mode is False:
+        if (do_gradient or do_Hessian) and forward_mode is True:
             dfdx = dsig.unsqueeze(1) * M
 
             # -------------------------------------------------------------------------------------------------------- #
@@ -121,7 +115,7 @@ class ICNNLayer(hessQuikLayer):
                 * torch.eye(self.input_dim, dtype=dfdx.dtype, device=dfdx.device).unsqueeze(0)
             dfdx = torch.cat((dfdx, I), dim=-1)
 
-        if (do_gradient or do_Hessian) and self.reverse_mode is True:
+        if (do_gradient or do_Hessian) and forward_mode is False:
             dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
 
         return f, dfdx, d2fd2x
@@ -187,10 +181,8 @@ if __name__ == '__main__':
     x = torch.randn(nex, d)
     f = ICNNLayer(d, None, m, act=act.softplusActivation())
 
-    # print('======= FORWARD =======')
-    # f.reverse_mode = False
-    # input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    print('======= FORWARD =======')
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
     print('======= BACKWARD =======')
-    f.reverse_mode = True
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)

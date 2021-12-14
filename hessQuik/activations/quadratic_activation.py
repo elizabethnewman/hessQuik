@@ -6,7 +6,7 @@ class quadraticActivation(hessQuikActivationFunction):
     def __init__(self):
         super(quadraticActivation, self).__init__()
 
-    def forward(self, x, do_gradient=False, do_Hessian=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -14,7 +14,7 @@ class quadraticActivation(hessQuikActivationFunction):
 
         # compute derivatives
         if do_gradient or do_Hessian:
-            if self.reverse_mode is not None:
+            if forward_mode is not None:
                 dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian)
             else:
                 self.ctx = (x,)
@@ -42,9 +42,7 @@ if __name__ == '__main__':
     f = quadraticActivation()
 
     print('======= FORWARD =======')
-    f.reverse_mode = False
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
     print('======= BACKWARD =======')
-    f.reverse_mode = True
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)

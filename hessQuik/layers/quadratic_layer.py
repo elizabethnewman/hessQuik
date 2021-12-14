@@ -45,14 +45,11 @@ class quadraticLayer(hessQuikLayer):
     def reverse_mode(self, reverse_mode):
         self._reverse_mode = reverse_mode
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+    def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
 
         (df, d2f) = (None, None)
         AtA = self.A.t() @ self.A
         f = u @ self.v + 0.5 * torch.sum((u @ AtA) * u, dim=1) + self.mu
-
-        if self.reverse_mode is not False:
-            self.ctx = (u,)
 
         if (do_gradient or do_Hessian) and self.reverse_mode is False:
             df = self.v.unsqueeze(0) + u @ AtA
@@ -72,8 +69,10 @@ class quadraticLayer(hessQuikLayer):
             if dudx is not None:
                 df = dudx @ df
 
-        if (do_gradient or do_Hessian) and self.reverse_mode is True:
-            df, d2f = self.backward(do_Hessian=do_Hessian)
+        if (do_gradient or do_Hessian) and forward_mode is not True:
+            self.ctx = (u,)
+            if forward_mode is False:
+                df, d2f = self.backward(do_Hessian=do_Hessian)
 
         return f.unsqueeze(-1), df, d2f
 
@@ -103,11 +102,9 @@ if __name__ == '__main__':
     f = quadraticLayer(d, m)
 
     print('======= FORWARD =======')
-    f.reverse_mode = False
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
     print('======= BACKWARD =======')
-    f.reverse_mode = True
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
 
 

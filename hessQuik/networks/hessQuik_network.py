@@ -8,19 +8,9 @@ class NN(nn.Sequential):
     """
     Forward propagation through network composed of forward Hessian layers
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args):
 
         super(NN, self).__init__(*args)
-
-        # setup reverse mode
-        if not ('reverse_mode' in kwargs.keys()):
-            if self.dim_input() < self.dim_output():
-                reverse_mode = False  # must compute the derivatives in forward mode
-            else:
-                reverse_mode = None  # store necessary info, but do not compute derivatives until backward call
-            kwargs['reverse_mode'] = reverse_mode
-
-        self.reverse_mode = (kwargs['reverse_mode'] is not False)  # backward call only if reverse_mode is True
 
     def dim_input(self):
         return self[0].dim_input()
@@ -28,22 +18,24 @@ class NN(nn.Sequential):
     def dim_output(self):
         return self[-1].dim_output()
 
-    @property
-    def reverse_mode(self):
-        return self._reverse_mode
+    def setup_forward_mode(self, **kwargs):
+        if not ('forward_mode' in kwargs.keys()):
+            if self.dim_input() < self.dim_output():
+                forward_mode = True  # compute the derivatives in forward mode
+            else:
+                forward_mode = False  # store necessary info, but do not compute derivatives until backward call
+            kwargs['forward_mode'] = forward_mode
 
-    @reverse_mode.setter
-    def reverse_mode(self, reverse_mode):
-        self._reverse_mode = reverse_mode
-        for i, _ in enumerate(self):
-            self[i].reverse_mode = False if reverse_mode is False else None
+        return kwargs['forward_mode']
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
+    def forward(self, x, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, **kwargs):
+        forward_mode = self.setup_forward_mode(**kwargs)
 
         for module in self:
-            x, dudx, d2ud2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x)
+            x, dudx, d2ud2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x,
+                                     forward_mode=True if forward_mode is True else None)
 
-        if self.reverse_mode is True:
+        if (do_gradient or do_Hessian) and forward_mode is False:
             dudx, d2ud2x = self.backward(do_Hessian=do_Hessian)
 
         return x, dudx, d2ud2x
@@ -139,13 +131,11 @@ if __name__ == '__main__':
            lay.singleLayer(ms[1], ms[2], act=act.softplusActivation()),
            lay.singleLayer(ms[2], m, act=act.softplusActivation()))
 
-    f = NNPytorchAD(f)
-    x.requires_grad = True
+    # f = NNPytorchAD(f)
+    # x.requires_grad = True
+
     print('======= FORWARD =======')
-    # f.reverse_mode = False
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
     print('======= BACKWARD =======')
-    # f.reverse_mode = True
-
-    # input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
