@@ -125,14 +125,14 @@ if __name__ == '__main__':
     import torch
     import hessQuik.activations as act
     import hessQuik.layers as lay
-    from hessQuik.utils import input_derivative_check, laplcian_check_using_hessian
+    from hessQuik.utils import input_derivative_check, laplacian_check_using_hessian
     torch.set_default_dtype(torch.float64)
 
     # problem setup
     nex = 11
     d = 3
     ms = [2, 7, 5]
-    m = 1
+    m = 8
     x = torch.randn(nex, d)
 
     f = NN(lay.singleLayer(d, ms[0], act=act.softplusActivation()),
@@ -150,6 +150,10 @@ if __name__ == '__main__':
     f.reverse_mode = True
     input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
-    print('======= LAPLACIAN =======')
+    print('======= LAPLACIAN: FORWARD =======')
     f.reverse_mode = False
-    laplcian_check_using_hessian(f, x)
+    laplacian_check_using_hessian(f, x)
+
+    print('======= LAPLACIAN: BACKWARD =======')
+    f.reverse_mode = True
+    laplacian_check_using_hessian(f, x)

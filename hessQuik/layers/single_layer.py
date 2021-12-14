@@ -109,7 +109,7 @@ class singleLayer(hessQuikLayer):
         return f, dfdx, d2fd2x, lap_f
 
     def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
-        (d2gd2x, lap_g) = (None, None)
+        (d2gd2x, lap_gx) = (None, None)
         dsig, d2sig = self.act.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
         dgdx = dsig.unsqueeze(1) * self.K
 
@@ -133,11 +133,25 @@ class singleLayer(hessQuikLayer):
                 # combine
                 d2gd2x = h1 + h2
 
+                if do_Laplacian:
+                    lap_gx = d2gd2x[:, torch.arange(d2gd2x.shape[1]), torch.arange(d2gd2x.shape[1]), :].sum(1)
+
+        if do_Laplacian and not do_Hessian:
+
+            if dgdf is None:
+                lap_gx = ((self.K ** 2).unsqueeze(0) * d2sig.unsqueeze(1)).sum(1)
+
+            if lap_g is not None:
+                # lap_u = d2ud2x[:, torch.arange(d2ud2x.shape[1]), torch.arange(d2ud2x.shape[1]), :].sum(1)
+                lap1 = (lap_g.unsqueeze(-1) * dgdx).sum(1)
+                lap2 = (((dgdx @ self.K) ** 2) * d2sig.unsqueeze(1)).sum(1)  # TODO: can we speed this up?
+                lap_gx = lap1 + lap2
+
         # finish computing gradient
         if dgdf is not None:
             dgdx = dgdx @ dgdf
 
-        return dgdx, d2gd2x, lap_g
+        return dgdx, d2gd2x, lap_gx
 
     def extra_repr(self) -> str:
         return 'in_features={}, out_features={}'.format(
@@ -146,7 +160,7 @@ class singleLayer(hessQuikLayer):
 
 
 if __name__ == '__main__':
-    from hessQuik.utils import input_derivative_check, laplcian_check_using_hessian
+    from hessQuik.utils import input_derivative_check, laplacian_check_using_hessian
     torch.set_default_dtype(torch.float64)
 
     nex = 11  # no. of examples
@@ -166,8 +180,8 @@ if __name__ == '__main__':
 
     print('======= LAPLACIAN: FORWARD =======')
     f.reverse_mode = False
-    laplcian_check_using_hessian(f, x)
+    laplacian_check_using_hessian(f, x)
 
-    # print('======= LAPLACIAN: BACKWARD =======')
-    # f.reverse_mode = True
-    # laplcian_check_using_hessian(f, x)
+    print('======= LAPLACIAN: BACKWARD =======')
+    f.reverse_mode = True
+    laplacian_check_using_hessian(f, x)

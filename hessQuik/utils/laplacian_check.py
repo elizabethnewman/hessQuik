@@ -1,7 +1,7 @@
 import torch
 
 
-def laplcian_check_using_hessian(f, x, tol=1e-4):
+def laplacian_check_using_hessian(f, x, tol=1e-4):
     f0, df0, d2f0, _ = f(x, do_gradient=True, do_Hessian=True, do_Laplacian=False)
 
     _, _, _, lap_f = f(x, do_gradient=True, do_Hessian=False, do_Laplacian=True)
