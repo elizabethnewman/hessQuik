@@ -1,6 +1,6 @@
 
 ### Usage
-The hessQuik network wrappers are located in hessQuik_network.py and are used as follows:
+The hessQuik network wrappers are located in **hessQuik_network.py** and are used as follows:
 ```python
 layer = lay.singleLayer(3, 4)
 net1 = net.NN(layer)
@@ -25,4 +25,8 @@ width = 32
 net = net.NN(lay.singleLayer(d, width, act=act.softplusActivation()), 
              net.resnetNN(width=width, depth=8, h=0.25, act=act.antiTanhActivation()), 
              lay.quadraticLayer(width, rank=5))
+
+icnn = net.NN(net.ICNN(input_dim=10, widths=[32, 64, 20], act=act.antiTanhActivation()), 
+              lay.quadraticICNNLayer(input_dim=10, in_features=20, rank=2))
 ```
+We do not allow concatenation of ICNN layers and networks with non-ICNN layers. 

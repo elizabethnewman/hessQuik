@@ -1,9 +1,9 @@
 import torch
 import torch.nn.functional as F
-from hessQuik.activations import activationFunction
+from hessQuik.activations import hessQuikActivationFunction
 
 
-class softplusActivation(activationFunction):
+class softplusActivation(hessQuikActivationFunction):
 
     def __init__(self, beta=1, threshold=20):
         super(softplusActivation, self).__init__()

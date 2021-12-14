@@ -3,10 +3,10 @@ from torch import Tensor
 from typing import Union, Tuple
 
 
-class activationFunction(nn.Module):
+class hessQuikActivationFunction(nn.Module):
 
     def __init__(self, reverse_mode=False) -> None:
-        super(activationFunction, self).__init__()
+        super(hessQuikActivationFunction, self).__init__()
         self.ctx = None  # context variable
         self.reverse_mode = reverse_mode
 

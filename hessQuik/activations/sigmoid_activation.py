@@ -1,8 +1,8 @@
 import torch
-from hessQuik.activations import activationFunction
+from hessQuik.activations import hessQuikActivationFunction
 
 
-class sigmoidActivation(activationFunction):
+class sigmoidActivation(hessQuikActivationFunction):
 
     def __init__(self):
         super(sigmoidActivation, self).__init__()

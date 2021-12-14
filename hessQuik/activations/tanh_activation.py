@@ -1,8 +1,8 @@
 import torch
-from hessQuik.activations import activationFunction
+from hessQuik.activations import hessQuikActivationFunction
 
 
-class tanhActivation(activationFunction):
+class tanhActivation(hessQuikActivationFunction):
 
     def __init__(self):
         super(tanhActivation, self).__init__()

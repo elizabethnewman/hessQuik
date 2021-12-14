@@ -1,5 +1,5 @@
 
-from .activation_function import activationFunction
+from .hessQuik_activation_function import hessQuikActivationFunction
 from .antiTanh_activation import antiTanhActivation
 from .identity_activation import identityActivation
 from .quadratic_activation import quadraticActivation

@@ -1,7 +1,7 @@
 import torch
-from hessQuik.activations import activationFunction
+from hessQuik.activations import hessQuikActivationFunction
 
-class identityActivation(activationFunction):
+class identityActivation(hessQuikActivationFunction):
 
     def __init__(self):
         super(identityActivation, self).__init__()

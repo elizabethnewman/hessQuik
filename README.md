@@ -79,20 +79,26 @@ f = net.NN(lay.singleLayer(d, widths[0], act.antiTanhActivation()),
            )
 ```
 
-You can obtain gradients and Hessians in forward more via
+You can obtain gradients and Hessians via
 ```python
 nex = 20 # number of examples
 x = torch.randn(nex, d)
 fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
 ```
 
-or in backward mode via
-```python
-nex = 20 # number of examples
-x = torch.randn(nex, d)
-fx, *_ = f(x, reverse_mode=True)
-dfx, d2fx = f.backward(do_Hessian=True)
-```
+[comment]: <> (or in backward mode via)
+
+[comment]: <> (```python)
+
+[comment]: <> (nex = 20 # number of examples)
+
+[comment]: <> (x = torch.randn&#40;nex, d&#41;)
+
+[comment]: <> (fx, *_ = f&#40;x, reverse_mode=True&#41;)
+
+[comment]: <> (dfx, d2fx = f.backward&#40;do_Hessian=True&#41;)
+
+[comment]: <> (```)
 
 
 ## Examples

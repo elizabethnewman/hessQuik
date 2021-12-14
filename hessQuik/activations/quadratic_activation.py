@@ -1,7 +1,7 @@
 import torch
-from hessQuik.activations import activationFunction
+from hessQuik.activations import hessQuikActivationFunction
 
-class quadraticActivation(activationFunction):
+class quadraticActivation(hessQuikActivationFunction):
 
     def __init__(self):
         super(quadraticActivation, self).__init__()
