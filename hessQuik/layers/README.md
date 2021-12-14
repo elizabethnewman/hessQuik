@@ -1,7 +1,7 @@
 ### hessQuik Layers
 
 The fundamental layer for the hessQuik package is found in **hessQuik_layer.py**.  The layer has the following structure:
-```math
+```python
 f, df, d2f = hessQuikLayer(x, do_gradient=True, do_Hessian=True)
 ```
 A key attribute of each layer is **reverse_mode**, which is defined as follows:
