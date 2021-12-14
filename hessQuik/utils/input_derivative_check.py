@@ -13,7 +13,7 @@ def input_derivative_check(f, x, do_Hessian=False, num_test=15, base=2.0, tol=0.
     # directional derivatives
     dx = torch.randn_like(x)
     curvx = None
-    if isinstance(f, hessQuik.activations.activationFunction):
+    if isinstance(f, hessQuik.activations.hessQuikActivationFunction):
         dfdx = df0 * dx
 
         if d2f0 is not None:
