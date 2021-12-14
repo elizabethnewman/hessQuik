@@ -100,6 +100,7 @@ class NNPytorchHessian(nn.Module):
     def __init__(self, net):
         super(NNPytorchHessian, self).__init__()
         self.net = net
+        self.net.reverse_mode = None
         self.ctx = None
 
     def forward(self, x, do_gradient=False, do_Hessian=False):
