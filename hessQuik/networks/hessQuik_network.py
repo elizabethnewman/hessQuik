@@ -66,14 +66,11 @@ class NNPytorchAD(nn.Module):
         self.net.reverse_mode = None
         self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, reverse_mode=False):
-        (df, d2f) = (None, None)
+    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
+        (df, d2f, lap_f) = (None, None, None)
         f, *_ = self.net(x)
 
-        if reverse_mode:
-            self.ctx = (f, x)
-
-        if not reverse_mode and (do_gradient or do_Hessian):
+        if do_gradient or do_Hessian:
             f = f.view(x.shape[0], -1)
             df = []
             for j in range(f.shape[1]):
@@ -95,7 +92,7 @@ class NNPytorchAD(nn.Module):
             if df.dim() < 3:
                 df = df.unsqueeze(-1)
 
-        return f, df, d2f
+        return f, df, d2f, lap_f
 
 
 class NNPytorchHessian(nn.Module):
@@ -106,8 +103,8 @@ class NNPytorchHessian(nn.Module):
         self.net.reverse_mode = None
         self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False):
-        (df, d2f) = (None, None)
+    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
+        (df, d2f, lap_f) = (None, None, None)
         f, *_ = self.net(x, do_gradient=False, do_Hessian=False)
 
         if f.squeeze().ndim > 1:
@@ -121,7 +118,7 @@ class NNPytorchHessian(nn.Module):
             d2f = hessian(lambda x: self.net(x)[0].sum(), x).sum(dim=2)
             d2f = d2f.unsqueeze(-1)
 
-        return f, df, d2f
+        return f, df, d2f, lap_f
 
 
 if __name__ == '__main__':
