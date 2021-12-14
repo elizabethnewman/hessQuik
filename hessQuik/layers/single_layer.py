@@ -54,13 +54,15 @@ class singleLayer(hessQuikLayer):
     @reverse_mode.setter
     def reverse_mode(self, reverse_mode):
         self._reverse_mode = reverse_mode
+        self.act.reverse_mode = False if reverse_mode is False else None
 
     def forward(self, u, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
 
         (dfdx, d2fd2x) = (None, None)
-        f, dsig, d2sig = self.act.forward(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian,
-                                          reverse_mode=self.reverse_mode is not False)
+        f, dsig, d2sig = self.act.forward(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian)
 
+        # ------------------------------------------------------------------------------------------------------------ #
+        # forward mode
         if (do_gradient or do_Hessian) and self.reverse_mode is False:
             dfdx = dsig.unsqueeze(1) * self.K
             # -------------------------------------------------------------------------------------------------------- #
@@ -84,6 +86,8 @@ class singleLayer(hessQuikLayer):
             if dudx is not None:
                 dfdx = dudx @ dfdx
 
+        # ------------------------------------------------------------------------------------------------------------ #
+        # backward mode (if layer is not wrapped in NN)
         if (do_gradient or do_Hessian) and self.reverse_mode is True:
             dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
 

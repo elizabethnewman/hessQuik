@@ -95,9 +95,8 @@ class quadraticICNNLayer(hessQuikLayer):
                 if d2ud2x is not None:
                     d2f = dudx[:, :, -self.input_dim:] @ d2f @ dudx[:, :, -self.input_dim:].permute(0, 2, 1)
                     z = torch.zeros(x.shape[0], self.in_features)
-                    d2f += (d2ud2x @ (
-                                torch.cat((w, self.v), dim=0).unsqueeze(0) + torch.cat((z, x @ AtA), dim=1)).unsqueeze(
-                        1).unsqueeze(-1)).squeeze()
+                    d2f += (d2ud2x @ (torch.cat((w, self.v), dim=0).unsqueeze(0)
+                                      + torch.cat((z, x @ AtA), dim=1)).unsqueeze(1).unsqueeze(-1)).squeeze()
 
                 d2f = d2f.unsqueeze(-1)
             # -------------------------------------------------------------------------------------------------------- #

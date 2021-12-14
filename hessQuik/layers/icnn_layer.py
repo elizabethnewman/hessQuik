@@ -75,6 +75,7 @@ class ICNNLayer(hessQuikLayer):
     @reverse_mode.setter
     def reverse_mode(self, reverse_mode):
         self._reverse_mode = reverse_mode
+        self.act.reverse_mode = False if reverse_mode is False else None
 
     def forward(self, ux, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None):
 
@@ -87,8 +88,7 @@ class ICNNLayer(hessQuikLayer):
         z = ux @ M + self.b
 
         # forward pass
-        f, dsig, d2sig = self.act.forward(z, do_gradient=do_gradient, do_Hessian=do_Hessian,
-                                          reverse_mode=self.reverse_mode is not False)
+        f, dsig, d2sig = self.act.forward(z, do_gradient=do_gradient, do_Hessian=do_Hessian)
         f = torch.cat((f, ux[:, -self.input_dim:]), dim=1)
 
         if (do_gradient or do_Hessian) and self.reverse_mode is False:
@@ -187,9 +187,9 @@ if __name__ == '__main__':
     x = torch.randn(nex, d)
     f = ICNNLayer(d, None, m, act=act.softplusActivation())
 
-    print('======= FORWARD =======')
-    f.reverse_mode = False
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    # print('======= FORWARD =======')
+    # f.reverse_mode = False
+    # input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
     f.reverse_mode = True

@@ -7,27 +7,28 @@ class sigmoidActivation(activationFunction):
     def __init__(self):
         super(sigmoidActivation, self).__init__()
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, reverse_mode=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False):
         (dsigma, d2sigma) = (None, None)
 
+        # forward propagate
         sigma = torch.sigmoid(x)
 
-        if reverse_mode:
-            self.ctx = (sigma,)
-        else:
-            if do_gradient or do_Hessian:
-                dsigma = sigma * (1 - sigma)
-                if do_Hessian:
-                    d2sigma = dsigma * (1 - 2 * sigma)
+        # compute derivatves
+        if do_gradient or do_Hessian:
+            if self.reverse_mode is not None:
+                dsigma, d2sigma = self.compute_derivatives(sigma, do_Hessian=do_Hessian)
+            else:
+                self.ctx = (sigma,)
 
         return sigma, dsigma, d2sigma
 
-    def backward(self, do_Hessian=False):
-        sigma, = self.ctx
-        d2sigma = None
+    def compute_derivatives(self, *args, do_Hessian=False):
+        sigma = args[0]
         dsigma = sigma * (1 - sigma)
+        d2sigma = None
         if do_Hessian:
             d2sigma = dsigma * (1 - 2 * sigma)
+
         return dsigma, d2sigma
 
 
@@ -43,7 +44,9 @@ if __name__ == '__main__':
     f = sigmoidActivation()
 
     print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)

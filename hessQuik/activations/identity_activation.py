@@ -6,28 +6,30 @@ class identityActivation(activationFunction):
     def __init__(self):
         super(identityActivation, self).__init__()
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, reverse_mode=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False):
         (dsigma, d2sigma) = (None, None)
 
-        if reverse_mode:
-            self.ctx = (x,)
-
+        # forward propagate
         sigma = x
 
-        if do_gradient:
-            dsigma = torch.ones_like(x)
-
-        if do_Hessian:
-            d2sigma = torch.zeros_like(x)
+        # compute derivatives
+        if do_gradient or do_Hessian:
+            if self.reverse_mode is not None:
+                dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian)
+            else:
+                self.ctx = (x,)
 
         return sigma, dsigma, d2sigma
 
-    def backward(self, do_Hessian=False):
-        x, = self.ctx
+    def compute_derivatives(self, *args, do_Hessian=False):
+        x = args[0]
         d2sigma = None
+        dsigma = torch.ones_like(x)
+
         if do_Hessian:
             d2sigma = torch.zeros_like(x)
-        return torch.ones_like(x), d2sigma
+
+        return dsigma, d2sigma
 
 
 if __name__ == '__main__':
@@ -42,8 +44,10 @@ if __name__ == '__main__':
     f = identityActivation()
 
     print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=False)
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
     print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, reverse_mode=True)
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
 
