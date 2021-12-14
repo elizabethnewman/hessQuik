@@ -26,7 +26,7 @@ class ICNNLayer(hessQuikLayer):
 
     """
 
-    def __init__(self, input_dim, in_features, out_features, act: act.activationFunction = act.softplusActivation(),
+    def __init__(self, input_dim, in_features, out_features, act: act.hessQuikActivationFunction = act.softplusActivation(),
                  device=None, dtype=None, reverse_mode=False):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(ICNNLayer, self).__init__()

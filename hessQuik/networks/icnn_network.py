@@ -8,7 +8,7 @@ from copy import deepcopy
 
 class ICNN(NN):
 
-    def __init__(self, input_dim: int, widths: Union[Tuple, List], act: act.activationFunction = act.identityActivation(),
+    def __init__(self, input_dim: int, widths: Union[Tuple, List], act: act.hessQuikActivationFunction = act.identityActivation(),
                  device=None, dtype=None, **kwargs):
         factory_kwargs = {'device': device, 'dtype': dtype}
 

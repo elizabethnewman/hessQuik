@@ -6,7 +6,7 @@ from copy import deepcopy
 
 class resnetNN(NN):
 
-    def __init__(self, width: int, depth: int, h: float = 1.0, act: act.activationFunction = act.identityActivation(),
+    def __init__(self, width: int, depth: int, h: float = 1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
                  device=None, dtype=None, **kwargs):
         factory_kwargs = {'device': device, 'dtype': dtype}
 

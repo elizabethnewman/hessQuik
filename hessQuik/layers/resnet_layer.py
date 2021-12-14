@@ -19,7 +19,7 @@ class resnetLayer(hessQuikLayer):
     where N is the number of examples and d is the number of input features into the network.
     """
 
-    def __init__(self, width, h=1.0, act: act.activationFunction = act.identityActivation(),
+    def __init__(self, width, h=1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
                  device=None, dtype=None, reverse_mode=None):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(resnetLayer, self).__init__()

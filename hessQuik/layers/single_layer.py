@@ -20,7 +20,7 @@ class singleLayer(hessQuikLayer):
     where N is the number of examples and d is the number of input features into the network.
     """
 
-    def __init__(self, in_features, out_features, act: act.activationFunction = act.identityActivation(),
+    def __init__(self, in_features, out_features, act: act.hessQuikActivationFunction = act.identityActivation(),
                  device=None, dtype=None, reverse_mode=False):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(singleLayer, self).__init__()

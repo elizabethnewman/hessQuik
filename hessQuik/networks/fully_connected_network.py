@@ -7,7 +7,7 @@ from copy import deepcopy
 
 class fullyConnectedNN(NN):
 
-    def __init__(self, widths: Union[Tuple, List], act: act.activationFunction = act.identityActivation(),
+    def __init__(self, widths: Union[Tuple, List], act: act.hessQuikActivationFunction = act.identityActivation(),
                  device=None, dtype=None, **kwargs):
         factory_kwargs = {'device': device, 'dtype': dtype}
         args = ()
