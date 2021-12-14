@@ -51,17 +51,13 @@ class NNPytorchAD(nn.Module):
     def __init__(self, net: NN):
         super(NNPytorchAD, self).__init__()
         self.net = net
-        self.net.reverse_mode = None
         self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, reverse_mode=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False, **kwargs):
         (df, d2f) = (None, None)
         f, *_ = self.net(x)
 
-        if reverse_mode:
-            self.ctx = (f, x)
-
-        if not reverse_mode and (do_gradient or do_Hessian):
+        if do_gradient or do_Hessian:
             f = f.view(x.shape[0], -1)
             df = []
             for j in range(f.shape[1]):
@@ -91,10 +87,9 @@ class NNPytorchHessian(nn.Module):
     def __init__(self, net):
         super(NNPytorchHessian, self).__init__()
         self.net = net
-        self.net.reverse_mode = None
         self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False, **kwargs):
         (df, d2f) = (None, None)
         f, *_ = self.net(x, do_gradient=False, do_Hessian=False)
 
@@ -131,7 +126,7 @@ if __name__ == '__main__':
            lay.singleLayer(ms[1], ms[2], act=act.softplusActivation()),
            lay.singleLayer(ms[2], m, act=act.softplusActivation()))
 
-    # f = NNPytorchAD(f)
+    # f = NNPytorchHessian(f)
     # x.requires_grad = True
 
     print('======= FORWARD =======')
