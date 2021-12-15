@@ -9,14 +9,13 @@ class quadraticLayer(hessQuikLayer):
     f(x) = x @ v + 0.5 * x.t() @ A.t() @ A @ x + mu
     """
 
-    def __init__(self, in_features, rank, device=None, dtype=None, reverse_mode=False):
+    def __init__(self, in_features, rank, device=None, dtype=None):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(quadraticLayer, self).__init__()
 
         self.in_features = in_features
         self.rank = rank
         self.ctx = None
-        self.reverse_mode = reverse_mode
 
         # create final layer
         self.v = nn.Parameter(torch.empty(self.in_features, **factory_kwargs))

@@ -21,14 +21,13 @@ class singleLayer(hessQuikLayer):
     """
 
     def __init__(self, in_features, out_features, act: act.hessQuikActivationFunction = act.identityActivation(),
-                 device=None, dtype=None, reverse_mode=False):
+                 device=None, dtype=None):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(singleLayer, self).__init__()
 
         self.in_features = in_features
         self.out_features = out_features
         self.act = act
-        self.reverse_mode = reverse_mode
 
         self.K = nn.Parameter(torch.empty(in_features, out_features, **factory_kwargs))
         self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))
