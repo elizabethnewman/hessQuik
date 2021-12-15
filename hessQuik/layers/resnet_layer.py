@@ -3,6 +3,8 @@ from hessQuik.layers import hessQuikLayer
 import hessQuik.activations as act
 from hessQuik.layers import singleLayer
 
+from line_profiler_pycharm import profile
+
 
 class resnetLayer(hessQuikLayer):
     """
@@ -27,22 +29,12 @@ class resnetLayer(hessQuikLayer):
         self.width = width
         self.h = h
         self.layer = singleLayer(width, width, act=act, **factory_kwargs)
-        self.reverse_mode = reverse_mode
 
     def dim_input(self):
         return self.width
 
     def dim_output(self):
         return self.width
-
-    @property
-    def reverse_mode(self):
-        return self._reverse_mode
-
-    @reverse_mode.setter
-    def reverse_mode(self, reverse_mode):
-        self._reverse_mode = reverse_mode
-        self.layer.reverse_mode = reverse_mode
 
     def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
 
@@ -100,6 +92,11 @@ class resnetLayer(hessQuikLayer):
                 h1 = (h_dfdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ h_dfdx.permute(0, 2, 1).unsqueeze(1))
                 h1 = h1.permute(0, 2, 3, 1)
 
+                # h1 = d2gd2f.permute(0, 3, 1, 2) @ dfdx.permute(0, 2, 1).unsqueeze(1)
+                # h1 += dfdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2)
+                # h1 += d2gd2f.permute(0, 3, 1, 2)
+                # h1 = h1.permute(0, 2, 3, 1)
+
                 # extra term to compute full Hessian
                 N, _, _, m = d2fd2x.shape
                 h2 = d2fd2x.reshape(N, -1, m) @ dgdf.reshape(N, m, -1)
@@ -124,8 +121,10 @@ if __name__ == '__main__':
     x = torch.randn(nex, width)
     f = resnetLayer(width, h=h, act=act.softplusActivation())
 
-    print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
+    f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=True, forward_mode=False)
 
-    print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
+    # print('======= FORWARD =======')
+    # input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
+    #
+    # print('======= BACKWARD =======')
+    # input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
