@@ -6,13 +6,13 @@ sigma, dsigma, d2sigma = hessQuikActivationFunction(x, do_gradient=True, do_Hess
 
 [comment]: <> (A key method of each layer is **compute_derivatives**, which is used for both forward and backward mode derivative computations.)
 
-### For Developers
+### For Contributors
 New activation functions inherit the attributes and methods from ```hessQuikActivationFunction```.
 The methods required to construct a new hessQuik activation layer are the following:
-```html
-forward             : apply the activation function, call compute_derivatives if forward_mode = True
-compute_derivatives : method to compute derivatives, used for forward and backward mode 
+```python
+def forward(*args, **kwargs):              # apply the activation function, call compute_derivatives if forward_mode = True
+def compute_derivatives(*args, **kwargs):  # method to compute derivatives, used for forward and backward mode 
 ```
 There is an additional method called ```backward``` that is automated in superclass.
 
-To test new activation functions, add the appropriate test the ```tests/test_activations.py```. 
+To test new activation functions, add the appropriate test to ```tests/test_activations.py```. 

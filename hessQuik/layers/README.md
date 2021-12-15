@@ -13,15 +13,15 @@ forward_mode = False # compute the derivatives in backward mode immediately
 ```
 No matter the setting of ```forward_mode```, the output of ```hessQuikLayer``` will include the gradients and Hessians if the appropriate flags are turned on.
 
-### For Developers
+### For Contributors
 All hessQuik layers should inherit the methods from ```hessQuikLayer``` which include
 ```python
-def dim_input():    # return the dimension of the input into the layer 
-def dim_outout():   # return the dimension of the output from the layer
-def forward(*args, **kwargs):      # propagate through network and compute derivatives in either forward or backward more
-def backward(**kwargs):     # method to compute derivatives in backward mode; this method will be called in forward()
+def dim_input():               # return the dimension of the input into the layer 
+def dim_outout():              # return the dimension of the output from the layer
+def forward(*args, **kwargs):  # propagate through network and compute derivatives in either forward or backward more
+def backward(**kwargs):        # method to compute derivatives in backward mode; this method will be called in forward()
 ```
-To test new layers, add the appropriate test the ```tests/test_layers.py```. 
+To test new layers, add the appropriate test to ```tests/test_layers.py```. 
 
 
 
