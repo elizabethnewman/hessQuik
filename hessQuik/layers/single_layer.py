@@ -91,33 +91,13 @@ class singleLayer(hessQuikLayer):
         if do_Hessian:
             d2gd2x = (d2sig.unsqueeze(1) * self.K.unsqueeze(0)).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
 
-            if d2gd2f is None:
-                d2gd2x = (d2sig.unsqueeze(1) * self.K.unsqueeze(0)).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
-
-            # if self.K.shape[0] <= self.K.shape[1]:
-            #     print('here1')
-            #     d2gd2x = (d2sig.unsqueeze(1) * self.K.unsqueeze(0)).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
-            # else:
-            #     print('here2')
-            #     # TODO: compare alternative computation - roughly the same amount of time to compute
-            #     d2gd2x = (d2sig.unsqueeze(-1).unsqueeze(-1) * (self.K.T.unsqueeze(-1) @ self.K.T.unsqueeze(1)))
-            #     d2gd2x = d2gd2x.permute(0, 2, 3, 1)
-
-            else:
+            if d2gd2f is not None:
                 # Gauss-Newton approximation
                 h1 = (dgdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ dgdx.permute(0, 2, 1).unsqueeze(1))
                 h1 = h1.permute(0, 2, 3, 1)
 
                 # extra term to compute full Hessian
-                h2 = (self.K.T.unsqueeze(-1) @ self.K.T.unsqueeze(1))
-                h2 = h2.permute(1, 2, 0).unsqueeze(0) @ (d2sig.unsqueeze(-1) * dgdf).unsqueeze(1)
-
-                # extra term to compute full Hessian
-                # N, _, _, m = d2gd2x.shape
                 h2 = d2gd2x @ dgdf.unsqueeze(1)
-                # h2 = d2gd2x.view(N, -1, m) @ dgdf.view(N, m, -1)
-                # h2 = h2.view(h1.shape)
-
                 # combine
                 d2gd2x = h1 + h2
 
