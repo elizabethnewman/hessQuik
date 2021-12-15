@@ -29,13 +29,16 @@ class softplusActivation(hessQuikActivationFunction):
     def compute_derivatives(self, *args, do_Hessian=False):
         x = args[0]
         d2sigma = None
-        idx = self.beta * x < self.threshold
-        dsigma = torch.ones_like(x)
-        dsigma[idx] = torch.exp(self.beta * x[idx]) / (1 + torch.exp(self.beta * x[idx]))
 
+        dsigma = torch.exp(self.beta * x) / (1 + torch.exp(self.beta * x))
         if do_Hessian:
-            d2sigma = torch.zeros_like(x)
-            d2sigma[idx] = self.beta * torch.exp(self.beta * x[idx]) / ((1 + torch.exp(self.beta * x[idx])) ** 2)
+            d2sigma = self.beta * torch.exp(self.beta * x) / ((1 + torch.exp(self.beta * x)) ** 2)
+
+        # for numerical stability
+        idx = (self.beta * x > self.threshold).nonzero(as_tuple=True)
+        if len(idx[0]) > 0:
+            dsigma[idx] = 1.0
+            d2sigma[idx] = 0.0
 
         return dsigma, d2sigma
 
@@ -47,7 +50,7 @@ if __name__ == '__main__':
     nex = 11  # no. of examples
     d = 4  # no. of input features
 
-    x = torch.randn(nex, d)
+    x = 100 * torch.randn(nex, d)
 
     f = softplusActivation()
 

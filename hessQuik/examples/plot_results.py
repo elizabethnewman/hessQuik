@@ -24,7 +24,7 @@ markersize = 20
 
 plt.figure()
 for i, name in enumerate(['hessQuik', 'PytorchAD', 'PytorchHessian']):
-    output = pickle.load(open('12-13-2021---' + name + '-cpu-w20-d4.p', 'rb'))
+    output = pickle.load(open('12-14-2021---' + name + '-cpu-w100-d4.p', 'rb'))
     results = output['results']
 
     x = results['in_feature_range']
@@ -32,19 +32,21 @@ for i, name in enumerate(['hessQuik', 'PytorchAD', 'PytorchHessian']):
 
     plt.semilogy(x, y, '-' + markers[i], linewidth=linewidth, markersize=markersize, label=name + ': cpu')
 
-    output = pickle.load(open('12-13-2021---' + name + '-cuda-w20-d4.p', 'rb'))
-    results = output['results']
+    # output = pickle.load(open('12-13-2021---' + name + '-cuda-w20-d4.p', 'rb'))
+    # results = output['results']
+    #
+    # x = results['in_feature_range']
+    # y = results['timing_trials_mean'].squeeze()
+    #
+    # plt.semilogy(x, y, '--' + markers[i], linewidth=linewidth, markersize=markersize, label=name + ': cuda')
 
-    x = results['in_feature_range']
-    y = results['timing_trials_mean'].squeeze()
 
-    plt.semilogy(x, y, '--' + markers[i], linewidth=linewidth, markersize=markersize, label=name + ': cuda')
 
 plt.xscale('log', base=2)
 plt.yscale('log', base=10)
 plt.xlabel('in features')
 plt.ylabel('time (seconds)')
-
+plt.grid()
 plt.legend()
 plt.show()
 
