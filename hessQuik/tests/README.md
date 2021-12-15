@@ -7,7 +7,7 @@ test_layers.py
 test_networks.py
 test_network_weight_derivatives.py
 ```
-The first three test the gradients and Hessians with respect to the inputs.  The last test checks the gradients of the networks with respect to the network weights computing using PyTorch's automatic differentiation.
+The first three test the gradients and Hessians with respect to the inputs.  The last test checks the gradients of the networks with respect to the network weights computed using PyTorch's automatic differentiation.
 
 
 ### For Contributors
