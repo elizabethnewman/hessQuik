@@ -14,3 +14,5 @@ forward             : apply the activation function, call compute_derivatives if
 compute_derivatives : method to compute derivatives, used for forward and backward mode 
 ```
 There is an additional method called ```backward``` that is automated in superclass.
+
+To test new activation functions, add the appropriate test the ```tests/test_activations.py```. 

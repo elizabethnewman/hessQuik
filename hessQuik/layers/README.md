@@ -18,9 +18,10 @@ All hessQuik layers should inherit the methods from ```hessQuikLayer``` which in
 ```python
 def dim_input():    # return the dimension of the input into the layer 
 def dim_outout():   # return the dimension of the output from the layer
-def forward():      # propagate through network and compute derivatives in either forward or backward more
-def backward():     # method to compute derivatives in backward mode; this method will be called in forward()
+def forward(*args, **kwargs):      # propagate through network and compute derivatives in either forward or backward more
+def backward(**kwargs):     # method to compute derivatives in backward mode; this method will be called in forward()
 ```
+To test new layers, add the appropriate test the ```tests/test_layers.py```. 
 
 
 

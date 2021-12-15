@@ -1,14 +1,10 @@
 
-### Usage
-The hessQuik network wrappers are located in **hessQuik_network.py** and are used as follows:
+### Basics
+Every hessQuik network is constructed using the ```NN``` wrapper.  For example,
 ```python
 layer = lay.singleLayer(3, 4)
-net1 = net.NN(layer)
-net2 = net.NNPytorchAD(net1)
+f = net.NN(layer)
 ```
-
-Here, **net1** uses our hessQuik implementation to compute gradients and Hessians and **net2** uses the implementations found in [CP-Flow](https://github.com/CW-Huang/CP-Flow). 
-
 
 ### Options
 For convenience, we provide some commonly-used network architectures
@@ -22,11 +18,23 @@ You can create a hessQuik network using layers and these commonly-used architect
 ```python
 d = 10 # number of input features
 width = 32
-net = net.NN(lay.singleLayer(d, width, act=act.softplusActivation()), 
+f = net.NN(lay.singleLayer(d, width, act=act.softplusActivation()), 
              net.resnetNN(width=width, depth=8, h=0.25, act=act.antiTanhActivation()), 
              lay.quadraticLayer(width, rank=5))
 
 icnn = net.NN(net.ICNN(input_dim=10, widths=[32, 64, 20], act=act.antiTanhActivation()), 
               lay.quadraticICNNLayer(input_dim=10, in_features=20, rank=2))
 ```
-We do not allow concatenation of ICNN layers and networks with non-ICNN layers. 
+We do not allow concatenation of ICNN layers and networks with non-ICNN layers.
+
+We offer some additional wrappers for comparison
+```python
+fAD = net.NNPytorchAD(f)         # use PyTorch automatic differentiation
+fHess = net.NNPytorchHessian(f)  # use PyTorch hessian function
+```
+The ```NNPytorchAD``` wrapper using the implementation from [CP-Flow](https://github.com/CW-Huang/CP-Flow).  The ```NNPytorchHessian``` wrapper is only available for networks with scalar outputs.
+
+### For Developers
+To create new networks, you should inherit the attributes and methods from ```NN```.  You should not need to rewrite the ```NN``` methods, only change the list of layers and networks as inputs.
+
+To test new networks, add the appropriate tests in ```tests/test_networks.py```.
