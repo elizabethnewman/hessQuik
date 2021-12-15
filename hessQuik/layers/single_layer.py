@@ -98,6 +98,7 @@ class singleLayer(hessQuikLayer):
 
                 # extra term to compute full Hessian
                 h2 = d2gd2x @ dgdf.unsqueeze(1)
+
                 # combine
                 d2gd2x = h1 + h2
 

@@ -98,9 +98,10 @@ class resnetLayer(hessQuikLayer):
                 # h1 = h1.permute(0, 2, 3, 1)
 
                 # extra term to compute full Hessian
-                N, _, _, m = d2fd2x.shape
-                h2 = d2fd2x.reshape(N, -1, m) @ dgdf.reshape(N, m, -1)
-                h2 = self.h * h2.reshape(h1.shape)
+                h2 = d2fd2x @ dgdf.unsqueeze(1)
+                # N, _, _, m = d2fd2x.shape
+                # h2 = d2fd2x.reshape(N, -1, m) @ dgdf.reshape(N, m, -1)
+                # h2 = self.h * h2.reshape(h1.shape)
 
                 # combine
                 d2gd2x = h1 + h2
