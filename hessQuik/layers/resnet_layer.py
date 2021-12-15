@@ -3,8 +3,6 @@ from hessQuik.layers import hessQuikLayer
 import hessQuik.activations as act
 from hessQuik.layers import singleLayer
 
-from line_profiler_pycharm import profile
-
 
 class resnetLayer(hessQuikLayer):
     """
@@ -84,25 +82,12 @@ class resnetLayer(hessQuikLayer):
                 # TODO: compare timings for h_dfdx on CPU and GPU
                 h_dfdx = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
 
-                # h_dfdx = self.h * dfdx
-                # idx = torch.arange(dfdx.shape[-1])
-                # h_dfdx[:, idx, idx] += 1.0
-
                 # Gauss-Newton approximation
                 h1 = (h_dfdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ h_dfdx.permute(0, 2, 1).unsqueeze(1))
                 h1 = h1.permute(0, 2, 3, 1)
 
-                # h1 = d2gd2f.permute(0, 3, 1, 2) @ dfdx.permute(0, 2, 1).unsqueeze(1)
-                # h1 += dfdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2)
-                # h1 += d2gd2f.permute(0, 3, 1, 2)
-                # h1 = h1.permute(0, 2, 3, 1)
-
                 # extra term to compute full Hessian
                 h2 = d2fd2x @ dgdf.unsqueeze(1)
-                # N, _, _, m = d2fd2x.shape
-                # h2 = d2fd2x.reshape(N, -1, m) @ dgdf.reshape(N, m, -1)
-                # h2 = self.h * h2.reshape(h1.shape)
-
                 # combine
                 d2gd2x = h1 + h2
 
