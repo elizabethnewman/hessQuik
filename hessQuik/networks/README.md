@@ -4,7 +4,13 @@ Every hessQuik network is constructed using the ```NN``` wrapper.  For example,
 ```python
 layer = lay.singleLayer(3, 4)
 f = net.NN(layer)
+
+nex = 100
+x = torch.randn(nex, net.dim_input())
+f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=True)
 ```
+
+Unless specified by the user, forward and backward mode is automatically selected based on the dimensions of the input and output features.  If ```net.dim_input() < net.dim_output()```, then derviatives are computed in forward mode. 
 
 ### Options
 For convenience, we provide some commonly-used network architectures

@@ -10,9 +10,9 @@ sigma, dsigma, d2sigma = hessQuikActivationFunction(x, do_gradient=True, do_Hess
 New activation functions inherit the attributes and methods from ```hessQuikActivationFunction```.
 The methods required to construct a new hessQuik activation layer are the following:
 ```python
-def forward(*args, **kwargs):              # apply the activation function, call compute_derivatives if forward_mode = True
-def compute_derivatives(*args, **kwargs):  # method to compute derivatives, used for forward and backward mode 
+def forward(self, *args, **kwargs):              # apply the activation function, call compute_derivatives if forward_mode = True
+def compute_derivatives(self, *args, **kwargs):  # method to compute derivatives, used for forward and backward mode 
 ```
-There is an additional method called ```backward``` that is automated in superclass.
+There is an additional method called ```backward``` that is automated when inheriting ```hessQuikActivationFunction```.
 
 To test new activation functions, add the appropriate test to ```tests/test_activations.py```. 

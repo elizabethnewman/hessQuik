@@ -60,10 +60,6 @@ class singleLayer(hessQuikLayer):
             if do_Hessian:
                 d2fd2x = (d2sig.unsqueeze(1) * self.K).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
 
-                # TODO: compare alternative computation - roughly the same amount of time to compute
-                # d2fd2x = (d2sig.unsqueeze(-1).unsqueeze(-1) * (self.K.T.unsqueeze(-1) @ self.K.T.unsqueeze(1)))
-                # d2fd2x = d2fd2x.permute(0, 2, 3, 1)
-
                 # Gauss-Newton approximation
                 if d2ud2x is not None:
                     d2fd2x = dudx.unsqueeze(1) @ (d2fd2x.permute(0, 3, 1, 2) @ dudx.permute(0, 2, 1).unsqueeze(1))

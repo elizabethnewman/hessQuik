@@ -20,7 +20,7 @@ class resnetLayer(hessQuikLayer):
     """
 
     def __init__(self, width, h=1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
-                 device=None, dtype=None, reverse_mode=None):
+                 device=None, dtype=None):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(resnetLayer, self).__init__()
 
@@ -61,35 +61,22 @@ class resnetLayer(hessQuikLayer):
         return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-        d2gd2x = None
-        if not do_Hessian:
+        dgdx, d2gd2x = self.layer.backward(do_Hessian=do_Hessian, dgdf=dgdf,
+                                           d2gd2f=self.h * d2gd2f if d2gd2f is not None else None)
 
-            dgdx = self.layer.backward(do_Hessian=False, dgdf=dgdf, d2gd2f=None)[0]
-
-            if dgdf is None:
-                dgdx = torch.eye(self.width, dtype=dgdx.dtype, device=dgdx.device) + self.h * dgdx
-            else:
-                dgdx = dgdf + self.h * dgdx
-        else:
-            dfdx, d2fd2x = self.layer.backward(do_Hessian=do_Hessian, dgdf=None, d2gd2f=None)[:2]
-
-            dgdx = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
-            if dgdf is not None:
-                dgdx = dgdx @ dgdf
-
-            d2gd2x = self.h * d2fd2x
+        if do_Hessian:
+            d2gd2x *= self.h
             if d2gd2f is not None:
-                # TODO: compare timings for h_dfdx on CPU and GPU
-                h_dfdx = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
+                dsig, _ = self.layer.act.backward(do_Hessian=False)  # TODO: this is computed in layer.backward
+                h3 = (dsig.unsqueeze(1) * self.layer.K).unsqueeze(1) @ (self.h * d2gd2f)
+                d2gd2x += d2gd2f + (h3 + h3.permute(0, 2, 1, 3))
 
-                # Gauss-Newton approximation
-                h1 = (h_dfdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ h_dfdx.permute(0, 2, 1).unsqueeze(1))
-                h1 = h1.permute(0, 2, 3, 1)
-
-                # extra term to compute full Hessian
-                h2 = d2fd2x @ dgdf.unsqueeze(1)
-                # combine
-                d2gd2x = h1 + h2
+        # finish computing gradient
+        dgdx *= self.h
+        if dgdf is None:
+            dgdx += torch.eye(self.width, dtype=dgdx.dtype, device=dgdx.device)
+        else:
+            dgdx += dgdf
 
         return dgdx, d2gd2x
 
@@ -109,8 +96,8 @@ if __name__ == '__main__':
 
     f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=True, forward_mode=False)
 
-    # print('======= FORWARD =======')
-    # input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
-    #
-    # print('======= BACKWARD =======')
-    # input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
+    print('======= FORWARD =======')
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
+
+    print('======= BACKWARD =======')
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
