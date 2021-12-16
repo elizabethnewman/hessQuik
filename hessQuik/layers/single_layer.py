@@ -89,10 +89,13 @@ class singleLayer(hessQuikLayer):
 
             if d2gd2f is not None:
                 # Gauss-Newton approximation
+                # h1 = torch.sum(dgdx.unsqueeze(2).unsqueeze(-1) * d2gd2f.unsqueeze(1), dim=3)
+                # h1 = torch.sum(dgdx.unsqueeze(2).unsqueeze(-1) * h1.unsqueeze(1), dim=3)
                 h1 = (dgdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ dgdx.permute(0, 2, 1).unsqueeze(1))
                 h1 = h1.permute(0, 2, 3, 1)
 
                 # extra term to compute full Hessian
+                # h2 = torch.sum(dgdf.unsqueeze(1).unsqueeze(1) * d2gd2x.unsqueeze(4), dim=3)
                 h2 = d2gd2x @ dgdf.unsqueeze(1)
 
                 # combine
