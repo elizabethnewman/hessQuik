@@ -28,6 +28,13 @@ def input_derivative_check(f, x, do_Hessian=False, forward_mode=True, num_test=1
     # derivative check
     grad_check, hess_check = None, None
     E0, E1, E2 = [], [], []
+
+    if verbose:
+        headers = ('h', 'E0', 'E1')
+        if do_Hessian:
+            headers += ('E2',)
+        print(('{:<20s}' * len(headers)).format(*headers))
+
     for k in range(num_test):
         h = base ** (-k)
         ft, *_ = f(x + h * dx, do_gradient=False, do_Hessian=False)

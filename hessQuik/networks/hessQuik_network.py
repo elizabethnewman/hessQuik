@@ -9,7 +9,6 @@ class NN(nn.Sequential):
     Forward propagation through network composed of forward Hessian layers
     """
     def __init__(self, *args):
-
         super(NN, self).__init__(*args)
 
     def dim_input(self):
