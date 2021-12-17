@@ -20,7 +20,7 @@ fh, *_ = f(x + h * p, do_gradient=False, do_Hessian=False)
 ```
 If the derivatives are computed correctly, the Taylor approximation test will observe the following behavior. 
 Let ```h``` approach 0. Then, we should observe that 
-* The zeroth-order Taylor approximation to```fh``` about ```x``` approaches ```f0``` at the rate that ```h``` approaches 0.
-* The first-order Taylor approximation to ```fh``` about ```x``` approaches ```f0``` at the rate that ```h^2``` approaches 0.
-* The second-order Taylor approximation to ```fh``` about ```x``` approaches ```f0``` at the rate that ```h^3``` approaches 0.
+* The zeroth-order Taylor approximation to```fh``` about ```x``` approaches ```fh``` at the rate that ```h``` approaches 0.
+* The first-order Taylor approximation to ```fh``` about ```x``` approaches ```fh``` at the rate that ```h^2``` approaches 0.
+* The second-order Taylor approximation to ```fh``` about ```x``` approaches ```fh``` at the rate that ```h^3``` approaches 0.
 
