@@ -28,6 +28,8 @@ parser.add_argument('--network-wrapper',    type=str,               default='hes
                     help='network wrapper from ("hessQuiK", "PytorchAD", "PytorchHessian") (default: "hessQuiK")')
 parser.add_argument('--save',               action='store_true',    default=False,
                     help='save results')
+parser.add_argument('--verbose',            action='store_true',    default=False,
+                    help='print mean results')
 args = parser.parse_args()
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -67,6 +69,11 @@ warm_up = timing_test(in_feature_range, out_feature_range, nex,
 results = timing_test(in_feature_range, out_feature_range, nex,
                       num_trials=num_trials, width=width, depth=depth,
                       network_wrapper=network_wrapper,  network_type=network_type, device=device, clear_memory=True)
+
+if args.verbose:
+    print('in_feature_range: ', results['in_feature_range'])
+    print('out_feature_range: ', results['out_feature_range'])
+    print('mean timing (in features x out_features):\n', results['timing_trials_mean'].tolist())
 
 # -------------------------------------------------------------------------------------------------------------------- #
 if args.save:
