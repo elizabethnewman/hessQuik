@@ -21,7 +21,7 @@ def dim_outout(self):              # return the dimension of the output from the
 def forward(self, *args, **kwargs):  # propagate through network and compute derivatives in either forward or backward more
 def backward(self, **kwargs):        # method to compute derivatives in backward mode; this method will be called in forward()
 ```
-To test new layers, add the appropriate test to ```tests/test_layers.py```. 
+To test new layers, add the appropriate test to [tests/test_layers.py](https://github.com/elizabethnewman/hessQuik/tree/main/hessQuik/tests). 
 
 
 

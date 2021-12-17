@@ -43,4 +43,4 @@ The ```NNPytorchAD``` wrapper using the implementation from [CP-Flow](https://gi
 ### For Contributors
 To create new networks, you should inherit the attributes and methods from ```NN```.  You should not need to rewrite the ```NN``` methods, only change the list of layers and networks as inputs.
 
-To test new networks, add the appropriate tests in ```tests/test_networks.py```.
+To test new networks, add the appropriate tests in [tests/test_networks.py](https://github.com/elizabethnewman/hessQuik/tree/main/hessQuik/tests).

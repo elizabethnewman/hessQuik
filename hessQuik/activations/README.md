@@ -15,4 +15,4 @@ def compute_derivatives(self, *args, **kwargs):  # method to compute derivatives
 ```
 There is an additional method called ```backward``` that is automated when inheriting ```hessQuikActivationFunction```.
 
-To test new activation functions, add the appropriate test to ```tests/test_activations.py```. 
+To test new activation functions, add the appropriate test to [tests/test_activations.py](https://github.com/elizabethnewman/hessQuik/tree/main/hessQuik/tests). 
