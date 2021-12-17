@@ -61,22 +61,54 @@ class resnetLayer(hessQuikLayer):
         return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-        dgdx, d2gd2x = self.layer.backward(do_Hessian=do_Hessian, dgdf=dgdf,
-                                           d2gd2f=self.h * d2gd2f if d2gd2f is not None else None)
+        d2gd2x = None
+        if not do_Hessian:
 
-        if do_Hessian:
-            d2gd2x *= self.h
-            if d2gd2f is not None:
-                dsig, _ = self.layer.act.backward(do_Hessian=False)  # TODO: this is computed in layer.backward
-                h3 = (dsig.unsqueeze(1) * self.layer.K).unsqueeze(1) @ (self.h * d2gd2f)
-                d2gd2x += d2gd2f + (h3 + h3.permute(0, 2, 1, 3))
+            dgdx = self.layer.backward(do_Hessian=False, dgdf=dgdf, d2gd2f=None)[0]
 
-        # finish computing gradient
-        dgdx *= self.h
-        if dgdf is None:
-            dgdx += torch.eye(self.width, dtype=dgdx.dtype, device=dgdx.device)
+            if dgdf is None:
+                dgdx = torch.eye(self.width, dtype=dgdx.dtype, device=dgdx.device) + self.h * dgdx
+            else:
+                dgdx = dgdf + self.h * dgdx
         else:
-            dgdx += dgdf
+            dfdx, d2fd2x = self.layer.backward(do_Hessian=do_Hessian, dgdf=None, d2gd2f=None)[:2]
+
+            dgdx = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
+            if dgdf is not None:
+                dgdx = dgdx @ dgdf
+
+            # d2gd2x = self.h * d2fd2x
+            if d2gd2f is None:
+                d2gd2x = self.h * d2fd2x
+            else:
+                # TODO: compare timings for h_dfdx on CPU and GPU
+                h_dfdx = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
+
+                # Gauss-Newton approximation
+                h1 = (h_dfdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ h_dfdx.permute(0, 2, 1).unsqueeze(1))
+                h1 = h1.permute(0, 2, 3, 1)
+
+                # extra term to compute full Hessian
+                h2 = d2fd2x @ dgdf.unsqueeze(1)
+                # combine
+                d2gd2x = h1 + self.h * h2
+
+        # dgdx, d2gd2x = self.layer.backward(do_Hessian=do_Hessian, dgdf=dgdf,
+        #                                    d2gd2f=self.h * d2gd2f if d2gd2f is not None else None)
+        #
+        # if do_Hessian:
+        #     d2gd2x *= self.h
+        #     if d2gd2f is not None:
+        #         dsig, _ = self.layer.act.backward(do_Hessian=False)  # TODO: this is computed in layer.backward
+        #         h3 = (dsig.unsqueeze(1) * self.layer.K).unsqueeze(1) @ (self.h * d2gd2f)
+        #         d2gd2x += d2gd2f + (h3 + h3.permute(0, 2, 1, 3))
+        #
+        # # finish computing gradient
+        # dgdx *= self.h
+        # if dgdf is None:
+        #     dgdx += torch.eye(self.width, dtype=dgdx.dtype, device=dgdx.device)
+        # else:
+        #     dgdx += dgdf
 
         return dgdx, d2gd2x
 
