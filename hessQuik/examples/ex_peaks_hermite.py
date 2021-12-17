@@ -2,7 +2,7 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
-from peaks import peaks
+from hessQuik.utils import peaks
 from time import time
 import numpy as np
 import matplotlib.pyplot as plt

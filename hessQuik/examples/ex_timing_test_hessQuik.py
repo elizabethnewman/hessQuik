@@ -1,5 +1,5 @@
 import torch
-from setup_timing_test import timing_test
+from hessQuik.utils import timing_test
 
 in_feature_range = (2 ** torch.arange(0, 5)).tolist()
 out_feature_range = (2 ** torch.arange(0, 1)).tolist()
@@ -13,7 +13,8 @@ seed = 1234
 torch.manual_seed(seed)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-network_type = 'hessQuik'
+network_wrapper = 'hessQuik'
+network_type = 'resnet'
 print(network_type)
 
 # warm up
