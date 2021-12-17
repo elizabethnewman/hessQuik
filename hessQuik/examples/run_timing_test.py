@@ -13,13 +13,13 @@ parser.add_argument('--num-input',      type=int,               default=1,      
 parser.add_argument('--num-output',     type=int,               default=1,              metavar='m',
                     help='number of input features by powers of 2; start from 2^0 (default: 1 input features (2^0,)')
 parser.add_argument('--num-examples',   type=int,               default=1,              metavar='e',
-                    help='number of input features by powers of 2; start from 2^0 (default: 1 input features (10^1,)')
+                    help='number of input features by powers of 10; start from 10^1 (default: 1 input features (10^1,)')
 parser.add_argument('--num-trials',     type=int,               default=10,             metavar='N',
                     help='number of trials (default: 10)')
 parser.add_argument('--seed',           type=int,               default=42,             metavar='s',
                     help='random seed (default: 42)')
-parser.add_argument('--width',          type=int,               default=20,             metavar='w',
-                    help='width of network (default: 20)')
+parser.add_argument('--width',          type=int,               default=16,             metavar='w',
+                    help='width of network (default: 16)')
 parser.add_argument('--depth',          type=int,               default=4,              metavar='d',
                     help='depth of network (default: 4)')
 parser.add_argument('--network-type',   type=str,               default='hessQuik',     metavar='t',

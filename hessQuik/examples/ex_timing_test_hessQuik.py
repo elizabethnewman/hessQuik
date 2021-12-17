@@ -4,7 +4,7 @@ from setup_timing_test import timing_test
 in_feature_range = (2 ** torch.arange(1, 11)).tolist()
 out_feature_range = (2 ** torch.arange(0, 1)).tolist()
 nex_range = [10]
-width = 20
+width = 16
 depth = 4
 num_trials = 10
 seed = 1234
