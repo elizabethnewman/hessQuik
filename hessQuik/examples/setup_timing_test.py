@@ -42,9 +42,9 @@ def timing_test_forward(f, x, num_trials=10, clear_memory=True):
         total_time[i] = t1_stop - t1_start
 
     if clear_memory:
-        torch.cuda.empty_cache()
         del f, x
         gc.collect()
+        torch.cuda.empty_cache()
 
     return total_time
 
@@ -73,9 +73,6 @@ def timing_test(in_feature_range, out_feature_range, nex_range, num_trials=10, w
                 timing_trials[idx_in, idx_out, idx_nex] = total_time
                 timing_trials_mean[idx_in, idx_out, idx_nex] = torch.mean(total_time).item()
                 timing_trials_std[idx_in, idx_out, idx_nex] = torch.std(total_time).item()
-
-                del f, x
-                gc.collect()
 
     results = {'timing_trials': timing_trials,
                'timing_trials_mean': timing_trials_mean,
