@@ -2,7 +2,7 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
-from time import time
+import time
 import gc
 
 
@@ -32,13 +32,13 @@ def create_network(in_features, out_features, width=20, depth=4,
     return f, x_requires_grad
 
 
-def timing_test_forward(f, x, num_trials=10, clear_memory=True):
+def timing_test_cpu(f, x, num_trials=10, clear_memory=True):
 
-    total_time = torch.zeros(num_trials)
-    for i in range(num_trials):
-        t1_start = time()
+    total_time = torch.zeros(num_trials + 1)
+    for i in range(num_trials + 1):
+        t1_start = time.perf_counter()
         f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=True)
-        t1_stop = time()
+        t1_stop = time.perf_counter()
         total_time[i] = t1_stop - t1_start
 
     if clear_memory:
@@ -46,7 +46,25 @@ def timing_test_forward(f, x, num_trials=10, clear_memory=True):
         gc.collect()
         torch.cuda.empty_cache()
 
-    return total_time
+    return total_time[1:]
+
+
+def timing_test_gpu(f, x, num_trials=10, clear_memory=True):
+
+    total_time = torch.zeros(num_trials + 1)
+    for i in range(num_trials + 1):
+        t1_start = time.perf_counter()
+        f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=True)
+        torch.cuda.synchronize()
+        t1_stop = time.perf_counter()
+        total_time[i] = t1_stop - t1_start
+
+    if clear_memory:
+        del f, x
+        gc.collect()
+        torch.cuda.empty_cache()
+
+    return total_time[1:]
 
 
 def timing_test(in_feature_range, out_feature_range, nex_range, num_trials=10, width=20, depth=4,
@@ -68,7 +86,10 @@ def timing_test(in_feature_range, out_feature_range, nex_range, num_trials=10, w
                 x.requires_grad = x_requires_grad
 
                 # main test
-                total_time = timing_test_forward(f, x, num_trials=num_trials, clear_memory=clear_memory)
+                if device == 'cpu':
+                    total_time = timing_test_cpu(f, x, num_trials=num_trials, clear_memory=clear_memory)
+                else:
+                    total_time = timing_test_gpu(f, x, num_trials=num_trials, clear_memory=clear_memory)
 
                 timing_trials[idx_in, idx_out, idx_nex] = total_time
                 timing_trials_mean[idx_in, idx_out, idx_nex] = torch.mean(total_time).item()
