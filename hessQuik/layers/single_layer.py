@@ -49,9 +49,8 @@ class singleLayer(hessQuikLayer):
     def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
 
         (dfdx, d2fd2x) = (None, None)
-        f, dsig, d2sig = self.act.forward(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian,
-                                          forward_mode=True if forward_mode is True else None)
-
+        f, dsig, d2sig = self.act(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian,
+                                  forward_mode=True if forward_mode is True else None)
         # ------------------------------------------------------------------------------------------------------------ #
         # forward mode
         if (do_gradient or do_Hessian) and forward_mode is True:
@@ -93,8 +92,9 @@ class singleLayer(hessQuikLayer):
                 h1 = h1.permute(0, 2, 3, 1)
 
                 # extra term to compute full Hessian
+                # h2 = (self.K.T.unsqueeze(-1) @ self.K.T.unsqueeze(1)).permute(1, 2, 0).unsqueeze(0) @ (d2sig.unsqueeze(-1) * dgdf).unsqueeze(1)
+                # h2 = ((self.K.T.unsqueeze(-1) @ self.K.T.unsqueeze(1)).unsqueeze(0) * (d2sig.unsqueeze(-1) * dgdf).unsqueeze(-1)).sum(1).unsqueeze(-1)
                 h2 = d2gd2x @ dgdf.unsqueeze(1)
-
                 # combine
                 d2gd2x = h1 + h2
 

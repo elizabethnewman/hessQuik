@@ -117,7 +117,7 @@ if __name__ == '__main__':
     nex = 11
     d = 3
     ms = [2, 7, 5]
-    m = 1
+    m = 8
     x = torch.randn(nex, d)
 
     f = NN(lay.singleLayer(d, ms[0], act=act.softplusActivation()),
