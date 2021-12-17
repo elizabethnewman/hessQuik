@@ -73,7 +73,7 @@ results = timing_test(in_feature_range, out_feature_range, nex,
 if args.verbose:
     print('in_feature_range: ', results['in_feature_range'])
     print('out_feature_range: ', results['out_feature_range'])
-    print('out_feature_range: ', results['timing_trials_mean'].shape)
+    print('size of mean timing: ', results['timing_trials_mean'].shape)
     print('mean timing (in features x out_features):\n', results['timing_trials_mean'])
 
 # -------------------------------------------------------------------------------------------------------------------- #
