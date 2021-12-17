@@ -1,18 +1,16 @@
 # hessQuik
 
+A lightweight package for fast, GPU-accelerated computation of gradients and Hessians of feed-forward networks.
+
 ## Installation
 
-### For Users: Install with **pip**
+### For Users: Install with ```pip```
 
 ```console
 python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
 
-[comment]: <> (virtualenv -p python env_name)
-
-[comment]: <> (source env_name/bin/activate)
-
-### For Contributors: Clone with **git**
+### For Contributors: Clone with ```git```
 
 ```console
 git clone https://github.com/elizabethnewman/hessQuik.git
@@ -46,7 +44,7 @@ fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
 
 
 ## Examples
-To make the code accessible, we provide some Google Colaboratory notebooks.
+To make the code accessible, we provide some introductory Google Colaboratory notebooks.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1GCUSR9fGhQ9PoqfPxv8qRfqf88_ibyUA?usp=sharing) Practical Use: Hermite Interpolation
 

@@ -24,3 +24,6 @@ Let ```h``` approach 0. Then, we should observe that
 * The first-order Taylor approximation to ```fh``` about ```x``` approaches ```fh``` at the rate that ```h^2``` approaches 0.
 * The second-order Taylor approximation to ```fh``` about ```x``` approaches ```fh``` at the rate that ```h^3``` approaches 0.
 
+We provide examples of passing the Taylor approximation test in the notebook:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1842TWdILPNhiqLMw9JMZjdZ6T-B6hzul?usp=sharing) Tutorial: Constructing and Testing ```hessQuik``` Layers

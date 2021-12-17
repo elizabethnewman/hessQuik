@@ -2,7 +2,7 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
-from time import perf_counter, process_time
+from time import time, perf_counter, process_time
 import gc
 
 
@@ -12,6 +12,8 @@ def create_network(in_features, out_features, width=20, depth=4,
     f = net.NN(lay.singleLayer(in_features, width, act=act.antiTanhActivation()),
                net.resnetNN(width, depth, h=0.5, act=act.softplusActivation()),
                lay.singleLayer(width, out_features, act=act.identityActivation())).to(device)
+
+    # f = net.fullyConnectedNN([in_features] + depth * [width] + [out_features], act=act.tanhActivation())
 
     if network_type == 'hessQuik':
         x_requires_grad = False
@@ -34,9 +36,9 @@ def timing_test_forward(f, x, num_trials=10, clear_memory=True):
 
     total_time = torch.zeros(num_trials)
     for i in range(num_trials):
-        t1_start = process_time()
+        t1_start = time()
         f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=True)
-        t1_stop = process_time()
+        t1_stop = time()
         total_time[i] = t1_stop - t1_start
 
     if clear_memory:

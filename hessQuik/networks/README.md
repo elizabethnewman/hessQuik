@@ -38,9 +38,9 @@ We offer some additional wrappers for comparison
 fAD = net.NNPytorchAD(f)         # use PyTorch automatic differentiation
 fHess = net.NNPytorchHessian(f)  # use PyTorch hessian function
 ```
-The ```NNPytorchAD``` wrapper using the implementation from [CP-Flow](https://github.com/CW-Huang/CP-Flow).  The ```NNPytorchHessian``` wrapper is only available for networks with scalar outputs.
+The ```NNPytorchAD``` wrapper using the implementation from [CP-Flow](https://github.com/CW-Huang/CP-Flow).  Currently, the ```NNPytorchHessian``` wrapper is only available for networks with scalar outputs.
 
-### For Developers
+### For Contributors
 To create new networks, you should inherit the attributes and methods from ```NN```.  You should not need to rewrite the ```NN``` methods, only change the list of layers and networks as inputs.
 
 To test new networks, add the appropriate tests in ```tests/test_networks.py```.
