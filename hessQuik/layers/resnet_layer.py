@@ -93,23 +93,6 @@ class resnetLayer(hessQuikLayer):
                 # combine
                 d2gd2x = h1 + self.h * h2
 
-        # dgdx, d2gd2x = self.layer.backward(do_Hessian=do_Hessian, dgdf=dgdf,
-        #                                    d2gd2f=self.h * d2gd2f if d2gd2f is not None else None)
-        #
-        # if do_Hessian:
-        #     d2gd2x *= self.h
-        #     if d2gd2f is not None:
-        #         dsig, _ = self.layer.act.backward(do_Hessian=False)  # TODO: this is computed in layer.backward
-        #         h3 = (dsig.unsqueeze(1) * self.layer.K).unsqueeze(1) @ (self.h * d2gd2f)
-        #         d2gd2x += d2gd2f + (h3 + h3.permute(0, 2, 1, 3))
-        #
-        # # finish computing gradient
-        # dgdx *= self.h
-        # if dgdf is None:
-        #     dgdx += torch.eye(self.width, dtype=dgdx.dtype, device=dgdx.device)
-        # else:
-        #     dgdx += dgdf
-
         return dgdx, d2gd2x
 
     def extra_repr(self) -> str:
