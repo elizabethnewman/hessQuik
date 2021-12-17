@@ -2,7 +2,7 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
-from time import time, perf_counter, process_time
+from time import time
 import gc
 
 
@@ -10,7 +10,7 @@ def create_network(in_features, out_features, width=20, depth=4,
                    network_type='hessQuik', device='cpu'):
 
     f = net.NN(lay.singleLayer(in_features, width, act=act.antiTanhActivation()),
-               net.resnetNN(width, depth, h=0.5, act=act.softplusActivation()),
+               net.resnetNN(width, depth, h=0.5, act=act.tanhActivation()),
                lay.singleLayer(width, out_features, act=act.identityActivation())).to(device)
 
     # f = net.fullyConnectedNN([in_features] + depth * [width] + [out_features], act=act.tanhActivation())
