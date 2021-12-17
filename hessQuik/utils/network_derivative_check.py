@@ -4,13 +4,13 @@ import hessQuik
 from hessQuik.utils import convert_to_base, extract_data, insert_data
 
 
-def network_derivative_check(f, x, do_Hessian=False, num_test=15, base=2, tol=0.1, verbose=False):
+def network_derivative_check(f, x, do_Hessian=False, forward_mode=True, num_test=15, base=2, tol=0.1, verbose=False):
 
     loss_df, loss_d2f = 0.0, 0.0
     dg0, d2g0 = None, None
 
     # initial evaluation
-    f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=do_Hessian)
+    f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=do_Hessian, forward_mode=forward_mode)
     g0 = torch.randn_like(f0).detach()
     loss_f = 0.5 * torch.norm(f0 - g0) ** 2
 

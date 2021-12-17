@@ -1,16 +1,26 @@
 ## Options
 
-We offer two types of derivative tests for the input of the network.
+We offer a derivative test for the input of the network and a derivative test for the weights/parameters of the network.
 ```python
-def input_derivative_check(*args, **kwargs):
-def input_derivative_check_finite_difference(*args, **kwargs):
+def input_derivative_check(f, x, do_Hessian=False, forward_mode=True, **kwargs):
+def network_derivative_check(f, x, do_Hessian=False, forward_mode=True, **kwargs)
 ```
-The first uses a Taylor approximation to determine the accuracy of the derivatives.  
+The first uses a Taylor approximation to determine the accuracy of the derivatives.  This is the test we use primarily and that we recommend.  We provide some intuition for this test below.
 
-### Taylor Series Test 
-For example,
-If our gradient is correct, then if we perturb our input $\mathbf{x}$ by unit vector $\mathbf{p}$ with step size $h$, then by Taylor's Theorem,
-````latex
-\left\|f(\mathbf{x}) + h \frac{\partial f(\mathbf{x})}{\partial \mathbf{x}}^\top \mathbf{p} - f(\mathbf{x} + h\mathbf{p})\right\| = \mathcal{O}(h^2).
-````
-If we have computed the correct gradient, $\frac{\partial f(\mathbf{x})}{\partial \mathbf{x}}$, then as $h\to 0$, the first-order error (left-hand side) also goes to zero at a rate of $h^2$.  This means if we divide $h$ by $2$ (smaller perturbation), then we should see the first-order error decrease by a factor of $4$. Similar logic can be applied for the zeroth-order (no derivative information) and second-order (Hessian information) error.
+We also provide a finite difference check for the derivatives of the network with respect to the inputs.  This test tends to be slower than the Taylor series test, but can be useful for debugging. 
+
+### Taylor Approximation Test 
+For example, suppose we compute the value and derivatives for a given input ```x``` via
+```python
+f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=True)
+```
+Suppose we perturb the input using a normalized tensor ```p``` and a step size ```h``` via
+```python
+fh, *_ = f(x + h * p, do_gradient=False, do_Hessian=False)
+```
+If the derivatives are computed correctly, the Taylor approximation test will observe the following behavior. 
+Let ```h``` approach 0. Then, we should observe that 
+* The zeroth-order Taylor approximation to```fh``` about ```x``` approaches ```f0``` at the rate that ```h``` approaches 0.
+* The first-order Taylor approximation to ```fh``` about ```x``` approaches ```f0``` at the rate that ```h^2``` approaches 0.
+* The second-order Taylor approximation to ```fh``` about ```x``` approaches ```f0``` at the rate that ```h^3``` approaches 0.
+

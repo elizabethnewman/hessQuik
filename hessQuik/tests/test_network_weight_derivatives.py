@@ -21,7 +21,8 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
         f = lay.singleLayer(d, 7, act=act.softplusActivation())
 
         print(self)
-        network_derivative_check(f, x, do_Hessian=True)
+        network_derivative_check(f, x, do_Hessian=True, forward_mode=True)
+        network_derivative_check(f, x, do_Hessian=True, forward_mode=False)
 
     def test_resnetNN(self):
         x = self.setup_data()
@@ -29,7 +30,8 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
         f = net.resnetNN(d, 4, act=act.softplusActivation())
 
         print(self)
-        network_derivative_check(f, x, do_Hessian=True)
+        network_derivative_check(f, x, do_Hessian=True, forward_mode=True)
+        network_derivative_check(f, x, do_Hessian=True, forward_mode=False)
 
     def test_blockNN(self):
         x = self.setup_data()
@@ -43,7 +45,8 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
                    )
 
         print(self)
-        network_derivative_check(f, x, do_Hessian=True)
+        network_derivative_check(f, x, do_Hessian=True, forward_mode=True)
+        network_derivative_check(f, x, do_Hessian=True, forward_mode=False)
 
     def test_ICNN(self):
         x = self.setup_data()
@@ -55,7 +58,8 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
                    lay.quadraticICNNLayer(d, ms[-1], 2))
 
         print(self)
-        network_derivative_check(f, x, do_Hessian=True)
+        network_derivative_check(f, x, do_Hessian=True, forward_mode=True)
+        network_derivative_check(f, x, do_Hessian=True, forward_mode=False)
 
 
 if __name__ == '__main__':
