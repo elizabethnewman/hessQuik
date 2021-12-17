@@ -2,7 +2,7 @@
 
 num_input=10
 num_output=4
-num_examples=1
+num_examples=10
 num_trials=10
 
 for type in hessQuik PytorchAD
