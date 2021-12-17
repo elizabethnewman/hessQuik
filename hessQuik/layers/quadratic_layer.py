@@ -36,21 +36,13 @@ class quadraticLayer(hessQuikLayer):
     def dim_output(self):
         return 1
 
-    @property
-    def reverse_mode(self):
-        return self._reverse_mode
-
-    @reverse_mode.setter
-    def reverse_mode(self, reverse_mode):
-        self._reverse_mode = reverse_mode
-
     def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
 
         (df, d2f) = (None, None)
         AtA = self.A.t() @ self.A
         f = u @ self.v + 0.5 * torch.sum((u @ AtA) * u, dim=1) + self.mu
 
-        if (do_gradient or do_Hessian) and self.reverse_mode is False:
+        if (do_gradient or do_Hessian) and forward_mode is True:
             df = self.v.unsqueeze(0) + u @ AtA
 
             if do_Hessian:
