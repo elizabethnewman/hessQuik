@@ -38,7 +38,8 @@ class softplusActivation(hessQuikActivationFunction):
         idx = (self.beta * x > self.threshold).nonzero(as_tuple=True)
         if len(idx[0]) > 0:
             dsigma[idx] = 1.0
-            d2sigma[idx] = 0.0
+            if do_Hessian:
+                d2sigma[idx] = 0.0
 
         return dsigma, d2sigma
 

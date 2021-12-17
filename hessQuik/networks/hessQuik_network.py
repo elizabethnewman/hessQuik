@@ -54,7 +54,7 @@ class NNPytorchAD(nn.Module):
 
     def forward(self, x, do_gradient=False, do_Hessian=False, **kwargs):
         (df, d2f) = (None, None)
-        f, *_ = self.net(x)
+        f, *_ = self.net(x, do_gradient=False, do_Hessian=False)
 
         if do_gradient or do_Hessian:
             f = f.view(x.shape[0], -1)
