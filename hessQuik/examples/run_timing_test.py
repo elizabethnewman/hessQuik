@@ -12,9 +12,11 @@ parser.add_argument('--num-input',          type=int,               default=1,  
                     help='number of input features by powers of 2; start from 2^0 (default: 1 input features (2^0,)')
 parser.add_argument('--num-output',         type=int,               default=1,              metavar='m',
                     help='number of input features by powers of 2; start from 2^0 (default: 1 input features (2^0,)')
-parser.add_argument('--num-examples',       type=int,               default=10,              metavar='e',
-                    help='number of examples')
+parser.add_argument('--num-examples',       type=int,               default=4,              metavar='e',
+                    help='number of threads (default: 4)')
 parser.add_argument('--num-trials',         type=int,               default=10,             metavar='N',
+                    help='number of trials (default: 10)')
+parser.add_argument('--num-threads',        type=int,               default=10,             metavar='N',
                     help='number of trials (default: 10)')
 parser.add_argument('--seed',               type=int,               default=42,             metavar='s',
                     help='random seed (default: 42)')
@@ -45,8 +47,9 @@ network_type = args.network_type
 network_wrapper = args.network_wrapper
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
+torch.set_num_threads(args.num_threads)
 print(args)
+print('number of computational threads: %d' % torch.get_num_threads())
 # -------------------------------------------------------------------------------------------------------------------- #
 # filename
 now = datetime.now()
