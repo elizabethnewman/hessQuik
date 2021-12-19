@@ -92,8 +92,6 @@ class singleLayer(hessQuikLayer):
                 h1 = h1.permute(0, 2, 3, 1)
 
                 # extra term to compute full Hessian
-                # h2 = (self.K.T.unsqueeze(-1) @ self.K.T.unsqueeze(1)).permute(1, 2, 0).unsqueeze(0) @ (d2sig.unsqueeze(-1) * dgdf).unsqueeze(1)
-                # h2 = ((self.K.T.unsqueeze(-1) @ self.K.T.unsqueeze(1)).unsqueeze(0) * (d2sig.unsqueeze(-1) * dgdf).unsqueeze(-1)).sum(1).unsqueeze(-1)
                 h2 = d2gd2x @ dgdf.unsqueeze(1)
                 # combine
                 d2gd2x = h1 + h2

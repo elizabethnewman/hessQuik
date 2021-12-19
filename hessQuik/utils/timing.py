@@ -11,22 +11,13 @@ def setup_device_and_gradient(f, network_wrapper='hessQuik', device='cpu'):
     # map to device
     f = f.to(device)
 
-    # determine if x requires gradient
-    if network_wrapper == 'hessQuik':
-        x_requires_grad = False
-
-    elif network_wrapper == 'PytorchAD':
+    if network_wrapper == 'PytorchAD':
         f = net.NNPytorchAD(f)
-        x_requires_grad = True
 
-    elif network_wrapper == 'PytorchHessian':
+    if network_wrapper == 'PytorchHessian':
         f = net.NNPytorchHessian(f)
-        x_requires_grad = True
 
-    else:
-        raise ValueError('network_wrapper must be "hessQuik", "PytorchAD", or "PytorchHessian"')
-
-    return f, x_requires_grad
+    return f
 
 
 def setup_resnet(in_features, out_features, width=20, depth=4):
@@ -62,9 +53,9 @@ def setup_network(in_features, out_features, width, depth, network_type='resnet'
     else:
         raise ValueError('network_type must be "resnet", "fully_connected", or "icnn"')
 
-    f, x_requires_grad = setup_device_and_gradient(f, network_wrapper=network_wrapper, device=device)
+    f = setup_device_and_gradient(f, network_wrapper=network_wrapper, device=device)
 
-    return f, x_requires_grad
+    return f
 
 
 def timing_test_cpu(f, x, num_trials=10, clear_memory=True):
@@ -114,12 +105,11 @@ def timing_test(in_feature_range, out_feature_range, nex=10, num_trials=10, widt
         for idx_in, in_features in enumerate(in_feature_range):
 
             # setup network
-            f, x_requires_grad = setup_network(in_features, out_features, width, depth,  network_type=network_type,
-                                               network_wrapper=network_wrapper, device=device)
+            f = setup_network(in_features, out_features, width, depth,  network_type=network_type,
+                              network_wrapper=network_wrapper, device=device)
 
             # setup data
             x = torch.randn(nex, in_features, device=device)
-            x.requires_grad = x_requires_grad
 
             # main test
             if device == 'cpu':

@@ -3,3 +3,4 @@ from .input_derivative_check import input_derivative_check, input_derivative_che
 from .network_derivative_check import network_derivative_check
 from .timing import timing_test
 from .data import peaks
+from .training import train_one_epoch, test, print_headers

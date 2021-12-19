@@ -52,8 +52,11 @@ class NNPytorchAD(nn.Module):
         self.net = net
         self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, **kwargs):
+    def forward(self, x, do_gradient=False, do_Hessian=False):
         (df, d2f) = (None, None)
+        if do_gradient or do_Hessian:
+            x.requires_grad = True
+
         f, *_ = self.net(x, do_gradient=False, do_Hessian=False)
 
         if do_gradient or do_Hessian:
@@ -88,8 +91,11 @@ class NNPytorchHessian(nn.Module):
         self.net = net
         self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, **kwargs):
+    def forward(self, x, do_gradient=False, do_Hessian=False):
         (df, d2f) = (None, None)
+        if do_gradient or do_Hessian:
+            x.requires_grad = True
+
         f, *_ = self.net(x, do_gradient=False, do_Hessian=False)
 
         if f.squeeze().ndim > 1:
