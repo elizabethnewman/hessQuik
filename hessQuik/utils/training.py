@@ -99,4 +99,4 @@ def print_headers(do_gradient=True, do_Hessian=True, verbose=True, loss_weights=
         print(('{:<15s}{:<15s}' + 3 * ('{:<2s}{:<15s}' + (n_loss - 1) * '{:<15.2e}')).format(*weights))
         print(('{:<15s}{:<15s}' + 3 * ('{:<2s}' + n_loss * '{:<15s}')).format(*printouts))
 
-    return printouts_frmt
+    return headers, printouts, printouts_frmt
