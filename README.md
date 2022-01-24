@@ -4,16 +4,8 @@ A lightweight package for fast, GPU-accelerated computation of gradients and Hes
 
 ## Installation
 
-### For Users: Install with ```pip```
-
 ```console
 python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
-```
-
-### For Contributors: Clone with ```git```
-
-```console
-git clone https://github.com/elizabethnewman/hessQuik.git
 ```
 
 ### Dependencies
@@ -61,4 +53,15 @@ To make the code accessible, we provide some introductory Google Colaboratory no
 
 [Tutorial: Constructing and Testing ```hessQuik``` Layers](https://github.com/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikSingleLayerTutorial.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikSingleLayerTutorial.ipynb)
 
-## Contributing
+### Contributing
+
+To contribute to ```hessQuik```, follow these steps:
+1. [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the ```hessQuik``` repository
+2. Clone your fork using 
+```console
+git clone https://github.com/<username>/hessQuik.git
+```
+3. Contribute to your forked repository
+4. Create a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+If your code passes the numerical tests and is well-documented, your changes and/or additions will be merged in the main ```hessQuik``` repository.
