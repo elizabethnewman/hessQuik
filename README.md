@@ -16,6 +16,13 @@ python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 git clone https://github.com/elizabethnewman/hessQuik.git
 ```
 
+### Dependencies
+```python
+torch
+numpy
+```
+These dependencies are installed automatically with ```pip```. 
+
 ## Getting Started
 
 Once you have installed hessQuik, you can import as follows:
@@ -46,7 +53,7 @@ fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
 ## Examples
 To make the code accessible, we provide some introductory Google Colaboratory notebooks.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1GCUSR9fGhQ9PoqfPxv8qRfqf88_ibyUA?usp=sharing) Practical Use: Hermite Interpolation
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikPeaksHermiteInterpolation.ipynb) Practical Use: Hermite Interpolation
 
 [comment]: <> ([![Open In Colab]&#40;https://colab.research.google.com/assets/colab-badge.svg&#41;]&#40;https://colab.research.google.com/drive/1zTgU0pcZJMRmSL4Rgt_oNSYcBI2cIj04?usp=sharing&#41; Timing Test)
 
@@ -54,3 +61,4 @@ To make the code accessible, we provide some introductory Google Colaboratory no
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1842TWdILPNhiqLMw9JMZjdZ6T-B6hzul?usp=sharing) Tutorial: Constructing and Testing ```hessQuik``` Layers
 
+## Contributing
