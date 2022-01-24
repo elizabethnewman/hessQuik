@@ -65,3 +65,7 @@ git clone https://github.com/<username>/hessQuik.git
 4. Create a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
 If your code passes the numerical tests and is well-documented, your changes and/or additions will be merged in the main ```hessQuik``` repository.
+
+### Reporting Bugs
+
+If you notice an issue with this repository, please report it using [Github Issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues).  When reporting an implemetnation bug, include a small example that helps to reproduce the error.  The issue will be addressed as quickly as possible.
