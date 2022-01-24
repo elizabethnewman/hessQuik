@@ -2,73 +2,10 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
-from hessQuik.utils import peaks
+from hessQuik.utils import peaks, train_one_epoch, test
 from time import time
 import numpy as np
 import matplotlib.pyplot as plt
-
-
-# %% training functions
-def train_one_epoch(f, x, y, optimizer, batch_size=5, do_gradient=True, do_Hessian=True, loss_weights=(1.0, 1.0, 1.0)):
-    f.train()
-    n = x.shape[0]
-    b = batch_size
-    n_batch = n_train // b
-
-    loss_f, loss_df, loss_d2f = torch.zeros(1), torch.zeros(1), torch.zeros(1)
-
-    idx = torch.randperm(n)
-
-    running_loss, running_loss_f, running_loss_df, running_loss_d2f = 0.0, 0.0, 0.0, 0.0
-    for i in range(n_batch):
-        idxb = idx[i * b:(i + 1) * b]
-        xb, yfb, ydfb, yd2fb = x[idxb], y['f'][idxb], y['df'][idxb], y['d2f'][idxb]
-
-        optimizer.zero_grad()
-        fb, dfb, d2fb = f(xb, do_gradient=do_gradient, do_Hessian=do_Hessian)
-
-        loss_f = (0.5 / b) * torch.norm(fb - yfb) ** 2
-
-        if dfb is not None:
-            loss_df = (0.5 / b) * torch.norm(dfb - ydfb) ** 2
-        if d2fb is not None:
-            loss_d2f = (0.5 / b) * torch.norm(d2fb - yd2fb) ** 2
-
-        loss = loss_weights[0] * loss_f + loss_weights[1] * loss_df + loss_weights[2] * loss_d2f
-
-        # store running loss
-        running_loss_f += b * loss_f.item()
-        running_loss_df += b * loss_df.item()
-        running_loss_d2f += b * loss_d2f.item()
-        running_loss += b * loss.item()
-
-        # update network weights
-        loss.backward()
-        optimizer.step()
-
-    return running_loss / n, running_loss_f / n, running_loss_df / n, running_loss_d2f / n
-
-
-def test(f, x, y, do_gradient=True, do_Hessian=True, loss_weights=(1.0, 1.0, 1.0)):
-    f.eval()
-
-    loss_f, loss_df, loss_d2f = torch.zeros(1), torch.zeros(1), torch.zeros(1)
-    with torch.no_grad():
-        n = x.shape[0]
-        f0, df0, d2f0 = f(x, do_gradient=do_gradient, do_Hessian=do_Hessian)
-
-        loss_f = (0.5 / n) * torch.norm(f0 - y['f']) ** 2
-
-        if df0 is not None:
-            loss_df = (0.5 / n) * torch.norm(df0 - y['df']) ** 2
-
-        if d2f0 is not None:
-            loss_d2f = (0.5 / n) * torch.norm(d2f0 - y['d2f']) ** 2
-
-        loss = loss_weights[0] * loss_f + loss_weights[1] * loss_df + loss_weights[2] * loss_d2f
-
-    return loss.item(), loss_f.item(), loss_df.item(), loss_d2f.item()
-
 
 # define device
 device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')

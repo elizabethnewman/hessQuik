@@ -11,6 +11,6 @@ setup(
     author='Elizabeth Newman',
     author_email='elizabeth.newman@emory.edu',
     description='AD-free gradient and Hessian computations',
-    install_requires=['torch', 'numpy'],
-    extras_require={'interactive': ['matplotlib']}
+    install_requires=['torch'],
+    extras_require={'interactive': ['numpy', 'matplotlib']}
 )

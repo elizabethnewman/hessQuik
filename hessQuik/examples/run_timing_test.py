@@ -16,15 +16,15 @@ parser.add_argument('--num-examples',       type=int,               default=4,  
                     help='number of threads (default: 4)')
 parser.add_argument('--num-trials',         type=int,               default=10,             metavar='N',
                     help='number of trials (default: 10)')
-parser.add_argument('--num-threads',        type=int,               default=10,             metavar='N',
-                    help='number of trials (default: 10)')
+parser.add_argument('--num-threads',        type=int,               default=2,              metavar='N',
+                    help='number of threads (default: 2)')
 parser.add_argument('--seed',               type=int,               default=42,             metavar='s',
                     help='random seed (default: 42)')
 parser.add_argument('--width',              type=int,               default=16,             metavar='w',
                     help='width of network (default: 16)')
 parser.add_argument('--depth',              type=int,               default=4,              metavar='d',
                     help='depth of network (default: 4)')
-parser.add_argument('--network-type',       type=str,               default='resnet',     metavar='t',
+parser.add_argument('--network-type',       type=str,               default='resnet',       metavar='t',
                     help='type of network from ("resnet", "fully_connected", "icnn") (default: "resnet")')
 parser.add_argument('--network-wrapper',    type=str,               default='hessQuik',     metavar='t',
                     help='network wrapper from ("hessQuiK", "PytorchAD", "PytorchHessian") (default: "hessQuiK")')

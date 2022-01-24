@@ -9,11 +9,10 @@ python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
 
 ### Dependencies
-```python
-torch
-numpy
-```
 These dependencies are installed automatically with ```pip```. 
+* torch
+* 
+
 
 ## Getting Started
 
@@ -53,7 +52,7 @@ To make the code accessible, we provide some introductory Google Colaboratory no
 
 [Tutorial: Constructing and Testing ```hessQuik``` Layers](https://github.com/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikSingleLayerTutorial.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikSingleLayerTutorial.ipynb)
 
-### Contributing
+## Contributing
 
 To contribute to ```hessQuik```, follow these steps:
 1. [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the ```hessQuik``` repository
@@ -66,6 +65,6 @@ git clone https://github.com/<username>/hessQuik.git
 
 If your code passes the numerical tests and is well-documented, your changes and/or additions will be merged in the main ```hessQuik``` repository.
 
-### Reporting Bugs
+## Reporting Bugs
 
 If you notice an issue with this repository, please report it using [Github Issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues).  When reporting an implemetnation bug, include a small example that helps to reproduce the error.  The issue will be addressed as quickly as possible.
