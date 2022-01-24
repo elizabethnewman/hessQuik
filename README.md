@@ -63,7 +63,7 @@ git clone https://github.com/<username>/hessQuik.git
 3. Contribute to your forked repository
 4. Create a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
-If your code passes the numerical tests and is well-documented, your changes and/or additions will be merged in the main ```hessQuik``` repository.
+If your code passes the necessary numerical tests and is well-documented, your changes and/or additions will be merged in the main ```hessQuik``` repository. You can find examples of the tests used in each file and related unit tests the ```tests``` directory.
 
 ## Reporting Bugs
 

@@ -5,7 +5,6 @@ setup(
     name='hessQuik',
     version='0.0.1',
     packages=find_packages(),
-    # scripts=['hessQuik/examples/ex_timing_test_scalar_output.sh'],
     url='https://github.com/elizabethnewman/hessQuik',
     license='MIT',
     author='Elizabeth Newman',
