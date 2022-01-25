@@ -52,6 +52,8 @@ To make the code accessible, we provide some introductory Google Colaboratory no
 
 [Tutorial: Constructing and Testing ```hessQuik``` Layers](https://github.com/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikSingleLayerTutorial.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikSingleLayerTutorial.ipynb)
 
+[Timing Comparisons](https://github.com/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb)
+
 ## Contributing
 
 To contribute to ```hessQuik```, follow these steps:
