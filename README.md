@@ -11,7 +11,6 @@ python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ### Dependencies
 These dependencies are installed automatically with ```pip```. 
 * torch
-* 
 
 
 ## Getting Started
