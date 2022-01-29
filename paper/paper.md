@@ -1,5 +1,5 @@
 ---
-title: "'hessQuik': Fast gradient and Hessian computations of deep neural networks"
+title: "hessQuik: Fast Hessian computations of composition of functions"
 tags:
   - Python
   - Pytorch
