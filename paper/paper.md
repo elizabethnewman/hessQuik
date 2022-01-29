@@ -24,7 +24,6 @@ bibliography: paper.bib
 # aas-journal: Astrophysical Journal <- The name of the AAS journal.
 ---
 
-# macros
 \newcommand{\bfK}{\mathbf{K}}
 \newcommand{\bfb}{\mathbf{b}}
 \newcommand{\bfu}{\mathbf{u}}
@@ -81,7 +80,7 @@ Then, we compute the derivatives of subsequent layers using the following mappin
         \nabla_{\bfu_0}^2\bfu_{i+1} &= \nabla_{\bfu_i}^2g_{i+1}(\bfu_i) \times_1 \nabla_{\bfu_0}\bfu_{i} \times_2 \nabla_{\bfu_0}\bfu_{i}^\top \nonumber\\
 	&\qquad + \nabla_{\bfu_0}^2\bfu_i \times_3 \nabla_{\bfu_i}g_{i+1}(\bfu_i) &&\in \Rbb^{n_0\times n_0 \times n_{i+1}}\label{eq:Hessian_ui}
     \end{align}
-where $\times_k$ is the mode-$k$ product \cite{koldabader} and $\nabla_{\bfu_0} \bfu_\ell \equiv \nabla_{\bfu_0} f(\bfu_0)$ is the Hessian we want to compute. 
+where $\times_k$ is the mode-$k$ product [@KoldaBader09] and $\nabla_{\bfu_0} \bfu_\ell \equiv \nabla_{\bfu_0} f(\bfu_0)$ is the Hessian we want to compute. 
 The Hessian mapping in \autoref{eq:Hessian_ui} is illustrated in \autoref{fig:hessianIllustration}. For efficiency, we store $\nabla_{\bfu_{i}}  g_{i+1}(\bfu_{i})$ when we compute the gradient and re-use this matrix to form the Hessian.  
 Notice that the sizes of the derivatives always depend on the number of input features, $n_{0}$. 
 
