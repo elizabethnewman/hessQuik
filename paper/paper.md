@@ -95,9 +95,9 @@ We compute derivatives of previous layers using the following mappings for $i=\e
 		%	
 		\nabla_{\bfu_{i-1}}^2 \bfu_{\ell} &= \nabla_{\bfu_i}^2 \bfu_{\ell}  \times_1 \nabla_{\bfu_{i-1}} g_i(\bfu_{i-1}) \times_2 \nabla_{\bfu_{i-1}} g_i(\bfu_{i-1})^\top \nonumber \\
 		&\qquad + \nabla_{\bfu_{i-1}}^2 g_i(\bfu_{i-1}) \times_3 \nabla_{\bfu_i} \bfu_{\ell} 
-			 \qquad &&\in \Rbb^{n_{i-1} \times n_{i-1} \times n_{\ell}}, \label{eq:Hessian_ui2}
+			 \qquad &&\in \Rbb^{n_{i-1} \times n_{i-1} \times n_{\ell}}.
     \end{align}
-where $\times_k$ is the mode-$k$ product \cite{koldabader}.  For efficiency, we re-use $nabla_{\bfu_{i-1}}  g_{i}(\bfu_{i-1})$ from the gradient computation to compute the Hessian.  Notice that the sizes of the derivatives always depend on the number of output features, $n_{\ell}$. 
+For efficiency, we re-use $nabla_{\bfu_{i-1}}  g_{i}(\bfu_{i-1})$ from the gradient computation to compute the Hessian.  Notice that the sizes of the derivatives always depend on the number of output features, $n_{\ell}$. 
 
 ## Forward Mode vs. Backward Mode
 
