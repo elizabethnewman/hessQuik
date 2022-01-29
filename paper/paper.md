@@ -8,8 +8,8 @@ tags:
 authors:
   - name: Lars Ruthotto^[co-first author]
     orcid: 0000-0003-0803-3299
-    affiliation: "1" # (Multiple affiliations must be quoted)
-  - name: Elizabeth Newman^[co-first author, corresponding authoer]
+    affiliation: 1
+  - name: Elizabeth Newman^[co-first author]
     affiliation: 1
     orcid: 0000-0002-6309-7706
 affiliations:
@@ -131,3 +131,8 @@ We compare the performance of three approaches to compute Hessians of a neural n
 
 # Conclusions
 We have presented `hessQuik`, a simple, user-friendly repository for computing second-order derivatives of neural networks and other models constructed via composition of functions.  Our implementation scales well with the number of output features and on GPUs and is faster than automatic-differentiation-based second-order derivative computations.
+
+# Acknowledgements
+
+
+# References
