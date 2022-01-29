@@ -1,4 +1,4 @@
-A---
+---
 title: 'hessQuik: Fast gradient and Hessian computations of deep neural networks'
 tags:
   - Python
@@ -15,7 +15,7 @@ authors:
 affiliations:
  - name: Emory University
    index: 1
-date: 19 October 2021
+date: 29 January 2022
 bibliography: paper.bib
 
 # Optional fields if submitting to a AAS journal too, see this blog post:
