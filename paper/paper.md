@@ -35,14 +35,12 @@ bibliography: paper.bib
 
 
 # Summary
-`hessQuik` provides efficient methods of computing second-order derivatives (Hessians) with respect to the inputs of (parameterized) functions formed via composition, such as neural networks, without automatic differentiation (AD). In general, Hessians are challenging to compute efficiently with AD and cumbersome to derive and debug analytically.  Hence, many algorithms approximate Hessian information, resulting in suboptimal performance.  To address these challenges of second-order derivative computation, `hessQuik` provides efficient, analytic Hessians with GPU acceleration for a variety of network layers that can be used seamlessly with PyTorch. The package is user-friendly and flexible by design -- users can construct many-layered networks with a variety of layer types, including fully-connected layers, residual layers, and input convex layers, and use various nonlinear activation functions, including hyperbolic tangent, sigmoid, and quadratic.  
+`hessQuik` is a lightweight repository for fast, automatic differentiation (AD)-free computation of second-order derivatives (Hessians) with respect to the inputs of compositions of functions (layers). Hessians are notoriously challenging to compute efficiently with AD and cumbersome to derive and debug analytically.  Hence, many algorithms approximate Hessian information, resulting in suboptimal performance.  To address these challenges, `hessQuik` implements analytic Hessians with GPU acceleration that can be used seamlessly with PyTorch. 'hessQuik' is flexible and user-friendly by design - users can construct many-layered functions with a variety of layer types and activation functions.
 
 
 # Statement of need
 
-Deep neural networks (DNNs), and other composition-based functions, have become a staple of data science, garnering state-of-the-art results in, e.g., image classification and speech recognition, and gaining widespread use in the scientific community, particularly as surrogate models to replace expensive computations. 
-The unrivaled universality and success of DNNs is due, in part, to the convenience of automatic differentiation (AD) which enables users to compute derivatives of complex functions without an explicit formula. 
-Despite being a powerful tool to compute gradients, AD encounters computational obstacles when computing second-order derivatives. Knowledge of second-order derivatives is paramount in many growing fields, such as physics-informed neural networks (PINNs) [@Raissi:2019hv], mean-field games [@Ruthotto9183], generative modeling [@ruthotto2021introduction], and adversarial learning [@papernot2016limitations].  In addition, second-order derivative information can provide insight into the optimization problem solved to form a good DNN model [@olearyroseberry2020illposedness]. `hessQuik` addresses these challenges of computing second-order derivatives 
+Deep neural networks (DNNs) and other composition-based functions have become a staple of data science, garnering state-of-the-art results in, e.g., image classification and speech recognition, and gaining widespread use in the scientific community, particularly as surrogate models to replace expensive computations. The unrivaled universality and success of DNNs is due, in part, to the convenience of automatic differentiation (AD) which enables users to compute derivatives of complex functions without an explicit formula. Despite being a powerful tool to compute gradients, AD encounters computational obstacles when computing second-order derivatives. Knowledge of second-order derivatives is paramount in many growing fields, such as physics-informed neural networks (PINNs) [@Raissi:2019hv], mean-field games [@Ruthotto9183], generative modeling [@ruthotto2021introduction], and adversarial learning [@papernot2016limitations].  In addition, second-order derivative information can provide insight into the optimization problem solved to form a good DNN model [@olearyroseberry2020illposedness]. `hessQuik` addresses these challenges of computing second-order derivatives 
 
 # The Chain Rule for Composed Functions
 
@@ -114,14 +112,14 @@ We compare the time to compute the Hessian of a neural network with respect to t
 .functional.hessian.html).
 
 
-## Network Architecture
+[comment]: <> (## Network Architecture)
 
 We compare the time to compute the gradient and Hessian of a network with an input dimension $d = 2^k$ where $k=0,1,\dots,10$.  We implement a residual neural network [@He2016:deep] with the width is $w=16$, the depth is $N=4$, and various numbers of output features, $n_\ell$.  For simplicity, same network architecture is used for every timing test. 
 
-## Hardware
+[comment]: <> (## Hardware)
 For reproducibility, we compare the time to compute the Hessian using Google Colaboratory (Colab) Pro [@googleColab] and provide the notebook in the repository. When using a CPU runtime, Google Colab Pro uses an Intel(R) Xeon(R) CPU with 2.20GHz processor base speed. When using a GPU runtime, Google Colab Pro uses a Tesla P100 with 16 GB of memory.  
 
-## Results
+[comment]: <> (## Results)
 
 We compare the performance of three approaches to compute Hessians of a neural network for two different cases: scalar outputs ($n_\ell = 1$) and vector-valued outputs ($n_\ell \ge 1$).  In our experiments, we see faster Hessian computations using `hessQuik` and noticeable acceleration on the GPU, particularly for networks with larger input and output dimensions. 
 
@@ -130,7 +128,7 @@ We compare the performance of three approaches to compute Hessians of a neural n
 ![Average time over $10$ trials to compute the Hessian with respect to the input features with variable number of input and output features. Each row corresponds to a number of input features, $n_0$, each column corresponds to a number of output features, $n_{\ell}$, and color represents the amount of time to compute.The `hessQuik` timings remain relatively constant as the number of output features changes whereas the `PytorchAD` timings significantly increase as the number of output features increases.](img/hessQuik_timing_vector.png){ width=80% }
 
 # Conclusions
-We have presented `hessQuik`, a simple, user-friendly repository for computing second-order derivatives of neural networks and other models constructed via composition of functions.  Our implementation scales well with the number of output features and on GPUs and is faster than automatic-differentiation-based second-order derivative computations.
+`hessQuik` is a simple, user-friendly repository for computing second-order derivatives of models constructed via composition of functions.  The package is designed to integrate within the PyTorch framework. 'hessQuik' includes many popular built-in layers, tutorial repositories, reproducibile experiments, and unit testing to allow for further contributions.  The implementation scales well in time with the various input and output feature dimensions and performance is accelerated on GPUs, notably faster than automatic-differentiation-based second-order derivative computations.  We hope the accessibility of this package will encourage researchers to use and contribute to 'hessQuik' in the future.
 
 # Acknowledgements
 
