@@ -118,21 +118,16 @@ The `hessQuik` package includes methods to test derivative implementations and c
 
 We compare the time to compute the Hessian of a neural network with respect to the input features of three approaches: `hessQuik` (AD-free method), `PytorchAD` which uses automatic differentiation following the implementation in [@huang2021convex], and `PytorchHessian` which uses the built-in Pytorch [Hessian function](https://pytorch.org/docs/stable/generated/torch.autograd\.functional.hessian.html).  
 
-
-[comment]: <> (## Network Architecture)
-
 We compare the time to compute the gradient and Hessian of a network with an input dimension $d = 2^k$ where $k=0,1,\dots,10$.  We implement a residual neural network [@He2016:deep] with the width is $w=16$, the depth is $N=4$, and various numbers of output features, $n_\ell$.  For simplicity, same network architecture is used for every timing test. 
 
-[comment]: <> (## Hardware)
 For reproducibility, we compare the time to compute the Hessian using Google Colaboratory (Colab) Pro [@googleColab] and provide the notebook in the repository. When using a CPU runtime, Google Colab Pro uses an Intel(R) Xeon(R) CPU with 2.20GHz processor base speed. When using a GPU runtime, Google Colab Pro uses a Tesla P100 with 16 GB of memory.  
-
-[comment]: <> (## Results)
 
 In \autoref{fig:scalar} and \autoref{fig:vector}, we compare the performance of three approaches to compute Hessians of a neural network.  In our experiments, we see faster Hessian computations using `hessQuik` and noticeable acceleration on the GPU, especially for networks with larger input and output dimensions.  Specifically, \autoref{fig:scalar} shows the timing using the `hessQuik` implementation scales better with the number of input features than either of the AD-based methods.  Additionally, \autorefPfig:vector} demonstrates that the `hessQuik` timings remain relatively constant as the number of output features changes whereas the `PytorchAD` timings significantly increase as the number of output features increases.  Note that we only compare to `PytorchAD ` for vector-valued outputs because `PytorchHessian` was noticeably slower for the scalar case.
 
 
 ![Average time over $10$ trials to evaluate and compute the Hessian with respect to the input features for one output feature ($n_{\ell}=1$). Solid lines represent timings on the CPU and dashed lines are timings on the GPU. The circle markers are the timings obtained using `hessQuik`. \label{fig:scalar}](img/hessQuik_timing_scalar.png){ width=80% } 
-![Average time over $10$ trials to compute the Hessian with respect to the input features with variable number of input and output features. Each row corresponds to a number of input features, $n_0$, each column corresponds to a number of output features, $n_{\ell}$, and color represents the amount of time to compute. \label{fig:vector}](img/hessQuik_timing_vector.png){ width=80% })
+
+![Average time over $10$ trials to compute the Hessian with respect to the input features with variable number of input and output features. Each row corresponds to a number of input features, $n_0$, each column corresponds to a number of output features, $n_{\ell}$, and color represents the amount of time to compute. \label{fig:vector}](img/hessQuik_timing_vector.png){ width=80% }
 
 # Conclusions
 `hessQuik` is a simple, user-friendly repository for computing second-order derivatives of models constructed via composition of functions.  The package is designed to integrate within the PyTorch framework. `hessQuik` includes many popular built-in layers, tutorial repositories, reproducibile experiments, and unit testing to allow for further contributions.  The implementation scales well in time with the various input and output feature dimensions and performance is accelerated on GPUs, notably faster than automatic-differentiation-based second-order derivative computations.  We hope the accessibility of this package will encourage researchers to use and contribute to `hessQuik` in the future.
