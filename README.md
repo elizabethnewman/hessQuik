@@ -16,7 +16,6 @@ These dependencies are installed automatically with ```pip```.
 
 Once you have installed hessQuik, you can import as follows:
 ```python
-import hessQuik
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
