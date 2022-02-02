@@ -10,7 +10,7 @@ python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 
 ### Dependencies
 These dependencies are installed automatically with ```pip```.
-* torch (recommended version >= 1.10.0, but code will run with version 1.5.0 or higher)
+* torch (recommended version >= 1.10.0, but code will run with version >= 1.5.0)
 
 ## Getting Started
 
