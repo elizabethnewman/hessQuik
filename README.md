@@ -1,6 +1,6 @@
 # hessQuik
 
-A lightweight package for fast, GPU-accelerated computation of gradients and Hessians of feed-forward networks.
+A lightweight package for fast, GPU-accelerated computation of gradients and Hessians of functions constructed via composition.
 
 ## Installation
 
@@ -9,14 +9,14 @@ python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
 
 ### Dependencies
-These dependencies are installed automatically with ```pip```. 
-* torch
-
+These dependencies are installed automatically with ```pip```.
+* torch (recommended version >= 1.10.0, but code will run with version 1.5.0 or higher)
 
 ## Getting Started
 
 Once you have installed hessQuik, you can import as follows:
 ```python
+import hessQuik
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
