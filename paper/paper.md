@@ -111,11 +111,11 @@ The computational efficiency of computing derivatives is proportional to the num
 
 ### Implemented `hessQuik` Layers
 
-
+<p align="center">
 \begin{tabular}{ccc}
 1 & 2 & 3
 \end{tabular}
-
+</p>
 
 ### Testing Derivative Implementations
 The `hessQuik` package includes methods to test derivative implementations and corresponding unit tests.  The main test employs Taylor approximations; for details, see [@haberDerivative]. 
