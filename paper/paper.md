@@ -123,6 +123,11 @@ The `hessQuik` package includes a variety of popular functions which can be comp
 	g_{\text{residual}}(\bfu) = \bfu + h\sigma(\bfK\bfu + \bfb)
 	\end{align}
 	
+* `ICNNLayer`: The input convex neural network layer preserves convexity of the composite function with respect to the input features.
+	\begin{align}
+	g_{\text{icnn}}(\bfu, \bfu_0) = \sigma(\bfW^+\bfu + \bfK\bfu_0 + \bfb) \quad \text{where $\bfW^+$ has nonnegative entries.}
+	\end{align}
+
 
 	
 
