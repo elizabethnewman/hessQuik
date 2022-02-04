@@ -1,19 +1,19 @@
 ---
-title: "hessQuik: Fast Hessian computations of composition of functions"
+title: "hessQuik: Fast Hessian computations composite functions"
 tags:
   - Python
   - Pytorch
   - deep neural networks
   - input convex neural networks
 authors:
-  - name: Lars Ruthotto^[co-first author]
-    orcid: 0000-0003-0803-3299
-    affiliation: 1
   - name: Elizabeth Newman^[co-first author]
     affiliation: 1
     orcid: 0000-0002-6309-7706
+  - name: Lars Ruthotto^[co-first author]
+    orcid: 0000-0003-0803-3299
+    affiliation: 1
 affiliations:
- - name: Emory University
+ - name: Emory University, Department of Mathematics
    index: 1
 date: 29 January 2022
 bibliography: paper.bib
@@ -35,7 +35,7 @@ bibliography: paper.bib
 
 
 # Summary
-`hessQuik` is a lightweight repository for fast computation of second-order derivatives (Hessians) with respect to the inputs of models formed via compositions of functions.  The core implementation of `hessQuik` computes Hessians analytically and does not use automatic differentiation, resulting in GPU accelaration of the computation. `hessQuik` is flexible, user-friendly, and works seamlessly with PyTorch [@pytorch].  The package offers a variety of popular functions or layers, including residual layers and input convex layers, from which users can build complex models via composition. Each layer provides two modes for derivative computation and the mode is automatically selected to maximize computational efficiency. `hessQuik` includes easy-access, illustrative tutorials on Google Colaboratory [@googleColab], reproducible experiments, and testing tools to help researchers use and contribute to the repository.  
+`hessQuik` is a lightweight repository for fast computation of second-order derivatives (Hessians) with respect to the inputs of coposite functions, or models formed via compositions of functions.  The core of `hessQuik` is the efficient computation of analytical Hessians with GPU acceleration. `hessQuik` is a PyTorch [@pytorch] package that is user-friendly and easily extendable.  The repository includes a variety of popular functions or layers, including residual layers and input convex layers, from which users can build complex models via composition.  Each layer provides two modes for derivative computation and the mode is automatically selected to maximize computational efficiency.  Users need only choose the layers of a model and the repository automatically composes the layers correctly.  `hessQuik` includes easy-access, [illustrative tutorials](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikPeaksHermiteInterpolation.ipynb) on Google Colaboratory [@googleColab], [reproducible experiments](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb), and unit tests to verify implementations.  
 
 
 
@@ -103,7 +103,7 @@ We compute derivatives of previous layers using the following mappings for $i=\e
 		&\qquad + \nabla_{\bfu_{i-1}}^2 g_i(\bfu_{i-1}) \times_3 \nabla_{\bfu_i} \bfu_{\ell} 
 			 \qquad &&\in \Rbb^{n_{i-1} \times n_{i-1} \times n_{\ell}}.
     \end{align}
-For efficiency, we re-use $nabla_{\bfu_{i-1}}  g_{i}(\bfu_{i-1})$ from the gradient computation to compute the Hessian.  Notice that the sizes of the derivatives always depend on the number of output features, $n_{\ell}$. 
+For efficiency, we re-use $\nabla_{\bfu_{i-1}}  g_{i}(\bfu_{i-1})$ from the gradient computation to compute the Hessian.  Notice that the sizes of the derivatives always depend on the number of output features, $n_{\ell}$. 
 
 ### Forward Mode vs. Backward Mode
 
