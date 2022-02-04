@@ -118,6 +118,13 @@ The `hessQuik` package includes a variety of popular functions which can be comp
 	 g_{\text{single}}(\bfu) = \sigma(\bfK \bfu + \bfb)
 	\end{align}
 	
+* `residualLayer`: This layer includes a skip connection and is the building block of a resdiual neural network (ResNet) [@He2016:deep].
+	\begin{align}
+	g_{\text{residual}}(\bfu) = \bfu + h\sigma(\bfK\bfu + \bfb)
+	\end{align}
+	
+
+	
 
 
 ### Testing Derivative Implementations
