@@ -113,19 +113,7 @@ The computational efficiency of computing derivatives is proportional to the num
 
 The `hessQuik` package includes a variety of popular functions which can be composed to form complex models.  Currently supported layers include the following:
 
-* `singleLayer`: This layer consists of an affine transformation followed by pointwise nonlinearity.  Multilayer perceptron neural networks are built upon these layers.
-	\begin{align}
-	 g_{\text{single}}(\bfu) = \sigma(\bfK \bfu + \bfb)
-	\end{align}
-* `residualLayer`: This layer includes a skip connection and is the building block of a resdiual neural network (ResNet) [@He2016:deep].
-	\begin{align}
-	g_{\text{residual}}(\bfu) = \bfu + h\sigma(\bfK\bfu + \bfb)
-	\end{align}
-* `ICNNLayer`: The input convex neural network layer preserves convexity of the composed functions with respect to the input features.
-	\begin{align}
-	g_{\text{icnn}}(\bfu, \bfu_0) = \sigma(\bfW^+\bfu + \bfK\bfu_0 + \bfb)
-	\end{align}
-	where $\bfW^+$ has nonnegative entries.
+
 
 ### Testing Derivative Implementations
 The `hessQuik` package includes methods to test derivative implementations and corresponding unit tests.  The main test employs Taylor approximations; for details, see [@haberDerivative]. 
