@@ -113,6 +113,11 @@ The computational efficiency of computing derivatives is proportional to the num
 
 The `hessQuik` package includes a variety of popular functions which can be composed to form complex models.  Currently supported layers include the following:
 
+* `singleLayer`: This layer consists of an affine transformation followed by pointwise nonlinearity.  Multilayer perceptron neural networks are built upon these layers.
+	\begin{align}
+	 g_{\text{single}}(\bfu) = \sigma(\bfK \bfu + \bfb)
+	\end{align}
+	
 
 
 ### Testing Derivative Implementations
