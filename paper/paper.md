@@ -109,11 +109,12 @@ For efficiency, we re-use $\nabla_{\bfu_{i-1}}  g_{i}(\bfu_{i-1})$ from the grad
 
 The computational efficiency of computing derivatives is proportional to the number of input features $n_0$ and the number of output features $n_{\ell}$.  The heuristic we use is if $n_0 < n_\ell$, we compute derivatives in forward mode, otherwise we compute derivatives in backward mode. Our implementation automatically selects the mode of derivative computation based on this heuristic. Users have the option to select their preferred mode of derivative computation if desired. 
 
-### `hessQuik` Implemented Layers
+### Implemented `hessQuik` Layers
 
-\begin{align}
-\text{single layer:} & & \bfu_{j+1} = \sigma(\bfK_j\bfu_j + \bfb_j)\\
-\end{align}
+
+\begin{tabular}{ccc}
+1 & 2 & 3
+\end{tabular}
 
 
 ### Testing Derivative Implementations
