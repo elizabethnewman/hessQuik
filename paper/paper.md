@@ -20,6 +20,7 @@ bibliography: paper.bib
 ---
 
 \newcommand{\bfK}{\mathbf{K}}
+\newcommand{\bfW}{\mathbf{W}}
 \newcommand{\bfb}{\mathbf{b}}
 \newcommand{\bfu}{\mathbf{u}}
 \newcommand{\bfx}{\mathbf{x}}
