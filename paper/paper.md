@@ -112,14 +112,14 @@ The computational efficiency of computing derivatives is proportional to the num
 
 ### Implemented `hessQuik` Layers
 
-The `hessQuik` package includes a variety of popular functions which can be composed to form complex models.  Currently supported layers include the following:
+The `hessQuik` package includes a variety of popular functions which can be composed to form complex models.  Currently supported layers include, but are not limited to, the following:
 
 * `singleLayer`: This layer consists of an affine transformation followed by pointwise nonlinearity.  Multilayer perceptron neural networks are built upon these layers.
 	\begin{align}
 	 g_{\text{single}}(\bfu) = \sigma(\bfK \bfu + \bfb)
 	\end{align}
 	
-* `residualLayer`: This layer includes a skip connection and is the building block of a resdiual neural network (ResNet) [@He2016:deep].
+* `residualLayer`: This layer includes a skip connection and is the building block of a residual neural network (ResNet) [@He2016:deep].
 	\begin{align}
 	g_{\text{residual}}(\bfu) = \bfu + h\sigma(\bfK\bfu + \bfb)
 	\end{align}
@@ -129,6 +129,8 @@ The `hessQuik` package includes a variety of popular functions which can be comp
 	g_{\text{icnn}}(\bfu, \bfu_0) = \sigma(\bfW^+\bfu + \bfK\bfu_0 + \bfb)
 	\end{align}
 	where $\bfW^+$ has nonnegative entries.
+
+Each layer uses a nonlinear activation function $\sigma: \Rbb \to \Rbb$, applied entry-wise.  We provide several activation functions, including sigmoid, hyperbolic tangent, and softplus.  The variety of implemented layers and activation functions makes designing a wide range of `hessQuik` models easy.
 
 	
 
