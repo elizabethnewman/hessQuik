@@ -158,6 +158,6 @@ In \autoref{fig:scalar} and \autoref{fig:vector}, we compare the performance of 
 `hessQuik` is a simple, user-friendly repository for computing second-order derivatives of models constructed via composition of functions.  The package is designed to integrate within the PyTorch framework. `hessQuik` includes many popular built-in layers, tutorial repositories, reproducibile experiments, and unit testing to allow for further contributions.  The implementation scales well in time with the various input and output feature dimensions and performance is accelerated on GPUs, notably faster than automatic-differentiation-based second-order derivative computations.  We hope the accessibility of this package will encourage researchers to use and contribute to `hessQuik` in the future.
 
 # Acknowledgements
-
+The development of `hessQuik` was supported in part by the US National Science Foundation under Grant Number 1751636, the Air Force Office of Scientific Research Award FA9550-20-1-0372, and the US DOE Office of Advanced Scientific Computing Research Field Work Proposal 20-023231. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the funding agencies.
 
 # References
