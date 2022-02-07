@@ -42,12 +42,12 @@ bibliography: paper.bib
 
 # Statement of need
 
-Deep neural networks (DNNs) and other composition-based functions have become a staple of data science, garnering state-of-the-art results in, e.g., image classification and speech recognition, and gaining widespread use in the scientific community, particularly as surrogate models to replace expensive computations. The unrivaled universality and success of DNNs is due, in part, to the convenience of automatic differentiation (AD) which enables users to compute derivatives of complex functions without an explicit formula. Despite being a powerful tool to compute gradients, AD encounters computational obstacles when computing second-order derivatives.  
+Deep neural networks (DNNs) and other composition-based models have become a staple of data science, garnering state-of-the-art results in, e.g., image classification and speech recognition, and gaining widespread use in the scientific community, particularly as surrogate models to replace expensive computations. The unrivaled universality and success of DNNs is due, in part, to the convenience of automatic differentiation (AD) which enables users to compute derivatives of complex functions without an explicit formula. Despite being a powerful tool to compute gradients, AD encounters computational obstacles when computing second-order derivatives.  
 
 Knowledge of second-order derivatives is paramount in many growing fields, such as physics-informed neural networks (PINNs) [@Raissi:2019hv], mean-field games [@Ruthotto9183], generative modeling [@ruthotto2021introduction], and adversarial learning [@papernot2016limitations].  In addition, second-order derivatives can provide insight into the optimization problem solved to build a good model [@olearyroseberry2020illposedness]. Hessians are notoriously challenging to compute efficiently with AD and cumbersome to derive and debug analytically.  Hence, many algorithms approximate Hessian information, resulting in suboptimal performance.  To address these challenges, `hessQuik` computes Hessians analytically and efficiently, employing an implementation that is accelerated on GPUs.
 
 
-# The Chain Rule for Composed Functions
+# `hessQuik` Building Blocks
 
 `hessQuik` is designed to build complex functions constructed via composition of simpler functions, which we call \emph{layers}.  The core of the package is the implementation of these layers and their derivatives.  We describe the process mathematically.
 
@@ -93,7 +93,7 @@ In `hessQuik`, we offer two modes, forward and backward, to compute the gradient
 	\end{align}
 where $\bfu_i$ are the hidden features on layer $i$ for $i=1,\dots,\ell-1$ and $\bfu_{\ell}$ are the output features.
 
-### Forward Mode
+## Forward Mode
 Computing derivatives in forward mode means we sequentially build the gradient and Hessian \emph{during forward propagation}; that is, when we form $\bfu_i$, we simultaneously form the corresponding gradient and Hessian information.  We start by computing the gradient and Hessian of the first layer with respect to the inputs; that is, 
     \begin{align}
         \nabla_{\bfu_0}\bfu_1 &=\nabla_{\bfu_0} g_1(\bfu_0) && \in \Rbb^{n_0\times n_1}\\
@@ -109,9 +109,9 @@ where $\times_k$ is the mode-$k$ product [@KoldaBader09] and $\nabla_{\bfu_0} \b
 The Hessian mapping in \autoref{eq:Hessian_ui} is illustrated in \autoref{fig:hessianIllustration}. For efficiency, we store $\nabla_{\bfu_{i}}  g_{i+1}(\bfu_{i})$ when we compute the gradient and re-use this matrix to form the Hessian.  
 Notice that the sizes of the derivatives always depend on the number of input features, $n_{0}$. 
 
-![Illustration of Hessian computation of $\nabla_{\bfu_0}^ 2\bfu_i$ in forward mode. Note that for the Gauss-Newton term, the gray three-dimensional array $\nabla_{\bfu_i} g_{i+1}(\bfu_i)$ is treated as a stack of matrices.  Then, the same Jacobian matrix $\nabla_{\bfu_0}\bfu_i$ is broadcast to each matrix in the stack, illustrated by the repeated cyan matrices. In the second term, the green matrix $\nabla_{\bfu_i}g_{i+1}(\bfu_i)$ is applied along the third dimension of the magenta three-dimensional array, $\nabla_{\bfu_0}\bfu_i$. Both of these operations can be efficiently parallelized, particularly on GPUs. \label{fig:hessianIllustration}](img/HessianIllustration.png){ width=80% }
+![Illustration of Hessian computation of $\nabla_{\bfu_0}^ 2\bfu_{i+1}$ in forward mode. Note that for the first term, the gray three-dimensional array $\nabla_{\bfu_i} g_{i+1}(\bfu_i)$ is treated as a stack of matrices.  Then, the same Jacobian matrix $\nabla_{\bfu_0}\bfu_i$ is broadcast to each matrix in the stack, illustrated by the repeated cyan matrices. In the second term, the green matrix $\nabla_{\bfu_i}g_{i+1}(\bfu_i)$ is applied along the third dimension of the magenta three-dimensional array, $\nabla_{\bfu_0}\bfu_i$. Both of these operations can be parallelized and hence accelerated GPUs. \label{fig:hessianIllustration}](img/HessianIllustration.png){ width=80% }
 
-### Backward Mode
+## Backward Mode
 
 Computing derivatives in backward mode is also known as \emph{backward propagation} and is the method by which automatic differentiation computes derivatives.  The process works as follows. We first forward propagate through the network \emph{without computing gradients or Hessians}. After we forward propagate, we build the gradient and Hessian starting from the output layer and working backwards to the input layer. We start by computing derivatives of the final layer with respect to the previous features; that is, 
     \begin{align}
@@ -129,13 +129,13 @@ We compute derivatives of previous layers using the following mappings for $i=\e
     \end{align}
 For efficiency, we re-use $\nabla_{\bfu_{i-1}}  g_{i}(\bfu_{i-1})$ from the gradient computation to compute the Hessian.  Notice that the sizes of the derivatives always depend on the number of output features, $n_{\ell}$. 
 
-### Forward Mode vs. Backward Mode
+## Forward Mode vs. Backward Mode
 
 The computational efficiency of computing derivatives is proportional to the number of input features $n_0$ and the number of output features $n_{\ell}$.  The heuristic we use is if $n_0 < n_\ell$, we compute derivatives in forward mode, otherwise we compute derivatives in backward mode. Our implementation automatically selects the mode of derivative computation based on this heuristic. Users have the option to select their preferred mode of derivative computation if desired. 
 	
 
 
-### Testing Derivative Implementations
+## Testing Derivative Implementations
 The `hessQuik` package includes methods to test derivative implementations and corresponding unit tests.  The main test employs Taylor approximations; for details, see [@haberDerivative]. 
 
 
