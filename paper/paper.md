@@ -55,9 +55,36 @@ Let $f:\Rbb^{n_0} \to \Rbb^{n_\ell}$ be a twice continuously-differentiable func
 	\begin{align}
 	f = g_{\ell} \circ g_{\ell - 1} \circ \cdots \circ g_1, \quad\text{where} \quad g_i: \Rbb^{n_{i-1}} \to \Rbb^{n_i} \quad \text{for }i=1,\dots, \ell.
 	\end{align}
-Here, $g_i$ represents the $i$-th layer and $n_i$ is the number of hidden features on the $i$-th layer.   We call $n_0$ the number of input features and $n_{\ell}$ the number of output features.  `hessQuik` provides many common layer types, including fully-connected and residual layers.  We note that each layer can be parameterized by weights which we can tune by solving an optimization problem. Because `hessQuik` computes derivatives for the network inputs, we omit the weights from our notation. 
+Here, $g_i$ represents the $i$-th layer and $n_i$ is the number of hidden features on the $i$-th layer.   We call $n_0$ the number of input features and $n_{\ell}$ the number of output features. We note that each layer can be parameterized by weights which we can tune by solving an optimization problem. Because `hessQuik` computes derivatives for the network inputs, we omit the weights from our notation. 
 
-It is useful to express the evaluation of $f$ as an iterative process.  Let $\bfu_0\in \Rbb^{n_0}$ be a vector of input features.  Then, the function evaluated at $\bfu_0$ is
+## Implemented `hessQuik` Layers
+
+The `hessQuik` package includes a variety of popular functions which can be composed to form complex models.  Currently supported layers include, but are not limited to, the following:
+
+* `singleLayer`: This layer consists of an affine transformation followed by pointwise nonlinearity.  Multilayer perceptron neural networks are built upon these layers.
+	\begin{align}
+	 g_{\text{single}}(\bfu) = \sigma(\bfK \bfu + \bfb)
+	\end{align}
+	where $\bfK$ and $\bfb$ are model weights that can be tuned.
+	
+* `residualLayer`: This layer differs from a single layer by including a skip connection. It is the building block of residual neural networks (ResNet) [@He2016:deep].
+	\begin{align}
+	g_{\text{residual}}(\bfu) = \bfu + h\sigma(\bfK\bfu + \bfb)
+	\end{align}
+	where $h > 0$ is a step size.  ResNets can be interpreted as discretizations of differential equations or dynamical systems [@HaberRuthotto2017] [@E2017].
+	
+* `ICNNLayer`: The input convex neural network layer [@amos2017input] preserves convexity of the composite function with respect to the input features via the mapping
+	\begin{align}
+	g_{\text{icnn}}(\widetilde{\bfu}) = \sigma(\begin{bmatrix}\bfW^+ & \bfK\end{bmatrix} \widetilde{\bfu} + \bfb), \qquad \widetilde{\bfu} = \begin{bmatrix} \bfu \\ \bfu_0\end{bmatrix}.
+	\end{align}
+	where $\bfW^+$ has nonnegative entries.
+
+Each layer uses a nonlinear activation function $\sigma: \Rbb \to \Rbb$, applied entry-wise.  We provide several activation functions, including sigmoid, hyperbolic tangent, and softplus.  The variety of implemented layers and activation functions makes designing a wide range of `hessQuik` models easy.
+
+
+# Computing Derivatives with `hessQuik`
+
+In `hessQuik`, we offer two modes, forward and backward, to compute the gradient $\nabla_{\bfu_0} f$ and the Hessian $\nabla_{\bfu_0}^2 f$ of the function with respect to the input features. The cost of computing derivatives in each mode is different and depends on the number of input and output features.  `hessQuik` automatically selects the least costly mode through which to compute derivatives.  We briefly describe the derivative calculations using the two methods.  First, it is useful to express the evaluation of $f$ as an iterative process.  Let $\bfu_0\in \Rbb^{n_0}$ be a vector of input features.  Then, the function evaluated at $\bfu_0$ is
 	\begin{align}
 			\bfu_1		&= g_1(\bfu_0)  &&\in \Rbb^{n_1}\\
 			\bfu_2		&= g_2(\bfu_1)  &&\in \Rbb^{n_2}\\
@@ -65,10 +92,6 @@ It is useful to express the evaluation of $f$ as an iterative process.  Let $\bf
 	f(\bfu_0) \equiv \bfu_{\ell}		&= g_\ell(\bfu_{\ell-1}) &&\in \Rbb^{n_\ell}
 	\end{align}
 where $\bfu_i$ are the hidden features on layer $i$ for $i=1,\dots,\ell-1$ and $\bfu_{\ell}$ are the output features.
-
-## Computing Derivatives in `hessQuik`
-
-In `hessQuik`, we offer two modes, forward and backward, to compute the gradient $\nabla_{\bfu_0} f$ and the Hessian $\nabla_{\bfu_0}^2 f$ of the function with respect to the input features. The cost of computing derivatives in each mode is different and depends on the number of input and output features.  `hessQuik` automatically selects the least costly mode through which to compute derivatives.  We briefly describe the derivative calculations using the two methods.  
 
 ### Forward Mode
 Computing derivatives in forward mode means we sequentially build the gradient and Hessian \emph{during forward propagation}; that is, when we form $\bfu_i$, we simultaneously form the corresponding gradient and Hessian information.  We start by computing the gradient and Hessian of the first layer with respect to the inputs; that is, 
@@ -109,29 +132,6 @@ For efficiency, we re-use $\nabla_{\bfu_{i-1}}  g_{i}(\bfu_{i-1})$ from the grad
 ### Forward Mode vs. Backward Mode
 
 The computational efficiency of computing derivatives is proportional to the number of input features $n_0$ and the number of output features $n_{\ell}$.  The heuristic we use is if $n_0 < n_\ell$, we compute derivatives in forward mode, otherwise we compute derivatives in backward mode. Our implementation automatically selects the mode of derivative computation based on this heuristic. Users have the option to select their preferred mode of derivative computation if desired. 
-
-### Implemented `hessQuik` Layers
-
-The `hessQuik` package includes a variety of popular functions which can be composed to form complex models.  Currently supported layers include, but are not limited to, the following:
-
-* `singleLayer`: This layer consists of an affine transformation followed by pointwise nonlinearity.  Multilayer perceptron neural networks are built upon these layers.
-	\begin{align}
-	 g_{\text{single}}(\bfu) = \sigma(\bfK \bfu + \bfb)
-	\end{align}
-	
-* `residualLayer`: This layer includes a skip connection and is the building block of a residual neural network (ResNet) [@He2016:deep].
-	\begin{align}
-	g_{\text{residual}}(\bfu) = \bfu + h\sigma(\bfK\bfu + \bfb)
-	\end{align}
-	
-* `ICNNLayer`: The input convex neural network layer [@amos2017input] preserves convexity of the composite function with respect to the input features.
-	\begin{align}
-	g_{\text{icnn}}(\bfu, \bfu_0) = \sigma(\bfW^+\bfu + \bfK\bfu_0 + \bfb)
-	\end{align}
-	where $\bfW^+$ has nonnegative entries.
-
-Each layer uses a nonlinear activation function $\sigma: \Rbb \to \Rbb$, applied entry-wise.  We provide several activation functions, including sigmoid, hyperbolic tangent, and softplus.  The variety of implemented layers and activation functions makes designing a wide range of `hessQuik` models easy.
-
 	
 
 
