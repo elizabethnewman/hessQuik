@@ -42,7 +42,7 @@ bibliography: paper.bib
 
 # Statement of need
 
-Deep neural networks (DNNs) and other composition-based models have become a staple of data science, garnering state-of-the-art results in, e.g., image classification and speech recognition, and gaining widespread use in the scientific community, particularly as surrogate models to replace expensive computations. The unrivaled universality and success of DNNs is due, in part, to the convenience of automatic differentiation (AD) which enables users to compute derivatives of complex functions without an explicit formula. Despite being a powerful tool to compute gradients, AD encounters computational obstacles when computing second-order derivatives.  
+Deep neural networks (DNNs) and other composition-based models have become a staple of data science, garnering state-of-the-art results in, e.g., image classification and speech recognition [@Goodfellow-et-al-2016], and gaining widespread use in the scientific community, particularly as surrogate models to replace expensive computations. The unrivaled universality and success of DNNs is due, in part, to the convenience of automatic differentiation (AD) which enables users to compute derivatives of complex functions without an explicit formula. Despite being a powerful tool to compute gradients, AD encounters computational obstacles when computing second-order derivatives.  
 
 Knowledge of second-order derivatives is paramount in many growing fields, such as physics-informed neural networks (PINNs) [@Raissi:2019hv], mean-field games [@Ruthotto9183], generative modeling [@ruthotto2021introduction], and adversarial learning [@papernot2016limitations].  In addition, second-order derivatives can provide insight into the optimization problem solved to build a good model [@olearyroseberry2020illposedness]. Hessians are notoriously challenging to compute efficiently with AD and cumbersome to derive and debug analytically.  Hence, many algorithms approximate Hessian information, resulting in suboptimal performance.  To address these challenges, `hessQuik` computes Hessians analytically and efficiently, employing an implementation that is accelerated on GPUs.
 
@@ -71,7 +71,7 @@ The `hessQuik` package includes a variety of popular functions which can be comp
 	\begin{align}
 	g_{\text{residual}}(\bfu) = \bfu + h\sigma(\bfK\bfu + \bfb)
 	\end{align}
-	where $h > 0$ is a step size.  ResNets can be interpreted as discretizations of differential equations or dynamical systems [@HaberRuthotto2017] [@E2017].
+	where $h > 0$ is a step size.  ResNets can be interpreted as discretizations of differential equations or dynamical systems [@HaberRuthotto2017, @E2017].
 	
 * `ICNNLayer`: The input convex neural network layer [@amos2017input] preserves convexity of the composite function with respect to the input features via the mapping
 	\begin{align}
