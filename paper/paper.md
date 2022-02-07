@@ -59,7 +59,7 @@ Here, $g_i$ represents the $i$-th layer and $n_i$ is the number of hidden featur
 
 ## Implemented `hessQuik` Layers
 
-The `hessQuik` package includes a variety of popular functions which can be composed to form complex models.  Currently supported layers include, but are not limited to, the following:
+The `hessQuik` package includes a variety of popular functions which can be composed to form complex models.  Each layer incorporates a nonlinear activation function, $\sigma: \Rbb \to \Rbb$, that is applied entry-wise.  The `hessQuik` package provides several activation functions, including sigmoid, hyperbolic tangent, and softplus.   Currently supported layers include the following:
 
 * `singleLayer`: This layer consists of an affine transformation followed by pointwise nonlinearity.  Multilayer perceptron neural networks are built upon these layers.
 	\begin{align}
@@ -71,7 +71,7 @@ The `hessQuik` package includes a variety of popular functions which can be comp
 	\begin{align}
 	g_{\text{residual}}(\bfu) = \bfu + h\sigma(\bfK\bfu + \bfb)
 	\end{align}
-	where $h > 0$ is a step size.  ResNets can be interpreted as discretizations of differential equations or dynamical systems [@HaberRuthotto2017, @E2017].
+	where $h > 0$ is a step size.  ResNets can be interpreted as discretizations of differential equations or dynamical systems [@HaberRuthotto2017; @E2017].
 	
 * `ICNNLayer`: The input convex neural network layer preserves convexity of the composite function with respect to the input features.  Our layer follows the construction of [@amos2017input].
 
@@ -82,7 +82,7 @@ The `hessQuik` package includes a variety of popular functions which can be comp
 	
 * `quadraticLayer`, `quadraticICNNLayer`: These are layers that output scalar values and are typically reserved for the final layer of a model.
 
-Each layer incorporates a nonlinear activation function, $\sigma: \Rbb \to \Rbb$, that is applied entry-wise.  We provide several activation functions, including sigmoid, hyperbolic tangent, and softplus.  The variety of implemented layers and activation functions makes designing a wide range of `hessQuik` models easy.
+The variety of implemented layers and activation functions makes designing a wide range of `hessQuik` models easy.
 
 
 # Computing Derivatives with `hessQuik`
