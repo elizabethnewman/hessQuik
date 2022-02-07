@@ -65,7 +65,7 @@ The `hessQuik` package includes a variety of popular functions which can be comp
 	\begin{align}
 	 g_{\text{single}}(\bfu) = \sigma(\bfK \bfu + \bfb)
 	\end{align}
-	where $\bfK$ and $\bfb$ are model weights that can be tuned.
+	where $\bfK$ and $\bfb$ are a weight matrix and bias vector, respectively, that can be tuned via optimization methods.
 	
 * `residualLayer`: This layer differs from a single layer by including a skip connection. It is the building block of residual neural networks (ResNet) [@He2016:deep].
 	\begin{align}
@@ -73,13 +73,16 @@ The `hessQuik` package includes a variety of popular functions which can be comp
 	\end{align}
 	where $h > 0$ is a step size.  ResNets can be interpreted as discretizations of differential equations or dynamical systems [@HaberRuthotto2017, @E2017].
 	
-* `ICNNLayer`: The input convex neural network layer [@amos2017input] preserves convexity of the composite function with respect to the input features via the mapping
-	\begin{align}
+* `ICNNLayer`: The input convex neural network layer preserves convexity of the composite function with respect to the input features.  Our layer follows the construction of [@amos2017input].
+
+<!-- 	\begin{align}
 	g_{\text{icnn}}(\widetilde{\bfu}) = \sigma(\begin{bmatrix}\bfW^+ & \bfK\end{bmatrix} \widetilde{\bfu} + \bfb), \qquad \widetilde{\bfu} = \begin{bmatrix} \bfu \\ \bfu_0\end{bmatrix}.
 	\end{align}
-	where $\bfW^+$ has nonnegative entries.
+	where $\bfW^+$ has nonnegative entries. -->
+	
+* `quadraticLayer`, `quadraticICNNLayer`: These are layers that output scalar values and are typically reserved for the final layer of a model.
 
-Each layer uses a nonlinear activation function $\sigma: \Rbb \to \Rbb$, applied entry-wise.  We provide several activation functions, including sigmoid, hyperbolic tangent, and softplus.  The variety of implemented layers and activation functions makes designing a wide range of `hessQuik` models easy.
+Each layer incorporates a nonlinear activation function, $\sigma: \Rbb \to \Rbb$, that is applied entry-wise.  We provide several activation functions, including sigmoid, hyperbolic tangent, and softplus.  The variety of implemented layers and activation functions makes designing a wide range of `hessQuik` models easy.
 
 
 # Computing Derivatives with `hessQuik`
