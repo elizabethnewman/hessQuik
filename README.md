@@ -68,3 +68,9 @@ If your code passes the necessary numerical tests and is well-documented, your c
 ## Reporting Bugs
 
 If you notice an issue with this repository, please report it using [Github Issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues).  When reporting an implemetnation bug, include a small example that helps to reproduce the error.  The issue will be addressed as quickly as possible.
+
+
+## Acknowledgements
+
+This material is in part based upon work supported by the US National Science Foundation under Grant Number 1751636, the Air Force Office of Scientific Research Award FA9550-20-1-0372, and the US DOE Office of
+Advanced Scientific Computing Research Field Work Proposal 20-023231. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the funding agencies.
