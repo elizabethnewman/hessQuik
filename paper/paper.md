@@ -36,7 +36,7 @@ bibliography: paper.bib
 
 
 # Summary
-`hessQuik` is a lightweight repository for fast computation of second-order derivatives (Hessians) with respect to the inputs of coposite functions, or models formed via compositions of functions.  The core of `hessQuik` is the efficient computation of analytical Hessians with GPU acceleration. `hessQuik` is a PyTorch [@pytorch] package that is user-friendly and easily extendable.  The repository includes a variety of popular functions or layers, including residual layers and input convex layers, from which users can build complex models via composition.  `hessQuik` layers are designed for ease of composition - users need only select the layers and the package provides a convenient wrapper to compose the functions properly.  Each layer provides two modes for derivative computation and the mode is automatically selected to maximize computational efficiency. `hessQuik` includes easy-access, [illustrative tutorials](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikPeaksHermiteInterpolation.ipynb) on Google Colaboratory [@googleColab], [reproducible experiments](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb), and unit tests to verify implementations.  We hope that `hessQuik` will enable users to incorporate valuable second-order informantion into their models simply and efficiently.
+`hessQuik` is a lightweight repository for fast computation of second-order derivatives (Hessians) of composite functions (that is, functions formed via compositions) with respect to their inputs.  The core of `hessQuik` is the efficient computation of analytical Hessians with GPU acceleration. `hessQuik` is a PyTorch [@pytorch] package that is user-friendly and easily extendable.  The repository includes a variety of popular functions or layers, including residual layers and input convex layers, from which users can build complex models via composition.  `hessQuik` layers are designed for ease of composition - users need only select the layers and the package provides a convenient wrapper to compose the functions properly.  Each layer provides two modes for derivative computation and the mode is automatically selected to maximize computational efficiency. `hessQuik` includes easy-access, [illustrative tutorials](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikPeaksHermiteInterpolation.ipynb) on Google Colaboratory [@googleColab], [reproducible experiments](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb), and unit tests to verify implementations. `hessQuik` enables users to obtain valuable second-order informantion into their models simply and efficiently.
 
 # Statement of need
 
@@ -47,7 +47,7 @@ Knowledge of second-order derivatives is paramount in many growing fields, such 
 
 # `hessQuik` Building Blocks
 
-`hessQuik` is designed to build complex functions constructed via composition of simpler functions, which we call \emph{layers}.  The package depends on the proper implementation of these layers and their derivatives.  We describe the process mathematically.
+`hessQuik` builds complex functions constructed via composition of simpler functions, which we call \emph{layers}.  The package uses the chain rule to compute Hessians of composite functions, assuming the derivatives of the layers are implemented analytically.  We describe the process mathematically.
 
 Let $f:\Rbb^{n_0} \to \Rbb^{n_\ell}$ be a twice continuously-differentiable function defined as
 	\begin{align}
@@ -57,19 +57,19 @@ Here, $g_i$ represents the $i$-th layer and $n_i$ is the number of hidden featur
 
 ## Implemented `hessQuik` Layers
 
-The `hessQuik` package includes a variety of popular functions which can be composed to form complex models.  Each layer incorporates a nonlinear activation function, $\sigma: \Rbb \to \Rbb$, that is applied entry-wise.  The `hessQuik` package provides several activation functions, including sigmoid, hyperbolic tangent, and softplus.   Currently supported layers include the following:
+`hessQuik` includes a variety of popular layers and their derivatives.  These layers can be composed to form complex models.  Each layer incorporates a nonlinear activation function, $\sigma: \Rbb \to \Rbb$, that is applied entry-wise.  The `hessQuik` package provides several activation functions, including sigmoid, hyperbolic tangent, and softplus.   Currently supported layers include the following:
 
-* `singleLayer`: This layer consists of an affine transformation followed by pointwise nonlinearity.  Multilayer perceptron neural networks are built upon these layers.
+* `singleLayer`: This layer consists of an affine transformation followed by pointwise nonlinearity
 	\begin{align}
 	 g_{\text{single}}(\bfu) = \sigma(\bfK \bfu + \bfb)
 	\end{align}
-	where $\bfK$ and $\bfb$ are a weight matrix and bias vector, respectively, that can be tuned via optimization methods.
+	where $\bfK$ and $\bfb$ are a weight matrix and bias vector, respectively, that can be tuned via optimization methods. Multilayer perceptron neural networks are built upon these layers.
 	
-* `residualLayer`: This layer differs from a single layer by including a skip connection. It is the building block of residual neural networks (ResNet) [@He2016:deep].
+* `residualLayer`: This layer differs from a single layer by including a skip connection
 	\begin{align}
 	g_{\text{residual}}(\bfu) = \bfu + h\sigma(\bfK\bfu + \bfb)
 	\end{align}
-	where $h > 0$ is a step size.  ResNets can be interpreted as discretizations of differential equations or dynamical systems [@HaberRuthotto2017; @E2017].
+	where $h > 0$ is a step size.  Residual layers are the building blocks of residual neural networks (ResNets) [@He2016:deep]. ResNets can be interpreted as discretizations of differential equations or dynamical systems [@HaberRuthotto2017; @E2017].
 	
 * `ICNNLayer`: The input convex neural network layer preserves convexity of the composite function with respect to the input features.  Our layer follows the construction of [@amos2017input].
 
@@ -85,7 +85,7 @@ The variety of implemented layers and activation functions makes designing a wid
 
 # Computing Derivatives with `hessQuik`
 
-In `hessQuik`, we offer two modes, forward and backward, to compute the gradient $\nabla_{\bfu_0} f$ and the Hessian $\nabla_{\bfu_0}^2 f$ of the function with respect to the input features. The cost of computing derivatives in each mode is different and depends on the number of input and output features.  `hessQuik` automatically selects the least costly method by which to compute derivatives.  We briefly describe the derivative calculations using the two methods.  First, it is useful to express the evaluation of $f$ as an iterative process.  Let $\bfu_0\in \Rbb^{n_0}$ be a vector of input features.  Then, the function evaluated at $\bfu_0$ is
+In `hessQuik`, we offer two modes, forward and backward, to compute the gradient $\nabla_{\bfu_0} f$ and the Hessian $\nabla_{\bfu_0}^2 f$ of the function with respect to the input features. The cost of computing derivatives in each mode differs and depends on the number of input and output features.  `hessQuik` automatically selects the least costly method by which to compute derivatives.  We briefly describe the derivative calculations using the two methods.  First, it is useful to express the evaluation of $f$ as an iterative process.  Let $\bfu_0\in \Rbb^{n_0}$ be a vector of input features.  Then, the function evaluated at $\bfu_0$ is
 	\begin{align}
 			\bfu_1		&= g_1(\bfu_0)  &&\in \Rbb^{n_1}\\
 			\bfu_2		&= g_2(\bfu_1)  &&\in \Rbb^{n_2}\\
@@ -156,9 +156,9 @@ In \autoref{fig:scalar} and \autoref{fig:vector}, we compare the performance of 
 ![Average time over $10$ trials to compute the Hessian with respect to the input features with variable number of input and output features. Each row corresponds to a number of input features, $n_0$, each column corresponds to a number of output features, $n_{\ell}$, and color represents the amount of time to compute. \label{fig:vector}](img/hessQuik_timing_vector.png){ width=80% }
 
 # Conclusions
-`hessQuik` is a simple, user-friendly repository for computing second-order derivatives of models constructed via composition of functions.  This PyTorch package includes many popular built-in layers, tutorial repositories, reproducibile experiments, and unit testing for ease of use.  The implementation scales well in time with the various input and output feature dimensions and performance is accelerated on GPUs, notably faster than automatic-differentiation-based second-order derivative computations.  We hope the accessibility and efficiency of this package will encourage researchers to use and contribute to `hessQuik` in the future.
+`hessQuik` is a simple, user-friendly repository for computing second-order derivatives of models constructed via composition of functions with respect to their inputs.  This PyTorch package includes many popular built-in layers, tutorial repositories, reproducibile experiments, and unit testing for ease of use.  The implementation scales well in time with the various input and output feature dimensions and performance is accelerated on GPUs, notably faster than automatic-differentiation-based second-order derivative computations.  We hope the accessibility and efficiency of this package will encourage researchers to use and contribute to `hessQuik` in the future.
 
 # Acknowledgements
-The development of `hessQuik` was supported in part by the US National Science Foundation under Grant Number 1751636, the Air Force Office of Scientific Research Award FA9550-20-1-0372, and the US DOE Office of Advanced Scientific Computing Research Field Work Proposal 20-023231. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the funding agencies.
+The development of `hessQuik` was supported in part by the US National Science Foundation under Grant Number 1751636, the Air Force Office of Scientific Research Award FA9550-20-1-0372, and the US DOE Office of Advanced Scientific Computing Research Field Work Proposal 20-023231. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the funding agencies.
 
 # References
