@@ -85,7 +85,9 @@ The variety of implemented layers and activation functions makes designing a wid
 
 # Computing Derivatives with `hessQuik`
 
-In `hessQuik`, we offer two modes, forward and backward, to compute the gradient $\nabla_{\bfu_0} f$ and the Hessian $\nabla_{\bfu_0}^2 f$ of the function with respect to the input features. The cost of computing derivatives in each mode differs and depends on the number of input and output features.  `hessQuik` automatically selects the least costly method by which to compute derivatives.  We briefly describe the derivative calculations using the two methods.  First, it is useful to express the evaluation of $f$ as an iterative process.  Let $\bfu_0\in \Rbb^{n_0}$ be a vector of input features.  Then, the function evaluated at $\bfu_0$ is
+In `hessQuik`, we offer two modes, forward and backward, to compute the gradient $\nabla_{\bfu_0} f$ and the Hessian $\nabla_{\bfu_0}^2 f$ of the function with respect to the input features. The cost of computing derivatives in each mode differs and depends on the number of input and output features.  `hessQuik` automatically selects the least costly method by which to compute derivatives.  We briefly describe the derivative calculations using the two methods.  
+
+First, it is useful to express the evaluation of $f$ as an iterative process.  Let $\bfu_0\in \Rbb^{n_0}$ be a vector of input features.  Then, the function evaluated at $\bfu_0$ is
 	\begin{align}
 			\bfu_1		&= g_1(\bfu_0)  &&\in \Rbb^{n_1}\\
 			\bfu_2		&= g_2(\bfu_1)  &&\in \Rbb^{n_2}\\
