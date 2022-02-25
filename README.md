@@ -2,6 +2,11 @@
 
 A lightweight package for fast, GPU-accelerated computation of gradients and Hessians of functions constructed via composition.
 
+## Statement of Need
+Deep neural networks (DNNs) and other composition-based models have become a staple of data science, garnering state-of-the-art results and gaining widespread use in the scientific community, particularly as surrogate models to replace expensive computations. The unrivaled universality and success of DNNs is due, in part, to the convenience of automatic differentiation (AD) which enables users to compute derivatives of complex functions without an explicit formula. Despite being a powerful tool to compute first-order derivatives (gradients), AD encounters computational obstacles when computing second-order derivatives (Hessians).  
+
+Knowledge of second-order derivatives is paramount in many growing fields and can provide insight into the optimization problem solved to build a good model. Hessians are notoriously challenging to compute efficiently with AD and cumbersome to derive and debug analytically.  Hence, many algorithms approximate Hessian information, resulting in suboptimal performance.  To address these challenges, `hessQuik` computes Hessians analytically and efficiently with an implementation that is accelerated on GPUs.
+
 ## Installation
 
 ```console
@@ -69,6 +74,9 @@ If your code passes the necessary numerical tests and is well-documented, your c
 
 If you notice an issue with this repository, please report it using [Github Issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues).  When reporting an implemetnation bug, include a small example that helps to reproduce the error.  The issue will be addressed as quickly as possible.
 
+## How to Cite
+
+To Be Added
 
 ## Acknowledgements
 
