@@ -18,15 +18,16 @@ class ICNNLayer(hessQuikLayer):
         d           - no. of input features, i.e., size of x
         min         - no. of auxiliary input features, i.e., size of u
         mout        - no. of output features
-        act         - activation function, default=softplus
-        m           - element-wise scaling function to ensure non-negativity of some weights, default=softplus
+        act         - activation function, default=softplusActivation
+        m           - element-wise scaling function to ensure non-negativity of some weights, default=softplus.png
         K           - weights applied to x, K.shape=(d,mout)
         L           - weights applied to u, L.shape=(min,mout)
         b           - weights for bias, b.shape=mout
 
     """
 
-    def __init__(self, input_dim, in_features, out_features, act: act.hessQuikActivationFunction = act.softplusActivation(),
+    def __init__(self, input_dim, in_features, out_features,
+                 act: act.hessQuikActivationFunction = act.softplusActivation(),
                  device=None, dtype=None):
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(ICNNLayer, self).__init__()

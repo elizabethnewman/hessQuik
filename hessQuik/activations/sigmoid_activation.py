@@ -11,7 +11,7 @@ class sigmoidActivation(hessQuikActivationFunction):
         \begin{align}
             \sigma(x)   &= \frac{1}{1 + e^{-x}}\\
             \sigma'(x)  &= \sigma(x)(1 - \sigma(x))\\
-            \sigma''(x) &= \sigma'(x)(1 - 2 * sigma)
+            \sigma''(x) &= \sigma'(x)(1 - 2 * \sigma(x))
         \end{align}
 
     """
