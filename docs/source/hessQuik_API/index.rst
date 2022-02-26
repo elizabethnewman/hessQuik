@@ -6,6 +6,7 @@ hessQuik API
    :caption: hessQuik API
 
    hessQuik.activations
+   hessQuik.activations2
    hessQuik.layers
    hessQuik.networks
    hessQuik
