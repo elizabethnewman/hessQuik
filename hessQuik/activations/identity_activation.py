@@ -1,12 +1,28 @@
 import torch
 from hessQuik.activations import hessQuikActivationFunction
 
+
 class identityActivation(hessQuikActivationFunction):
+    r"""
+    Identity function
+
+    .. math::
+
+        \begin{align}
+            \sigma(x)   &= x\\
+            \sigma'(x)  &= 1\\
+            \sigma''(x) &= 0
+        \end{align}
+
+    """
 
     def __init__(self):
         super(identityActivation, self).__init__()
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
+        """
+        :meta private:
+        """
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -22,6 +38,9 @@ class identityActivation(hessQuikActivationFunction):
         return sigma, dsigma, d2sigma
 
     def compute_derivatives(self, *args, do_Hessian=False):
+        """
+        :meta private:
+        """
         x = args[0]
         d2sigma = None
         dsigma = torch.ones_like(x)

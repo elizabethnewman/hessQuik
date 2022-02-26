@@ -4,6 +4,18 @@ from hessQuik.activations import hessQuikActivationFunction
 
 
 class softplusActivation(hessQuikActivationFunction):
+    r"""
+    Softplus function
+
+    .. math::
+
+        \begin{align}
+            \sigma(x)   &= \frac{1}{\beta}\ln(1 + e^{\beta x})\\
+            \sigma'(x)  &= \frac{1}{1 + e^{-\beta x}}\\
+            \sigma''(x) &= \frac{\beta}{2\cosh(\beta x) + 2}
+        \end{align}
+
+    """
 
     def __init__(self, beta=1, threshold=20):
         super(softplusActivation, self).__init__()
@@ -11,6 +23,9 @@ class softplusActivation(hessQuikActivationFunction):
         self.threshold = threshold
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
+        """
+        :meta private:
+        """
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -27,12 +42,15 @@ class softplusActivation(hessQuikActivationFunction):
         return sigma, dsigma, d2sigma
 
     def compute_derivatives(self, *args, do_Hessian=False):
+        """
+        :meta private:
+        """
         x = args[0]
         d2sigma = None
 
-        dsigma = torch.exp(self.beta * x) / (1 + torch.exp(self.beta * x))
+        dsigma = 1 / (1 + torch.exp(-self.beta * x))
         if do_Hessian:
-            d2sigma = self.beta * torch.exp(self.beta * x) / ((1 + torch.exp(self.beta * x)) ** 2)
+            d2sigma = self.beta / (2 + 2 * torch.cosh(self.beta * x))
 
         # for numerical stability
         idx = (self.beta * x > self.threshold).nonzero(as_tuple=True)

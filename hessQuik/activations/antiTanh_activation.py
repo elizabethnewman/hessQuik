@@ -9,7 +9,7 @@ class antiTanhActivation(hessQuikActivationFunction):
     .. math::
 
         \begin{align}
-            \sigma(x)   &= \ln(\cosh(x))\\
+            \sigma(x)   &= \ln|\cosh(x)|\\
             \sigma'(x)  &= \tanh(x)\\
             \sigma''(x) &= 1 - \tanh^2(x)
         \end{align}
@@ -21,7 +21,6 @@ class antiTanhActivation(hessQuikActivationFunction):
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
         """
-
         :meta private:
         """
 
@@ -40,6 +39,9 @@ class antiTanhActivation(hessQuikActivationFunction):
         return sigma, dsigma, d2sigma
 
     def compute_derivatives(self, *args, do_Hessian=False):
+        """
+        :meta private:
+        """
         x = args[0]
         dsigma = torch.tanh(x)
         d2sigma = None

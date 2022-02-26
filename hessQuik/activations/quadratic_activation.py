@@ -1,12 +1,28 @@
 import torch
 from hessQuik.activations import hessQuikActivationFunction
 
+
 class quadraticActivation(hessQuikActivationFunction):
+    r"""
+    Quadratic function
+
+    .. math::
+
+        \begin{align}
+            \sigma(x)   &= \frac{1}{2}x^2\\
+            \sigma'(x)  &= x\\
+            \sigma''(x) &= 1
+        \end{align}
+
+    """
 
     def __init__(self):
         super(quadraticActivation, self).__init__()
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
+        """
+        :meta private:
+        """
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -22,6 +38,9 @@ class quadraticActivation(hessQuikActivationFunction):
         return sigma, dsigma, d2sigma
 
     def compute_derivatives(self, *args, do_Hessian=False):
+        """
+        :meta private:
+        """
         dsigma = args[0]
         d2sigma = None
         if do_Hessian:

@@ -3,11 +3,32 @@ from hessQuik.activations import hessQuikActivationFunction
 
 
 class tanhActivation(hessQuikActivationFunction):
+    r"""
+    Hyperbolic tangent function
+
+    .. math::
+
+        \begin{align}
+            \sigma(x)   &= \tanh(x)\\
+            \sigma'(x)  &= 1 - \tanh^2(x)\\
+            \sigma''(x) &= -2\tanh(x) (1 - \tanh^2(x))
+        \end{align}
+
+    Examples::
+        >>> act_func = act.tanhActivation()
+        >>> x = torch.randn(10, 4)
+        >>> sigma, dsigma, d2sigma = act_func(x)
+
+
+    """
 
     def __init__(self):
         super(tanhActivation, self).__init__()
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
+        """
+        :meta private:
+        """
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -23,6 +44,9 @@ class tanhActivation(hessQuikActivationFunction):
         return sigma, dsigma, d2sigma
 
     def compute_derivatives(self, *args, do_Hessian=False):
+        """
+        :meta private:
+        """
         sigma = args[0]
         d2sigma = None
         dsigma = 1 - sigma ** 2
