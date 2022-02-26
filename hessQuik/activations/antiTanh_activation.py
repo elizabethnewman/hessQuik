@@ -7,7 +7,8 @@ class antiTanhActivation(hessQuikActivationFunction):
     antiTanh Activation function
 
     .. math::
-        \sigma(x) = \ln(\cosh(x))\\
+
+        \sigma(x) = \ln(\cosh(x))
 
     """
 
