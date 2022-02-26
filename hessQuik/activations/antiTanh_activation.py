@@ -3,21 +3,21 @@ from hessQuik.activations import hessQuikActivationFunction
 
 
 class antiTanhActivation(hessQuikActivationFunction):
+    """
+    antiTanh Activation function
+
+    :math::
+        \sigma(x)   & = \ln(\cosh(x))\\
+        \sigma'(x)  & = \tanh(x)\\
+        \sigma''(x) & = 1 - \tanh^2(x)
+
+    """
 
     def __init__(self):
         super(antiTanhActivation, self).__init__()
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
-        """
-        .. math::
 
-            \begin{align}
-                \sigma(x)   & = \ln(\cosh(x))\\
-                \sigma'(x)  & = \tanh(x)\\
-                \sigma''(x) & = 1 - \tanh^2(x)
-            \end{align}
-        """
-        
         (dsigma, d2sigma) = (None, None)
 
         # forward
