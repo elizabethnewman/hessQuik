@@ -7,12 +7,13 @@ class antiTanhActivation(hessQuikActivationFunction):
     antiTanh Activation function
 
     .. math::
-        :nowrap:
 
-        \begin{eqnarray}
-            y    & = & ax^2 + bx + c \\
-            f(x) & = & x^2 + 2xy + y^2
-        \end{eqnarray}
+        \sigma(x) = \ln(\cosh(x))
+
+        \sigma'(x) = \tanh(x)
+
+        \sigma''(x) = 1 - \tanh^2(x)
+
 
     """
 
