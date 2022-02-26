@@ -1,8 +1,8 @@
 hessQuik Activation Functions
 =============================
 
-hessQuik Activation Function Syntax
------------------------------------
+hessQuik.activations.hessQuik\_activation\_function
+---------------------------------------------------
 
 .. automodule:: hessQuik.activations.hessQuik_activation_function
    :members:
@@ -24,32 +24,32 @@ hessQuik.activations.identity\_activation
    :undoc-members:
    :show-inheritance:
 
-hessQuik.activations.quadratic\_activation module
--------------------------------------------------
+hessQuik.activations.quadratic\_activation
+------------------------------------------
 
 .. automodule:: hessQuik.activations.quadratic_activation
    :members:
    :undoc-members:
    :show-inheritance:
 
-hessQuik.activations.sigmoid\_activation module
------------------------------------------------
+hessQuik.activations.sigmoid\_activation
+----------------------------------------
 
 .. automodule:: hessQuik.activations.sigmoid_activation
    :members:
    :undoc-members:
    :show-inheritance:
 
-hessQuik.activations.softplus\_activation module
-------------------------------------------------
+hessQuik.activations.softplus\_activation
+-----------------------------------------
 
 .. automodule:: hessQuik.activations.softplus_activation
    :members:
    :undoc-members:
    :show-inheritance:
 
-hessQuik.activations.tanh\_activation module
---------------------------------------------
+hessQuik.activations.tanh\_activation
+-------------------------------------
 
 .. automodule:: hessQuik.activations.tanh_activation
    :members:

@@ -9,8 +9,7 @@ class hessQuikActivationFunction(nn.Module):
         super(hessQuikActivationFunction, self).__init__()
         self.ctx = None  # context variable
 
-    def forward(self, x: Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True) -> \
-            Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
+    def forward(self, x: Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True) -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
         """
         Forward propagate through a pointwise activation function, sigma(x)
 
