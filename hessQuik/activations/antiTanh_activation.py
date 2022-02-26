@@ -9,9 +9,10 @@ class antiTanhActivation(hessQuikActivationFunction):
     .. math::
         :nowrap:
 
-        \begin{align}
-            \sigma(x) & = \ln(\cosh(x))
-        \end{align}
+        \begin{eqnarray}
+            y    & = & ax^2 + bx + c \\
+            f(x) & = & x^2 + 2xy + y^2
+        \end{eqnarray}
 
     """
 
