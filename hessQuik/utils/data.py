@@ -1,7 +1,28 @@
 import torch
+from torch import Tensor
+from typing import Tuple, Optional
 
 
-def peaks(y, do_gradient=False, do_Hessian=False):
+def peaks(y: Tensor, do_gradient: bool = False, do_Hessian: bool = False) -> \
+        Tuple[Tensor, Optional[Tensor], Optional[Tensor]]:
+    """
+    Generate data from the MATLAB 2D peaks function
+    https://www.mathworks.com/help/matlab/ref/peaks.html
+
+    Inputs
+    ------
+    y : torch.Tensor, (x, y) coordinates, (n_samples, 2)
+    do_gradient: bool, optional (default = False), compute value of first derivatives at given (x, y) coordinates
+    do_Hessian: bool, optional (default = False), compute value of second derivatives at given (x, y) coordinates
+
+    Return
+    ------
+    f : torch.Tensor, function value at each (x, y) coordinate, (n_samples,)
+    df : torch.Tensor, optional, first derivative values at each (x, y) coordinate, (n_samples, 2)
+    d2f : torch.Tensor, optional, second derivative values at each (x, y) coordinate, (n_samples, 4)
+            Note: because the peaks function is twice continuously differentiable,
+
+    """
     df, d2f = None, None
 
     # function

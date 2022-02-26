@@ -52,12 +52,12 @@ class NNPytorchAD(nn.Module):
         self.net = net
         self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False, **kwargs):
         (df, d2f) = (None, None)
         if do_gradient or do_Hessian:
             x.requires_grad = True
 
-        f, *_ = self.net(x, do_gradient=False, do_Hessian=False)
+        f, *_ = self.net(x, do_gradient=False, do_Hessian=False, forward_mode=False)
 
         if do_gradient or do_Hessian:
             f = f.view(x.shape[0], -1)
@@ -91,12 +91,12 @@ class NNPytorchHessian(nn.Module):
         self.net = net
         self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False):
+    def forward(self, x, do_gradient=False, do_Hessian=False, **kwargs):
         (df, d2f) = (None, None)
         if do_gradient or do_Hessian:
             x.requires_grad = True
 
-        f, *_ = self.net(x, do_gradient=False, do_Hessian=False)
+        f, *_ = self.net(x, do_gradient=False, do_Hessian=False, forward_mode=False)
 
         if f.squeeze().ndim > 1:
             raise ValueError(type(self), " must have scalar outputs per example")
