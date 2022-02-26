@@ -20,6 +20,10 @@ class antiTanhActivation(hessQuikActivationFunction):
         super(antiTanhActivation, self).__init__()
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
+        """
+
+        :meta private:
+        """
 
         (dsigma, d2sigma) = (None, None)
 
