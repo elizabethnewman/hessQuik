@@ -3,7 +3,9 @@ from hessQuik.activations import hessQuikActivationFunction
 
 
 class antiTanhActivation(hessQuikActivationFunction):
-
+    """
+    Here is some documentation.
+    """
     def __init__(self):
         super(antiTanhActivation, self).__init__()
 
