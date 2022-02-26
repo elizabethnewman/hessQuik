@@ -4,12 +4,14 @@ from hessQuik.activations import hessQuikActivationFunction
 
 class antiTanhActivation(hessQuikActivationFunction):
     r"""
-    antiTanh Activation function
+    Antiderivative of hyperbolic tangent
 
     .. math::
 
         \begin{align}
-            \sigma(x) &= \ln(\cosh(x))
+            \sigma(x)   &= \ln(\cosh(x))\\
+            \sigma'(x)  &= \tanh(x)\\
+            \sigma''(x) &= 1 - \tanh^2(x)
         \end{align}
 
     """
