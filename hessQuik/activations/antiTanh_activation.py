@@ -7,10 +7,10 @@ class antiTanhActivation(hessQuikActivationFunction):
     antiTanh Activation function
 
     .. math::
-        :nowrap:
-            \begin{align}
-                \sigma(x) &= \ln(\cosh(x))
-            \end{align}
+
+        \begin{align}
+            \sigma(x) &= \ln(\cosh(x))
+        \end{align}
 
     """
 
