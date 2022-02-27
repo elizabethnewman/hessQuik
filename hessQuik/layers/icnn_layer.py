@@ -4,9 +4,23 @@ import torch.nn.functional as F
 import math
 from hessQuik.layers import hessQuikLayer
 import hessQuik.activations as act
+from typing import Union
 
 
 class ICNNLayer(hessQuikLayer):
+    r"""
+    Evaluate and compute derivatives of a single layer.
+
+    Examples::
+
+        >>> import torch, hessQuik.layers as lay
+        >>> layer = lay.ICNNLayer(4, None, 7)
+        >>> x = torch.randn(10, 4)
+        >>> f, dfdx, d2fd2x = layer(x, do_gradient=True, do_Hessian=True)
+        >>> print(f.shape, dfdx.shape, d2fd2x.shape)
+        torch.Size([10, 11]) torch.Size([10, 4, 11]) torch.Size([10, 4, 4, 11])
+
+    """
     """
     layer of an input convex neural network f : R^{min} x R^d \to R^{mout} where
 
@@ -19,16 +33,32 @@ class ICNNLayer(hessQuikLayer):
         min         - no. of auxiliary input features, i.e., size of u
         mout        - no. of output features
         act         - activation function, default=softplusActivation
-        m           - element-wise scaling function to ensure non-negativity of some weights, default=softplus.png
+        m           - element-wise scaling function to ensure non-negativity of some weights, default=softplus
         K           - weights applied to x, K.shape=(d,mout)
         L           - weights applied to u, L.shape=(min,mout)
         b           - weights for bias, b.shape=mout
 
     """
 
-    def __init__(self, input_dim, in_features, out_features,
+    def __init__(self, input_dim: int, in_features: Union[int, None], out_features: int,
                  act: act.hessQuikActivationFunction = act.softplusActivation(),
                  device=None, dtype=None):
+        r"""
+
+        :param input_dim: dimension of network inputs
+        :type input_dim: int
+        :param in_features: number of input features. For first ICNN layer, set ``in_features = None``
+        :type in_features: int or ``None``
+        :param out_features: number of output features
+        :type out_features: int
+        :param act: activation function
+        :type act: hessQuikActivation
+        :var K: weight matrix for the network inputs of size :math:`(d, n_{out})`
+        :var b: bias vector of size :math:`(n_{out},)`
+        :var L: weight matrix for the input features of size :math:`(n_{in}, n_{out})`
+        :var nonneg: pointwise function to force :math:`l` to have nonnegative weights.
+        Default: ``torch.nn.functional.softplus``
+        """
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(ICNNLayer, self).__init__()
 
@@ -63,15 +93,47 @@ class ICNNLayer(hessQuikLayer):
         nn.init.uniform_(self.b, -bound, bound)
 
     def dim_input(self):
+        r"""
+        Dimension of input features + dimensions of network inputs
+        """
         n = self.input_dim
         if self.in_features is not None:
             n += self.in_features
         return n
 
     def dim_output(self):
+        r"""
+        Dimension of output features + dimensions of network inputs
+        """
         return self.out_features + self.input_dim
 
     def forward(self, ux, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
+        r"""
+        Forward propagation through ICNN layer of the form
+
+        .. math::
+
+            \left[\begin{arrray}{c}f(x) & x\end{array}\right] =
+            \sigma\left(\left[\begin{arrray}{c}u(x) & x\end{array}\right]
+            \left[\begin{arrray}{c}L^+ \\ K\end{array}\right] + b\right)
+
+        Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
+        a function of the input of the network, :math:`x` of size :math:`(n_s, d)`.
+        The output features, :math:`f(x)`, are of size :math:`(n_s, n_{out})`.
+        The notation :math:`L^+` indicates that the weights in the matrix :math:`L` are non-negative.
+
+        As an example, the gradient with respect to :math:`x` is of the form
+
+        .. math::
+
+            \nabla_x f = \text{diag}\left(\sigma\left(\left[\begin{arrray}{c}u(x) & x\end{array}\right]
+            \left[\begin{arrray}{c}L^+ \\ K\end{array}\right] + b\right)'\right)
+            \left[\begin{arrray}{c}(L^+)^\top & K^\top\end{array}\right]
+            \left[\begin{arrray}{c}\nabla_x u & I\end{array}\right]
+
+        where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix and :math:`I` is
+        the :math:`d \times d` identity matrix.
+        """
 
         (dfdx, d2fd2x) = (None, None)
 
@@ -122,6 +184,27 @@ class ICNNLayer(hessQuikLayer):
         return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+        r"""
+        Backward propagation through ICNN layer of the form
+
+        .. math::
+
+            \left[\begin{arrray}{c}f(u) & x\end{array}\right] =
+            \sigma\left(\left[\begin{arrray}{c}u & x\end{array}\right]
+            \left[\begin{arrray}{c}L^+ \\ K\end{array}\right] + b\right)
+
+        Here, the network is :math:`g` is a function of :math:`f(u)`.
+
+        As an example, the gradient of the network with respect to :math:`u` is of the form
+
+        .. math::
+
+            \nabla_u g = \left(\sigma'\left(\left[\begin{arrray}{c}u & x\end{array}\right]
+            \left[\begin{arrray}{c}L^+ \\ K\end{array}\right] + b\right) \odot \nabla_f g\right)K^\top
+
+        where :math:`\odot` denotes the pointwise product.
+
+        """
         M = self.K
         if self.L is not None:
             M = torch.cat((self.nonneg(self.L), M), dim=0)

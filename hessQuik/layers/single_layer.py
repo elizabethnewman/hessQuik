@@ -11,7 +11,7 @@ class singleLayer(hessQuikLayer):
 
     Examples::
 
-        >>> import hessQuik.layers as lay
+        >>> import torch, hessQuik.layers as lay
         >>> layer = lay.singleLayer(4, 7)
         >>> x = torch.randn(10, 4)
         >>> f, dfdx, d2fd2x = layer(x, do_gradient=True, do_Hessian=True)
@@ -81,7 +81,7 @@ class singleLayer(hessQuikLayer):
 
             \nabla_x f = \text{diag}(\sigma'(u(x) K + b))K^\top \nabla_x u
 
-        where :math:`\odot` denotes the pointwise product.
+        where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix.
         """
         (dfdx, d2fd2x) = (None, None)
         f, dsig, d2sig = self.act(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian,
