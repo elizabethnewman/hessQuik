@@ -3,7 +3,7 @@ import torch.nn as nn
 import math
 from hessQuik.layers import hessQuikLayer
 import hessQuik.activations as act
-
+from typing import Union, Tuple
 
 class singleLayer(hessQuikLayer):
     r"""
@@ -22,7 +22,7 @@ class singleLayer(hessQuikLayer):
 
     def __init__(self, in_features: int, out_features: int,
                  act: act.hessQuikActivationFunction = act.identityActivation(),
-                 device=None, dtype=None):
+                 device=None, dtype=None) -> None:
         r"""
         :param in_features: number of input features, :math:`n_{in}`
         :type in_features: int
@@ -44,14 +44,14 @@ class singleLayer(hessQuikLayer):
         self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))
         self.reset_parameters()
 
-    def reset_parameters(self):
+    def reset_parameters(self) -> None:
         nn.init.kaiming_uniform_(self.K, a=math.sqrt(5))
 
         fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.K)
         bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
         nn.init.uniform_(self.b, -bound, bound)
 
-    def dim_input(self):
+    def dim_input(self) -> int:
         r"""
         number of input features
         """
@@ -63,7 +63,9 @@ class singleLayer(hessQuikLayer):
         """
         return self.out_features
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
+    def forward(self, u: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True,
+                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
         Forward propagation through single layer of the form
 
@@ -113,7 +115,8 @@ class singleLayer(hessQuikLayer):
 
         return f, dfdx, d2fd2x
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+    def backward(self, do_Hessian: bool = False,
+                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None):
         r"""
         Backward propagation through single layer of the form
 

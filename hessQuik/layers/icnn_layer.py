@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import math
 from hessQuik.layers import hessQuikLayer
 import hessQuik.activations as act
-from typing import Union
+from typing import Union, Tuple
 
 
 class ICNNLayer(hessQuikLayer):
@@ -24,7 +24,7 @@ class ICNNLayer(hessQuikLayer):
 
     def __init__(self, input_dim: int, in_features: Union[int, None], out_features: int,
                  act: act.hessQuikActivationFunction = act.softplusActivation(),
-                 device=None, dtype=None):
+                 device=None, dtype=None) -> None:
         r"""
 
         :param input_dim: dimension of network inputs
@@ -73,7 +73,7 @@ class ICNNLayer(hessQuikLayer):
         bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
         nn.init.uniform_(self.b, -bound, bound)
 
-    def dim_input(self):
+    def dim_input(self) -> int:
         r"""
         number of input features + dimension of network inputs
         """
@@ -82,13 +82,15 @@ class ICNNLayer(hessQuikLayer):
             n += self.in_features
         return n
 
-    def dim_output(self):
+    def dim_output(self) -> int:
         r"""
         number of output features + dimension of network inputs
         """
         return self.out_features + self.input_dim
 
-    def forward(self, ux, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
+    def forward(self, ux: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True,
+                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
         Forward propagation through ICNN layer of the form
 
@@ -166,7 +168,9 @@ class ICNNLayer(hessQuikLayer):
 
         return f, dfdx, d2fd2x
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+    def backward(self, do_Hessian: bool = False,
+                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None)\
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
         r"""
         Backward propagation through ICNN layer of the form
 

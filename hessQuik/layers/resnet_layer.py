@@ -2,6 +2,7 @@ import torch
 from hessQuik.layers import hessQuikLayer
 import hessQuik.activations as act
 from hessQuik.layers import singleLayer
+from typing import Union, Tuple
 
 
 class resnetLayer(hessQuikLayer):
@@ -20,7 +21,7 @@ class resnetLayer(hessQuikLayer):
     """
 
     def __init__(self, width: int, h: float = 1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
-                 device=None, dtype=None):
+                 device=None, dtype=None) -> None:
         r"""
         :param width: number of input and output features, :math:`w`
         :type width: int
@@ -38,19 +39,21 @@ class resnetLayer(hessQuikLayer):
         self.h = h
         self.layer = singleLayer(width, width, act=act, **factory_kwargs)
 
-    def dim_input(self):
+    def dim_input(self) -> int:
         r"""
         width
         """
         return self.width
 
-    def dim_output(self):
+    def dim_output(self) -> int:
         r"""
         width
         """
         return self.width
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
+    def forward(self, u: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True,
+                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
         Forward propagation through resnet layer of the form
 
@@ -94,7 +97,8 @@ class resnetLayer(hessQuikLayer):
 
         return f, dfdx, d2fd2x
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+    def backward(self, do_Hessian: bool = False,
+                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None):
         r"""
         Backward propagation through single layer of the form
 

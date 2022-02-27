@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from hessQuik.layers import hessQuikLayer
-from typing import Union
+from typing import Union, Tuple
 
 
 class quadraticICNNLayer(hessQuikLayer):
@@ -21,7 +21,7 @@ class quadraticICNNLayer(hessQuikLayer):
 
     """
 
-    def __init__(self, input_dim: int, in_features: Union[int, None], rank: int, device=None, dtype=None):
+    def __init__(self, input_dim: int, in_features: Union[int, None], rank: int, device=None, dtype=None) -> None:
         r"""
 
         :param input_dim: dimension of network inputs
@@ -55,7 +55,7 @@ class quadraticICNNLayer(hessQuikLayer):
         self.A = nn.Parameter(torch.empty(rank, input_dim, **factory_kwargs))
         self.reset_parameters()
 
-    def reset_parameters(self):
+    def reset_parameters(self) -> None:
 
         if self.in_features is not None:
             bound = 1 / math.sqrt(self.in_features)
@@ -68,19 +68,21 @@ class quadraticICNNLayer(hessQuikLayer):
         bound = 1 / math.sqrt(self.input_dim)
         nn.init.uniform_(self.A, a=-bound, b=bound)
 
-    def dim_input(self):
+    def dim_input(self) -> int:
         r"""
         number of input features + dimension of network inputs
         """
         return self.in_features + self.input_dim
 
-    def dim_output(self):
+    def dim_output(self) -> int:
         r"""
         scalar
         """
         return 1
 
-    def forward(self, ux, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
+    def forward(self, ux: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True,
+                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
         Forward propagation through ICNN layer of the form
 
@@ -160,7 +162,9 @@ class quadraticICNNLayer(hessQuikLayer):
 
         return f.unsqueeze(-1), df, d2f
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+    def backward(self, do_Hessian: bool = False,
+                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
         d2f = None
 
         ux = self.ctx[0]
