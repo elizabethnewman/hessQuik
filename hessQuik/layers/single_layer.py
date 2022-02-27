@@ -7,31 +7,31 @@ import hessQuik.activations as act
 
 class singleLayer(hessQuikLayer):
     r"""
-    Forward propagation through single layer of the form
+    Evaluate and compute derivatives of a single layer.
 
-    .. math::
+    Examples::
 
-        f(u(x)) = \sigma(u(x) @ K + b)
+        >>> import hessQuik.layers as lay
+        >>> layer = lay.singleLayer(4, 7)
+        >>> x = torch.randn(10, 4)
+        >>> f, dfdx, d2fd2x = layer(x, do_gradient=True, do_Hessian=True)
+        >>> print(f.shape, dfdx.shape, d2fd2x.shape)
+        torch.Size([10, 7]) torch.Size([10, 4, 7]) torch.Size([10, 4, 4, 7])
 
-    Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})`
-    which is a function of the input of the network, :math:`x`.
-    The output features, :math:`f(u(x))`, are of size :math:`(n_s, n_{out})`.
-
-    :var K: weight matrix of size :math:`(n_{in}, n_{out})`
-    :var b: bias vector of size :math:`(n_{out},)`
     """
 
     def __init__(self, in_features: int, out_features: int,
                  act: act.hessQuikActivationFunction = act.identityActivation(),
                  device=None, dtype=None):
         r"""
-
-        :param in_features: number of input features
+        :param in_features: number of input features, :math:`n_{in}`
         :type in_features: int
-        :param out_features: number of output features
+        :param out_features: number of output features, :math:`n_{out}`
         :type out_features: int
         :param act: activation function
         :type act: hessQuikActivationFunction
+        :var K: weight matrix of size :math:`(n_{in}, n_{out})`
+        :var b: bias vector of size :math:`(n_{out},)`
         """
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(singleLayer, self).__init__()
@@ -52,13 +52,37 @@ class singleLayer(hessQuikLayer):
         nn.init.uniform_(self.b, -bound, bound)
 
     def dim_input(self):
+        r"""
+        :meta private:
+        """
         return self.in_features
 
     def dim_output(self):
+        r"""
+        :meta private:
+        """
         return self.out_features
 
     def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
+        r"""
+        Forward propagation through single layer of the form
 
+        .. math::
+
+            f(x) = \sigma(u(x) K + b)
+
+        Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
+        a function of the input of the network, :math:`x`.
+        The output features, :math:`f(x)`, are of size :math:`(n_s, n_{out})`.
+
+        As an example, the gradient with respect to :math:`x` is of the form
+
+        .. math::
+
+            \nabla_x f = (\sigma'(u(x) K + b) \odot \nabla_x u)K^\top
+
+        where :math:`\odot` denotes the pointwise product.
+        """
         (dfdx, d2fd2x) = (None, None)
         f, dsig, d2sig = self.act(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian,
                                   forward_mode=True if forward_mode is True else None)
@@ -90,6 +114,29 @@ class singleLayer(hessQuikLayer):
         return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+        r"""
+        Backward propagation through single layer of the form
+
+        .. math::
+
+            \begin{align}
+                f &= \sigma(u K + b)
+                h &= g(f)
+            \end{align}
+
+        Here, :math:`h` is the output of the network which is computed by evaluating some function :math:`g`
+        starting from the output features :math:`f`.
+
+        As an example, the gradient of the network with respect to :math:`u` is of the form
+
+        .. math::
+
+            \nabla_u h = (\sigma'(u K + b) \odot \nabla_f g)K^\top
+
+        where :math:`\odot` denotes the pointwise product.
+
+        """
+
         d2gd2x = None
         dsig, d2sig = self.act.backward(do_Hessian=do_Hessian)
         dgdx = dsig.unsqueeze(1) * self.K
@@ -114,6 +161,9 @@ class singleLayer(hessQuikLayer):
         return dgdx, d2gd2x
 
     def extra_repr(self) -> str:
+        r"""
+        :meta private:
+        """
         return 'in_features={}, out_features={}'.format(
             self.in_features, self.out_features
         )
