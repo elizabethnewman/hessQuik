@@ -21,6 +21,7 @@ class hessQuikActivationFunction(nn.Module):
 
             x (torch.Tensor): input into the activation function. :math:`(*)` where :math:`*` means any size.
 
+
             do_gradient (bool): If set to ``True``, the gradient will be computed during the forward call.
                                 Default: ``True``
 
@@ -64,7 +65,7 @@ class hessQuikActivationFunction(nn.Module):
                                 Default: ``True``
 
         Return:
-            
+
             dsigma (torch.Tensor): optional, first derivative of activation function at input x, same size as x
 
             d2sigma (torch.Tensor): optional, second derivative of activation function at input x, same size as x
