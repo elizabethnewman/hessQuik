@@ -11,7 +11,7 @@ class singleLayer(hessQuikLayer):
 
     Examples::
 
-        >>> import torch, hessQuik.layers as lay
+        >>> import hessQuik.layers as lay
         >>> layer = lay.singleLayer(4, 7)
         >>> x = torch.randn(10, 4)
         >>> f, dfdx, d2fd2x = layer(x, do_gradient=True, do_Hessian=True)
@@ -75,7 +75,7 @@ class singleLayer(hessQuikLayer):
         a function of the input of the network, :math:`x`.
         The output features, :math:`f(x)`, are of size :math:`(n_s, n_{out})`.
 
-        As an example, the gradient with respect to :math:`x` is of the form
+        As an example, for one sample, :math:`n_s = 1`, the gradient with respect to :math:`x` is of the form
 
         .. math::
 
@@ -123,7 +123,7 @@ class singleLayer(hessQuikLayer):
 
         Here, the network is :math:`g` is a function of :math:`f(u)`.
 
-        As an example, the gradient of the network with respect to :math:`u` is of the form
+        As an example, for one sample, :math:`n_s = 1`, the gradient of the network with respect to :math:`u` is of the form
 
         .. math::
 

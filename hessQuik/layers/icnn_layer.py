@@ -21,24 +21,6 @@ class ICNNLayer(hessQuikLayer):
         torch.Size([10, 11]) torch.Size([10, 4, 11]) torch.Size([10, 4, 4, 11])
 
     """
-    """
-    layer of an input convex neural network f : R^{min} x R^d \to R^{mout} where
-
-        f(u,x) = act(z(u,x)) with z(u,x) =  m(L)*u + K*x + b
-
-    with implementation its input gradients and Hessians
-
-    Properties:
-        d           - no. of input features, i.e., size of x
-        min         - no. of auxiliary input features, i.e., size of u
-        mout        - no. of output features
-        act         - activation function, default=softplusActivation
-        m           - element-wise scaling function to ensure non-negativity of some weights, default=softplus
-        K           - weights applied to x, K.shape=(d,mout)
-        L           - weights applied to u, L.shape=(min,mout)
-        b           - weights for bias, b.shape=mout
-
-    """
 
     def __init__(self, input_dim: int, in_features: Union[int, None], out_features: int,
                  act: act.hessQuikActivationFunction = act.softplusActivation(),
@@ -122,7 +104,7 @@ class ICNNLayer(hessQuikLayer):
         The output features, :math:`f(x)`, are of size :math:`(n_s, n_{out})`.
         The notation :math:`(\cdot)^+` is a function that makes the weights of a matrix nonnegative.
 
-        As an example, the gradient with respect to :math:`x` is of the form
+        As an example, for one sample, :math:`n_s = 1`, the gradient with respect to :math:`x` is of the form
 
         .. math::
 
@@ -195,7 +177,7 @@ class ICNNLayer(hessQuikLayer):
 
         Here, the network is :math:`g` is a function of :math:`f(u)`.
 
-        As an example, the gradient of the network with respect to :math:`u` is of the form
+        As an example, for one sample, :math:`n_s = 1`, the gradient of the network with respect to :math:`u` is of the form
 
         .. math::
 

@@ -62,7 +62,7 @@ class resnetLayer(hessQuikLayer):
         a function of the input of the network, :math:`x`.
         The output features, :math:`f(x)`, are of size :math:`(n_s, w)`.
 
-        As an example, the gradient with respect to :math:`x` is of the form
+        As an example, for one sample, :math:`n_s = 1`, the gradient with respect to :math:`x` is of the form
 
         .. math::
 
@@ -104,7 +104,7 @@ class resnetLayer(hessQuikLayer):
 
         Here, the network is :math:`g` is a function of :math:`f(u)`.
 
-        As an example, the gradient of the network with respect to :math:`u` is of the form
+        As an example, for one sample, :math:`n_s = 1`, the gradient of the network with respect to :math:`u` is of the form
 
         .. math::
 
