@@ -17,7 +17,7 @@ class hessQuikActivationFunction(nn.Module):
         r"""
         Applies a pointwise activation function to the incoming data.
 
-        :param x: input into the activation function. :math:`(*)` where :math:`*` means any size.
+        :param x: input into the activation function. :math:`(*)` where :math:`*` means any shape.
         :type x: torch.Tensor
         :param do_gradient: If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
         :type do_gradient: bool, optional
@@ -27,9 +27,9 @@ class hessQuikActivationFunction(nn.Module):
         :type forward_mode: bool, optional
         :return:
 
-            - sigma (*torch.Tensor*) - value of activation function at input x, same size as x
-            - dsigma (*torch.Tensor* or ``None``) - first derivative of activation function at input x, same size as x
-            - d2sigma (*torch.Tensor* or ``None``) - second derivative of activation function at input x, same size as x
+            - **sigma** (*torch.Tensor*) - value of activation function at input x, same size as x
+            - **dsigma** (*torch.Tensor* or ``None``) - first derivative of activation function at input x, same size as x
+            - **d2sigma** (*torch.Tensor* or ``None``) - second derivative of activation function at input x, same size as x
 
         """
         raise NotImplementedError
@@ -48,22 +48,15 @@ class hessQuikActivationFunction(nn.Module):
 
     def compute_derivatives(self, *args, do_Hessian: bool = False) -> Tuple[Tensor, Union[Tensor, None]]:
         r"""
-        Computes derivatives of activation function evaluated at x in either forward or backward more
 
-        Input:
+        :param args: tuple of variables needed to compute derivatives
+        :type args: tuple
+        :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
+        :type do_Hessian: bool, optional
+        :return:
 
-            *args (tuple):
-                tuple of variables needed to compute derivatives
+            - **dsigma** (*torch.Tensor* or ``None``) - first derivative of activation function at input x, same size as x
+            - **d2sigma** (*torch.Tensor* or ``None``) - second derivative of activation function at input x, same size as x
 
-            do_Hessian (bool, optional):
-                If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
-
-        Return:
-
-            dsigma (torch.Tensor, optional):
-                first derivative of activation function at input x, same size as x
-
-            d2sigma (torch.Tensor, optional):
-                second derivative of activation function at input x, same size as x
         """
         raise NotImplementedError
