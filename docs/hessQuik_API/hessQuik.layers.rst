@@ -13,6 +13,7 @@ ICNN Layer
 
 .. automodule:: hessQuik.layers.icnn_layer
    :members:
+   :special-members: __init__
    :show-inheritance:
 
 Quadratic ICNN Layer
@@ -20,6 +21,7 @@ Quadratic ICNN Layer
 
 .. automodule:: hessQuik.layers.quadratic_icnn_layer
    :members:
+   :special-members: __init__
    :show-inheritance:
 
 Quadratic Layer
@@ -27,6 +29,7 @@ Quadratic Layer
 
 .. automodule:: hessQuik.layers.quadratic_layer
    :members:
+   :special-members: __init__
    :show-inheritance:
 
 Residual Layer

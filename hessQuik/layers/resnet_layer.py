@@ -11,10 +11,10 @@ class resnetLayer(hessQuikLayer):
     Examples::
 
         >>> import hessQuik.layers as lay
-        >>> layer = lay.resnetLayer(4, h=0.25)
+        >>> f = lay.resnetLayer(4, h=0.25)
         >>> x = torch.randn(10, 4)
-        >>> f, dfdx, d2fd2x = layer(x, do_gradient=True, do_Hessian=True)
-        >>> print(f.shape, dfdx.shape, d2fd2x.shape)
+        >>> fx, dfdx, d2fd2x = f(x, do_gradient=True, do_Hessian=True)
+        >>> print(fx.shape, dfdx.shape, d2fd2x.shape)
         torch.Size([10, 4]) torch.Size([10, 4, 4]) torch.Size([10, 4, 4, 4])
 
     """

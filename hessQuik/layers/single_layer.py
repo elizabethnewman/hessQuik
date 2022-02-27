@@ -12,10 +12,10 @@ class singleLayer(hessQuikLayer):
     Examples::
 
         >>> import hessQuik.layers as lay
-        >>> layer = lay.singleLayer(4, 7)
+        >>> f = lay.singleLayer(4, 7)
         >>> x = torch.randn(10, 4)
-        >>> f, dfdx, d2fd2x = layer(x, do_gradient=True, do_Hessian=True)
-        >>> print(f.shape, dfdx.shape, d2fd2x.shape)
+        >>> fx, dfdx, d2fd2x = f(x, do_gradient=True, do_Hessian=True)
+        >>> print(fx.shape, dfdx.shape, d2fd2x.shape)
         torch.Size([10, 7]) torch.Size([10, 4, 7]) torch.Size([10, 4, 4, 7])
 
     """

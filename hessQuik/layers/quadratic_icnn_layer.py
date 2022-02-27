@@ -3,14 +3,38 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from hessQuik.layers import hessQuikLayer
+from typing import Union
 
 
 class quadraticICNNLayer(hessQuikLayer):
-    """
-    f(x) = u @ nonneg(w) + x @ v + 0.5 * x.t() @ A.t() @ A @ x + mu
+    r"""
+    Evaluate and compute derivatives of a ICNN quadratic layer.
+
+    Examples::
+
+        >>> import hessQuik.layers as lay
+        >>> f = lay.quadraticICNNLayer(4, None, 2)
+        >>> x = torch.randn(10, 4)
+        >>> fx, dfdx, d2fd2x = f(x, do_gradient=True, do_Hessian=True)
+        >>> print(fx.shape, dfdx.shape, d2fd2x.shape)
+        torch.Size([10, 1]) torch.Size([10, 4, 1]) torch.Size([10, 4, 4, 1])
+
     """
 
-    def __init__(self, input_dim, in_features, rank, device=None, dtype=None, reverse_mode=False):
+    def __init__(self, input_dim: int, in_features: Union[int, None], rank: int, device=None, dtype=None):
+        r"""
+
+        :param input_dim: dimension of network inputs
+        :type input_dim: int
+        :param in_features: number of input features, :math:`n_{in}`.  For only ICNN quadratic layer, set ``in_features = None``
+        :type in_features: int or ``None``
+        :param rank: number of columns of quadratic matrix, :math:`r`.  In practice, :math:`r < n_{in}`
+        :type rank: int
+        :var v: weight vector for network inputs of size :math:`(d,)`
+        :var w: weight vector for input features of size :math:`(n_{in},)`
+        :var mu: additive scalar bias
+        :var nonneg: pointwise function to force :math:`l` to have nonnegative weights. Default ``torch.nn.functional.softplus``
+        """
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(quadraticICNNLayer, self).__init__()
 
@@ -19,10 +43,8 @@ class quadraticICNNLayer(hessQuikLayer):
         self.rank = rank
         self.ctx = None
         self.nonneg = F.softplus
-        self.reverse_mode = reverse_mode
 
         # create final layer
-
         if in_features is not None:
             self.w = nn.Parameter(torch.empty(in_features, **factory_kwargs))
         else:
@@ -52,16 +74,34 @@ class quadraticICNNLayer(hessQuikLayer):
     def dim_output(self):
         return 1
 
-    @property
-    def reverse_mode(self):
-        return self._reverse_mode
-
-    @reverse_mode.setter
-    def reverse_mode(self, reverse_mode):
-        self._reverse_mode = reverse_mode
-
     def forward(self, ux, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
+        r"""
+        Forward propagation through ICNN layer of the form
 
+        .. math::
+
+            f(x) =
+            \left[\begin{array}{c}u(x) & x\end{array}\right]
+            \left[\begin{array}{c}w^+ \\ v\end{array}\right] + \frac{1}{2} x^\top @ A^\top A  x + \mu
+
+        Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
+        a function of the input of the network, :math:`x` of size :math:`(n_s, d)`.
+        The output features, :math:`f(x)`, are of size :math:`(n_s, 1)`.
+        The notation :math:`(\cdot)^+` is a function that makes the weights of a matrix nonnegative.
+
+        As an example, for one sample, :math:`n_s = 1`, the gradient with respect to :math:`x` is of the form
+
+        .. math::
+
+            \nabla_x f = \text{diag}\left(\sigma'\left(\left[\begin{array}{c}u(x) & x\end{array}\right]
+            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right)\right)
+            \left[\begin{array}{c}(L^+)^\top & K^\top\end{array}\right]
+            \left[\begin{array}{c}\nabla_x u \\ I\end{array}\right]
+
+        where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix and :math:`I` is
+        the :math:`d \times d` identity matrix.
+
+        """
         (df, d2f) = (None, None)
         AtA = self.A.t() @ self.A
 
@@ -96,6 +136,10 @@ class quadraticICNNLayer(hessQuikLayer):
                                       + torch.cat((z, x @ AtA), dim=1)).unsqueeze(1).unsqueeze(-1)).squeeze()
 
                 d2f = d2f.unsqueeze(-1)
+                if d2f.ndim < 4:
+                    e = torch.ones(x.shape[0], device=x.device, dtype=x.dtype).view(-1, 1, 1, 1)
+                    d2f = e * d2f.unsqueeze(0)
+
             # -------------------------------------------------------------------------------------------------------- #
             # finish computing gradient
             if dudx is not None:

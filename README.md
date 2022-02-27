@@ -7,6 +7,10 @@ Deep neural networks (DNNs) and other composition-based models have become a sta
 
 Knowledge of second-order derivatives is paramount in many growing fields and can provide insight into the optimization problem solved to build a good model. Hessians are notoriously challenging to compute efficiently with AD and cumbersome to derive and debug analytically.  Hence, many algorithms approximate Hessian information, resulting in suboptimal performance.  To address these challenges, `hessQuik` computes Hessians analytically and efficiently with an implementation that is accelerated on GPUs.
 
+## Documentation
+
+To see detailed documentation, visit [https://hessquik.readthedocs.io/](https://hessquik.readthedocs.io/en/latest/index.html).
+
 ## Installation
 
 ```console

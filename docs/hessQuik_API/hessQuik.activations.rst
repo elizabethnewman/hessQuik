@@ -58,6 +58,7 @@ Softplus
 
 .. automodule:: hessQuik.activations.softplus_activation
    :members:
+   :special-members: __init__
    :show-inheritance:
 
 .. image:: ../img/activations/softplus.png
