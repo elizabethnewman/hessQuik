@@ -6,7 +6,7 @@ from hessQuik.layers import singleLayer
 
 class resnetLayer(hessQuikLayer):
     r"""
-    Evaluate and compute derivatives of a single layer.
+    Evaluate and compute derivatives of a residual layer.
 
     Examples::
 
@@ -22,14 +22,14 @@ class resnetLayer(hessQuikLayer):
     def __init__(self, width: int, h: float = 1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
                  device=None, dtype=None):
         r"""
-        :meta public:
-
-        :param width: number of input and output features
+        :param width: number of input and output features, :math:`w`
         :type width: int
         :param h: step size, :math:`h > 0`
         :type h: float
         :param act: activation function
         :type act: hessQuikActivationFunction
+
+        :var layer: singleLayer with :math:`w` input features and :math:`w` output features
         """
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(resnetLayer, self).__init__()
@@ -39,13 +39,37 @@ class resnetLayer(hessQuikLayer):
         self.layer = singleLayer(width, width, act=act, **factory_kwargs)
 
     def dim_input(self):
+        r"""
+        :meta private:
+        """
         return self.width
 
     def dim_output(self):
+        r"""
+        :meta private:
+        """
         return self.width
 
     def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
+        r"""
+        Forward propagation through resnet layer of the form
 
+        .. math::
+
+            f(x) = u(x) + h \cdot singleLayer(u(x))
+
+        Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, w)` which is
+        a function of the input of the network, :math:`x`.
+        The output features, :math:`f(x)`, are of size :math:`(n_s, w)`.
+
+        As an example, the gradient with respect to :math:`x` is of the form
+
+        .. math::
+
+            \nabla_x f = I + h \nabla_x singleLayer(u(x))
+
+        where :math:`I` denotes the :math:`w \times w` identity matrix.
+        """
         (dfdx, d2fd2x) = (None, None)
         fi, dfi, d2fi = self.layer(u, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x,
                                    forward_mode=True if forward_mode is True else None)
@@ -71,25 +95,44 @@ class resnetLayer(hessQuikLayer):
         return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-        d2gd2x = None
+        r"""
+        Backward propagation through single layer of the form
+
+        .. math::
+
+                f(u) = u + h \cdot singleLayer(u)
+
+        Here, the network is :math:`g` is a function of :math:`f(u)`.
+
+        As an example, the gradient of the network with respect to :math:`u` is of the form
+
+        .. math::
+
+            \nabla_u g = \nabla_f g + h \cdot \nabla_u singleLayer(u)
+
+        where :math:`\odot` denotes the pointwise product.
+
+        """
+        
+        d2gd2u = None
         if not do_Hessian:
 
-            dgdx = self.layer.backward(do_Hessian=False, dgdf=dgdf, d2gd2f=None)[0]
+            dgdu = self.layer.backward(do_Hessian=False, dgdf=dgdf, d2gd2f=None)[0]
 
             if dgdf is None:
-                dgdx = torch.eye(self.width, dtype=dgdx.dtype, device=dgdx.device) + self.h * dgdx
+                dgdu = torch.eye(self.width, dtype=dgdu.dtype, device=dgdu.device) + self.h * dgdu
             else:
-                dgdx = dgdf + self.h * dgdx
+                dgdu = dgdf + self.h * dgdu
         else:
             dfdx, d2fd2x = self.layer.backward(do_Hessian=do_Hessian, dgdf=None, d2gd2f=None)[:2]
 
-            dgdx = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
+            dgdu = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
             if dgdf is not None:
-                dgdx = dgdx @ dgdf
+                dgdu = dgdu @ dgdf
 
-            # d2gd2x = self.h * d2fd2x
+            # d2gd2u = self.h * d2fd2x
             if d2gd2f is None:
-                d2gd2x = self.h * d2fd2x
+                d2gd2u = self.h * d2fd2x
             else:
                 # TODO: compare timings for h_dfdx on CPU and GPU
                 h_dfdx = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
@@ -101,11 +144,14 @@ class resnetLayer(hessQuikLayer):
                 # extra term to compute full Hessian
                 h2 = d2fd2x @ dgdf.unsqueeze(1)
                 # combine
-                d2gd2x = h1 + self.h * h2
+                d2gd2u = h1 + self.h * h2
 
-        return dgdx, d2gd2x
+        return dgdu, d2gd2u
 
     def extra_repr(self) -> str:
+        r"""
+        :meta private:
+        """
         return 'width={}, h={}'.format(self.width, self.h)
 
 
