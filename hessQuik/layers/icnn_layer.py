@@ -95,13 +95,13 @@ class ICNNLayer(hessQuikLayer):
 
         .. math::
 
-            \left[\begin{array}{c}f(x) & x\end{array}\right] =
-            \sigma\left(\left[\begin{array}{c}u(x) & x\end{array}\right]
-            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right)
+            f(x) =
+            \left[\begin{array}{c} \sigma\left(\left[\begin{array}{c}u(x) & x\end{array}\right]
+            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right) & x \end{array}\right]
 
         Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
         a function of the input of the network, :math:`x` of size :math:`(n_s, d)`.
-        The output features, :math:`f(x)`, are of size :math:`(n_s, n_{out})`.
+        The output features, :math:`f(x)`, are of size :math:`(n_s, n_{out} + d)`.
         The notation :math:`(\cdot)^+` is a function that makes the weights of a matrix nonnegative.
 
         As an example, for one sample, :math:`n_s = 1`, the gradient with respect to :math:`x` is of the form
@@ -115,6 +115,7 @@ class ICNNLayer(hessQuikLayer):
 
         where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix and :math:`I` is
         the :math:`d \times d` identity matrix.
+
         """
 
         (dfdx, d2fd2x) = (None, None)
@@ -171,9 +172,9 @@ class ICNNLayer(hessQuikLayer):
 
         .. math::
 
-            \left[\begin{array}{c}f(u) & x\end{array}\right] =
-            \sigma\left(\left[\begin{array}{c}u & x\end{array}\right]
-            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right)
+            f(u) =
+            \left[\begin{array}{c} \sigma\left(\left[\begin{array}{c}u & x\end{array}\right]
+            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right) & x \end{array}\right]
 
         Here, the network is :math:`g` is a function of :math:`f(u)`.
 
@@ -192,49 +193,49 @@ class ICNNLayer(hessQuikLayer):
             M = torch.cat((self.nonneg(self.L), M), dim=0)
 
         # obtain stored information from backward pass
-        d2gd2x = None
+        d2gd2u = None
         dsig, d2sig = self.act.backward(do_Hessian=do_Hessian)
 
         # compute gradient
-        dgdx = dsig.unsqueeze(1) * M
+        dgdu = dsig.unsqueeze(1) * M
 
         # augment gradient
-        M2 = torch.ones(dgdx.shape[0], 1, 1, dtype=dgdx.dtype, device=dgdx.device) \
-            * torch.eye(self.input_dim, dtype=dgdx.dtype, device=dgdx.device).unsqueeze(0)
+        M2 = torch.ones(dgdu.shape[0], 1, 1, dtype=dgdu.dtype, device=dgdu.device) \
+            * torch.eye(self.input_dim, dtype=dgdu.dtype, device=dgdu.device).unsqueeze(0)
 
         if self.in_features is not None:
-            Z = torch.zeros(dgdx.shape[0], self.input_dim, self.in_features)
+            Z = torch.zeros(dgdu.shape[0], self.input_dim, self.in_features)
             M2 = torch.cat((Z, M2), dim=-1).permute(0, 2, 1)
 
-        dgdx = torch.cat((dgdx, M2), dim=-1)
+        dgdu = torch.cat((dgdu, M2), dim=-1)
 
         if do_Hessian:
             # TODO: change order of operations, multiply K's first; check if logic with better naming
-            d2gd2x = (d2sig.unsqueeze(1) * M.unsqueeze(0)).unsqueeze(2) * M.unsqueeze(0).unsqueeze(0)
+            d2gd2u = (d2sig.unsqueeze(1) * M.unsqueeze(0)).unsqueeze(2) * M.unsqueeze(0).unsqueeze(0)
 
             # concatenate zeros
-            Z = torch.zeros(d2gd2x.shape[0], d2gd2x.shape[1], d2gd2x.shape[2], self.input_dim,
-                            dtype=d2gd2x.dtype, device=d2gd2x.device)
-            d2gd2x = torch.cat((d2gd2x, Z), dim=-1)
+            Z = torch.zeros(d2gd2u.shape[0], d2gd2u.shape[1], d2gd2u.shape[2], self.input_dim,
+                            dtype=d2gd2u.dtype, device=d2gd2u.device)
+            d2gd2u = torch.cat((d2gd2u, Z), dim=-1)
 
             if d2gd2f is not None:
                 # Gauss-Newton approximation
-                h1 = (dgdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ dgdx.permute(0, 2, 1).unsqueeze(1))
+                h1 = (dgdu.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ dgdu.permute(0, 2, 1).unsqueeze(1))
                 h1 = h1.permute(0, 2, 3, 1)
 
                 # extra term to compute full Hessian
-                N, _, _, m = d2gd2x.shape
-                h2 = d2gd2x.view(N, -1, m) @ dgdf.view(N, m, -1)
+                N, _, _, m = d2gd2u.shape
+                h2 = d2gd2u.view(N, -1, m) @ dgdf.view(N, m, -1)
                 h2 = h2.view(h1.shape)
 
                 # combine
-                d2gd2x = h1 + h2
+                d2gd2u = h1 + h2
 
         # finish computing gradient
         if dgdf is not None:
-            dgdx = dgdx @ dgdf
+            dgdu = dgdu @ dgdf
 
-        return dgdx, d2gd2x
+        return dgdu, d2gd2u
 
 
 if __name__ == '__main__':
