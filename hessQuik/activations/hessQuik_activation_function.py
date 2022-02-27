@@ -16,31 +16,17 @@ class hessQuikActivationFunction(nn.Module):
             -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
         r"""
         Applies a pointwise activation function to the incoming data.
+        :param x: input into the activation function. :math:`(*)` where :math:`*` means any size.
+        :type x: torch.Tensor
+        :param do_gradient: If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
+        :type do_gradient: bool, optional
+        :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
+        :type do_Hessian: bool, optional
+        :param forward_mode:  If set to ``False``, the derivatives will be computed in backward mode. Default: ``True``
+        :type forward_mode: bool, optional
+        :return: sigma: value of activation function at input x, same size as x
+        :rtype: torch.Tensor
 
-        Input:
-
-            x (torch.Tensor):
-                input into the activation function. :math:`(*)` where :math:`*` means any size.
-
-            do_gradient (bool, optional):
-                If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
-
-            do_Hessian (bool, optional):
-                If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
-
-            forward_mode (bool, optional):
-                If set to ``False``, the derivatives will be computed in backward mode. Default: ``True``
-
-        Return:
-
-            sigma (torch.Tensor):
-                value of activation function at input x, same size as x
-
-            dsigma (torch.Tensor, optional):
-                first derivative of activation function at input x, same size as x.
-
-            d2sigma (torch.Tensor, optional):
-                second derivative of activation function at input x, same size as x
         """
         raise NotImplementedError
 
@@ -60,7 +46,7 @@ class hessQuikActivationFunction(nn.Module):
         r"""
         Computes derivatives of activation function evaluated at x in either forward or backward more
 
-        Input::
+        Input:
 
             *args (tuple):
                 tuple of variables needed to compute derivatives
