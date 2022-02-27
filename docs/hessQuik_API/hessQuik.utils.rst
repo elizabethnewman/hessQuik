@@ -4,58 +4,39 @@ hessQuik.utils package
 Submodules
 ----------
 
-hessQuik.utils.data module
---------------------------
+Peaks Data
+----------
 
 .. automodule:: hessQuik.utils.data
    :members:
-   :undoc-members:
-   :show-inheritance:
 
-hessQuik.utils.input\_derivative\_check module
-----------------------------------------------
+Input Derivative Checks
+-----------------------
 
 .. automodule:: hessQuik.utils.input_derivative_check
    :members:
-   :undoc-members:
-   :show-inheritance:
 
-hessQuik.utils.network\_derivative\_check module
-------------------------------------------------
+Network Weights Derivative Check
+--------------------------------
 
 .. automodule:: hessQuik.utils.network_derivative_check
    :members:
-   :undoc-members:
-   :show-inheritance:
 
-hessQuik.utils.timing module
-----------------------------
+Timing Functions
+----------------
 
 .. automodule:: hessQuik.utils.timing
    :members:
-   :undoc-members:
-   :show-inheritance:
 
-hessQuik.utils.training module
-------------------------------
+Training Functions
+------------------
 
 .. automodule:: hessQuik.utils.training
    :members:
-   :undoc-members:
-   :show-inheritance:
 
-hessQuik.utils.utils module
----------------------------
+Additional Utilities
+--------------------
 
 .. automodule:: hessQuik.utils.utils
    :members:
-   :undoc-members:
-   :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: hessQuik.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
