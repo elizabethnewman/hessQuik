@@ -113,23 +113,23 @@ class ICNNLayer(hessQuikLayer):
 
         .. math::
 
-            \left[\begin{arrray}{c}f(x) & x\end{array}\right] =
-            \sigma\left(\left[\begin{arrray}{c}u(x) & x\end{array}\right]
-            \left[\begin{arrray}{c}L^+ \\ K\end{array}\right] + b\right)
+            \left[\begin{array}{c}f(x) & x\end{array}\right] =
+            \sigma\left(\left[\begin{array}{c}u(x) & x\end{array}\right]
+            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right)
 
         Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
         a function of the input of the network, :math:`x` of size :math:`(n_s, d)`.
         The output features, :math:`f(x)`, are of size :math:`(n_s, n_{out})`.
-        The notation :math:`L^+` indicates that the weights in the matrix :math:`L` are non-negative.
+        The notation :math:`(\cdot)^+` is a function that makes the weights of a matrix nonnegative.
 
         As an example, the gradient with respect to :math:`x` is of the form
 
         .. math::
 
-            \nabla_x f = \text{diag}\left(\sigma\left(\left[\begin{arrray}{c}u(x) & x\end{array}\right]
-            \left[\begin{arrray}{c}L^+ \\ K\end{array}\right] + b\right)'\right)
-            \left[\begin{arrray}{c}(L^+)^\top & K^\top\end{array}\right]
-            \left[\begin{arrray}{c}\nabla_x u & I\end{array}\right]
+            \nabla_x f = \text{diag}\left(\sigma'\left(\left[\begin{array}{c}u(x) & x\end{array}\right]
+            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right)\right)
+            \left[\begin{array}{c}(L^+)^\top & K^\top\end{array}\right]
+            \left[\begin{array}{c}\nabla_x u \\ I\end{array}\right]
 
         where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix and :math:`I` is
         the :math:`d \times d` identity matrix.
@@ -189,9 +189,9 @@ class ICNNLayer(hessQuikLayer):
 
         .. math::
 
-            \left[\begin{arrray}{c}f(u) & x\end{array}\right] =
-            \sigma\left(\left[\begin{arrray}{c}u & x\end{array}\right]
-            \left[\begin{arrray}{c}L^+ \\ K\end{array}\right] + b\right)
+            \left[\begin{array}{c}f(u) & x\end{array}\right] =
+            \sigma\left(\left[\begin{array}{c}u & x\end{array}\right]
+            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right)
 
         Here, the network is :math:`g` is a function of :math:`f(u)`.
 
@@ -199,8 +199,8 @@ class ICNNLayer(hessQuikLayer):
 
         .. math::
 
-            \nabla_u g = \left(\sigma'\left(\left[\begin{arrray}{c}u & x\end{array}\right]
-            \left[\begin{arrray}{c}L^+ \\ K\end{array}\right] + b\right) \odot \nabla_f g\right)K^\top
+            \nabla_u g = \left(\sigma'\left(\left[\begin{array}{c}u & x\end{array}\right]
+            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right) \odot \nabla_f g\right)K^\top
 
         where :math:`\odot` denotes the pointwise product.
 
