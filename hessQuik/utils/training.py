@@ -1,7 +1,40 @@
 import torch
+from typing import Union
 
 
-def train_one_epoch(f, x, y, optimizer, batch_size=5, do_gradient=True, do_Hessian=True, loss_weights=(1.0, 1.0, 1.0)):
+def train_one_epoch(f: torch.nn.Module, x: torch.Tensor, y: torch.Tensor, optimizer: torch.optim.Optimizer,
+                    batch_size: int = 5, do_gradient: bool = True, do_Hessian: bool = True,
+                    loss_weights: Union[tuple, list] = (1.0, 1.0, 1.0)):
+    r"""
+    Training mean-square loss for one epoch where the loss function is
+
+    .. math::
+        L(\theta) = \frac{1}{2N}\left(w_0\|f_{\theta}(x)\|^2 + w_1\|\nabla f_{\theta}(x)\|^2 + w_2\|\nabla^2 f_{\theta}(x)\|^2\right)
+
+    where :math:`f_{theta}` is the network :math:`\theta` are the network weights,
+    and :math:`N` is the number of training samples.
+    The loss corresponding to the function value, gradient, and Hessian each can have different weights,
+    :math:`w_0`, :math:`w_1`, and :math:`w_2`, respectively.
+
+    :param f: hessQuik neural network to train
+    :type f: torch.nn.Module
+    :param x: training data of shape :math:`(N, *)` where :math:`*` can be any shapw
+    :type x: torch.Tensor
+    :param y: target data of shape :math:`(N, *)`
+    :type y: torch.Tensor
+    :param optimizer: method for updating the network weights
+    :type optimizer: torch.optim.Optimizer
+    :param batch_size: size of mini-batches for stochatistic training. Default: 5
+    :type batch_size: int
+    :param do_gradient: If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
+    :type do_gradient: bool, optional
+    :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
+    :type do_Hessian: bool, optional
+    :param loss_weights: weight for each term in the loss function
+    :type loss_weights: tuple or list
+    :return: tuple containing the overall running loss and the running loss for each term in the loss function
+
+    """
     f.train()
     n = x.shape[0]
     b = batch_size
@@ -26,7 +59,7 @@ def train_one_epoch(f, x, y, optimizer, batch_size=5, do_gradient=True, do_Hessi
         running_loss_f += b * loss_f.item()
 
         if do_gradient:
-            loss_df =  (0.5 / b) * torch.norm(dfb - yb[:, 1:xb.shape[1]+1].view_as(dfb)) ** 2
+            loss_df = (0.5 / b) * torch.norm(dfb - yb[:, 1:xb.shape[1]+1].view_as(dfb)) ** 2
             loss = loss + loss_weights[1] * loss_df
             running_loss_df += b * loss_df.item()
         if do_Hessian:
@@ -49,7 +82,13 @@ def train_one_epoch(f, x, y, optimizer, batch_size=5, do_gradient=True, do_Hessi
     return output
 
 
-def test(f, x, y, do_gradient=True, do_Hessian=True, loss_weights=(1.0, 1.0, 1.0)):
+def test(f: torch.nn.Module, x: torch.Tensor, y: torch.Tensor, do_gradient: bool = True, do_Hessian: bool = True,
+         loss_weights: Union[tuple, list] = (1.0, 1.0, 1.0)):
+    r"""
+    Evaluate mean-squared loss function without training
+
+    See :py:func:`hessQuik.utils.training.train_one_epoch` for details.
+    """
     f.eval()
 
     (loss_f, loss_df, loss_d2f) = (torch.zeros(1), torch.zeros(1), torch.zeros(1))
@@ -77,8 +116,11 @@ def test(f, x, y, do_gradient=True, do_Hessian=True, loss_weights=(1.0, 1.0, 1.0
     return output
 
 
-def print_headers(do_gradient=True, do_Hessian=True, verbose=True, loss_weights=(1.0, 1.0, 1.0)):
-
+def print_headers(do_gradient: bool = True, do_Hessian: bool = True, verbose: bool = True,
+                  loss_weights: Union[tuple, list] = (1.0, 1.0, 1.0)):
+    r"""
+    Print headers for nice training
+    """
     loss_printouts = ('loss', 'loss_f')
     if do_gradient or do_Hessian:
         loss_printouts += ('loss_df',)
