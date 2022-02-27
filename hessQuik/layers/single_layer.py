@@ -79,7 +79,7 @@ class singleLayer(hessQuikLayer):
 
         .. math::
 
-            \nabla_x f = (\sigma'(u(x) K + b) \odot \nabla_x u)K^\top
+            \nabla_x f = \text{diag}(\sigma'(u(x) K + b))K^\top \nabla_x u
 
         where :math:`\odot` denotes the pointwise product.
         """
@@ -119,46 +119,42 @@ class singleLayer(hessQuikLayer):
 
         .. math::
 
-            \begin{align}
-                f &= \sigma(u K + b)
-                h &= g(f)
-            \end{align}
+                f(u) = \sigma(u K + b)
 
-        Here, :math:`h` is the output of the network which is computed by evaluating some function :math:`g`
-        starting from the output features :math:`f`.
+        Here, the network is :math:`g` is a function of :math:`f(u)`.
 
         As an example, the gradient of the network with respect to :math:`u` is of the form
 
         .. math::
 
-            \nabla_u h = (\sigma'(u K + b) \odot \nabla_f g)K^\top
+            \nabla_u g = (\sigma'(u K + b) \odot \nabla_f g)K^\top
 
         where :math:`\odot` denotes the pointwise product.
 
         """
 
-        d2gd2x = None
+        d2gd2u = None
         dsig, d2sig = self.act.backward(do_Hessian=do_Hessian)
-        dgdx = dsig.unsqueeze(1) * self.K
+        dgdu = dsig.unsqueeze(1) * self.K
 
         if do_Hessian:
-            d2gd2x = (d2sig.unsqueeze(1) * self.K.unsqueeze(0)).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
+            d2gd2u = (d2sig.unsqueeze(1) * self.K.unsqueeze(0)).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
 
             if d2gd2f is not None:
                 # Gauss-Newton approximation
-                h1 = (dgdx.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ dgdx.permute(0, 2, 1).unsqueeze(1))
+                h1 = (dgdu.unsqueeze(1) @ d2gd2f.permute(0, 3, 1, 2) @ dgdu.permute(0, 2, 1).unsqueeze(1))
                 h1 = h1.permute(0, 2, 3, 1)
 
                 # extra term to compute full Hessian
-                h2 = d2gd2x @ dgdf.unsqueeze(1)
+                h2 = d2gd2u @ dgdf.unsqueeze(1)
                 # combine
-                d2gd2x = h1 + h2
+                d2gd2u = h1 + h2
 
         # finish computing gradient
         if dgdf is not None:
-            dgdx = dgdx @ dgdf
+            dgdu = dgdu @ dgdf
 
-        return dgdx, d2gd2x
+        return dgdu, d2gd2u
 
     def extra_repr(self) -> str:
         r"""

@@ -5,22 +5,32 @@ from hessQuik.layers import singleLayer
 
 
 class resnetLayer(hessQuikLayer):
+    r"""
+    Evaluate and compute derivatives of a single layer.
+
+    Examples::
+
+        >>> import hessQuik.layers as lay
+        >>> layer = lay.resnetLayer(4, h=0.25)
+        >>> x = torch.randn(10, 4)
+        >>> f, dfdx, d2fd2x = layer(x, do_gradient=True, do_Hessian=True)
+        >>> print(f.shape, dfdx.shape, d2fd2x.shape)
+        torch.Size([10, 4]) torch.Size([10, 4, 4]) torch.Size([10, 4, 4, 4])
+
     """
-    Forward propagation through residual layer of the form
 
-        f(u(x)) = u(x) + h * layer(u(x)) where layer(u(x)) = act(u(x) @ K + b).
-
-    Here, u(x) is the input into the layer and x is the input into the network of shapes
-
-        x : (N, d) torch.Tensor
-        u(x) : (N, width) torch.Tensor
-        f(u(x)) : (N, width) torch.Tensor
-
-    where N is the number of examples and d is the number of input features into the network.
-    """
-
-    def __init__(self, width, h=1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
+    def __init__(self, width: int, h: float = 1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
                  device=None, dtype=None):
+        r"""
+        :meta public:
+
+        :param width: number of input and output features
+        :type width: int
+        :param h: step size, :math:`h > 0`
+        :type h: float
+        :param act: activation function
+        :type act: hessQuikActivationFunction
+        """
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(resnetLayer, self).__init__()
 
