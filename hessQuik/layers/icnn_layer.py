@@ -75,7 +75,7 @@ class ICNNLayer(hessQuikLayer):
 
     def dim_input(self):
         r"""
-        Dimension of input features + dimensions of network inputs
+        number of input features + dimension of network inputs
         """
         n = self.input_dim
         if self.in_features is not None:
@@ -84,7 +84,7 @@ class ICNNLayer(hessQuikLayer):
 
     def dim_output(self):
         r"""
-        Dimension of output features + dimensions of network inputs
+        number of output features + dimension of network inputs
         """
         return self.out_features + self.input_dim
 
@@ -103,7 +103,8 @@ class ICNNLayer(hessQuikLayer):
         The output features, :math:`f(x)`, are of size :math:`(n_s, n_{out} + d)`.
         The notation :math:`(\cdot)^+` is a function that makes the weights of a matrix nonnegative.
 
-        As an example, for one sample, :math:`n_s = 1`, the gradient with respect to :math:`x` is of the form
+        As an example, for one sample, :math:`n_s = 1`, the gradient with respect to
+        :math:`\begin{bmatrix} u & x \end{bmatrix}` is of the form
 
         .. math::
 

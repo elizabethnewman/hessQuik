@@ -40,13 +40,13 @@ class resnetLayer(hessQuikLayer):
 
     def dim_input(self):
         r"""
-        :meta private:
+        width
         """
         return self.width
 
     def dim_output(self):
         r"""
-        :meta private:
+        width
         """
         return self.width
 

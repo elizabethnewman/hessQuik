@@ -69,9 +69,15 @@ class quadraticICNNLayer(hessQuikLayer):
         nn.init.uniform_(self.A, a=-bound, b=bound)
 
     def dim_input(self):
+        r"""
+        number of input features + dimension of network inputs
+        """
         return self.in_features + self.input_dim
 
     def dim_output(self):
+        r"""
+        scalar
+        """
         return 1
 
     def forward(self, ux, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
@@ -89,7 +95,7 @@ class quadraticICNNLayer(hessQuikLayer):
         The output features, :math:`f(x)`, are of size :math:`(n_s, 1)`.
         The notation :math:`(\cdot)^+` is a function that makes the weights of a matrix nonnegative.
 
-        As an example, for one sample, :math:`n_s = 1`, the gradient with respect to :math:`x` is of the form
+        As an example, the gradient with respect to :math:`x` is of the form
 
         .. math::
 

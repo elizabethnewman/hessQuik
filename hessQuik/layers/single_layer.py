@@ -53,13 +53,13 @@ class singleLayer(hessQuikLayer):
 
     def dim_input(self):
         r"""
-        :meta private:
+        number of input features
         """
         return self.in_features
 
     def dim_output(self):
         r"""
-        :meta private:
+        number of output features
         """
         return self.out_features
 
