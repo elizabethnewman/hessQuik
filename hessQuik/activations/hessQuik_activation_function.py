@@ -19,25 +19,28 @@ class hessQuikActivationFunction(nn.Module):
 
         Input:
 
-            x (torch.Tensor): input into the activation function. :math:`(*)` where :math:`*` means any size.
-                            Default: ``True``
+            x (torch.Tensor):
+                input into the activation function. :math:`(*)` where :math:`*` means any size.
 
-            do_gradient (bool): If set to ``True``, the gradient will be computed during the forward call.
-                                Default: ``True``
+            do_gradient (bool, optional):
+                If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
 
-            do_Hessian (bool): If set to ``True``, the Hessian will be computed during the forward call.
-                                Default: ``True``
+            do_Hessian (bool, optional):
+                If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
 
-            forward_mode (bool): If set to ``False``, the derivatives will be computed in backward mode.
-                                Default: ``True``
+            forward_mode (bool, optional):
+                If set to ``False``, the derivatives will be computed in backward mode. Default: ``True``
 
         Return:
 
-            sigma (torch.Tensor): value of activation function at input x, same size as x
+            sigma (torch.Tensor):
+                value of activation function at input x, same size as x
 
-            dsigma (torch.Tensor): optional, first derivative of activation function at input x, same size as x
+            dsigma (torch.Tensor, optional):
+                first derivative of activation function at input x, same size as x.
 
-            d2sigma (torch.Tensor): optional, second derivative of activation function at input x, same size as x
+            d2sigma (torch.Tensor, optional):
+                second derivative of activation function at input x, same size as x
         """
         raise NotImplementedError
 
@@ -57,17 +60,20 @@ class hessQuikActivationFunction(nn.Module):
         r"""
         Computes derivatives of activation function evaluated at x in either forward or backward more
 
-        Input:
+        Input::
 
-            *args (tuple): tuple of variables needed to compute derivatives
+            *args (tuple):
+                tuple of variables needed to compute derivatives
 
-            do_Hessian (bool): If set to ``True``, the Hessian will be computed during the forward call.
-                                Default: ``True``
+            do_Hessian (bool, optional):
+                If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
 
         Return:
 
-            dsigma (torch.Tensor): optional, first derivative of activation function at input x, same size as x
+            dsigma (torch.Tensor, optional):
+                first derivative of activation function at input x, same size as x
 
-            d2sigma (torch.Tensor): optional, second derivative of activation function at input x, same size as x
+            d2sigma (torch.Tensor, optional):
+                second derivative of activation function at input x, same size as x
         """
         raise NotImplementedError
