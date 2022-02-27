@@ -2,12 +2,12 @@ import torch
 from math import log2, floor, ceil
 import hessQuik
 from hessQuik.utils import convert_to_base
-from typing import Callable, Tuple, Optional
+from typing import Callable, Tuple, Optional, Union
 
 
-def input_derivative_check(f: Callable, x: torch.Tensor, do_Hessian: bool = False, forward_mode: bool = True,
-                           num_test: int = 15, base: float = 2.0, tol: float = 0.1, verbose: float = False) \
-        -> Tuple[Optional[bool], Optional[bool]]:
+def input_derivative_check(f: Union[torch.nn.Module, Callable], x: torch.Tensor, do_Hessian: bool = False,
+                           forward_mode: bool = True, num_test: int = 15, base: float = 2.0, tol: float = 0.1,
+                           verbose: float = False) -> Tuple[Optional[bool], Optional[bool]]:
     r"""
     Taylor approximation test to verify derivatives.  Form the approximation by perturbing the input :math:`x`
     in the direction :math:`p` with step size :math:`h > 0` via
@@ -49,14 +49,14 @@ def input_derivative_check(f: Callable, x: torch.Tensor, do_Hessian: bool = Fals
             Hessian PASSED!
 
     :param f: callable function that returns value, gradient, and Hessian
-    :type f: Callable
+    :type f: torch.nn.Module or Callable
     :param x: input data
     :type x: torch.Tensor
     :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
     :type do_Hessian: bool, optional
     :param forward_mode:  If set to ``False``, the derivatives will be computed in backward mode. Default: ``True``
     :type forward_mode: bool, optional
-    :param num_test: number of perturbations to
+    :param num_test: number of perturbations
     :type num_test: int
     :param base: step size :math:`h = base^k`
     :type base: float

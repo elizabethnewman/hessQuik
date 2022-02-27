@@ -1,8 +1,5 @@
-hessQuik.utils package
-======================
-
-Submodules
-----------
+hessQuik.utils
+==============
 
 Peaks Data
 ----------

@@ -4,10 +4,13 @@ import hessQuik.layers as lay
 import hessQuik.networks as net
 import time
 import gc
+from typing import Union
 
 
-def setup_device_and_gradient(f, network_wrapper='hessQuik', device='cpu'):
-
+def setup_device_and_gradient(f: net.NN, network_wrapper: str = 'hessQuik', device: str = 'cpu'):
+    r"""
+    Setup network with correct wrapper and device
+    """
     # map to device
     f = f.to(device)
 
@@ -20,7 +23,10 @@ def setup_device_and_gradient(f, network_wrapper='hessQuik', device='cpu'):
     return f
 
 
-def setup_resnet(in_features, out_features, width=20, depth=4):
+def setup_resnet(in_features: int, out_features: int, width: int = 16, depth: int = 4) -> net.NN:
+    r"""
+    Setup resnet architecture for timing tests
+    """
 
     f = net.NN(lay.singleLayer(in_features, width, act=act.antiTanhActivation()),
                net.resnetNN(width, depth, h=0.5, act=act.tanhActivation()),
@@ -28,12 +34,21 @@ def setup_resnet(in_features, out_features, width=20, depth=4):
     return f
 
 
-def setup_fully_connected(in_features, out_features, width=20, depth=4):
+def setup_fully_connected(in_features: int, out_features: int, width: int = 16, depth: int = 4):
+    r"""
+    Setup fully-connected architecture for timing tests
+    """
     f = net.fullyConnectedNN([in_features] + depth * [width] + [out_features], act=act.tanhActivation())
     return f
 
 
-def setup_icnn(in_features, out_features, width=20, depth=4):
+def setup_icnn(in_features: int, out_features: int, width: int = 16, depth: int = 4):
+    r"""
+    Setup ICNN architecture for timing tests.
+
+    Requires scalar output.
+    """
+
     if out_features > 1:
         raise ValueError('Must be scalar output for ICNN example')
 
@@ -42,8 +57,11 @@ def setup_icnn(in_features, out_features, width=20, depth=4):
     return f
 
 
-def setup_network(in_features, out_features, width, depth, network_type='resnet',
-                  network_wrapper='hessQuik', device='cpu'):
+def setup_network(in_features: int, out_features: int, width: int, depth: int, network_type: str = 'resnet',
+                  network_wrapper: str = 'hessQuik', device: str = 'cpu'):
+    r"""
+    Wrapper to setup network.
+    """
     if network_type == 'resnet':
         f = setup_resnet(in_features, out_features, width, depth)
     elif network_type == 'fully_connected':
@@ -58,8 +76,17 @@ def setup_network(in_features, out_features, width, depth, network_type='resnet'
     return f
 
 
-def timing_test_cpu(f, x, num_trials=10, clear_memory=True):
+def timing_test_cpu(f: Union[net.NN, torch.nn.Module], x: torch.Tensor, num_trials: int = 10,
+                    clear_memory: bool = True) -> torch.tensor():
+    r"""
+    Timing test for one architecture on CPU.
 
+    Test is run ``num_trials`` times and the timing for each trial is returned.
+
+    The timing includes one dry run for the first iteration that is not returned.
+
+    Memory is cleared after the completion of all trials.
+    """
     total_time = torch.zeros(num_trials + 1)
     for i in range(num_trials + 1):
         t1_start = time.perf_counter()
@@ -75,7 +102,19 @@ def timing_test_cpu(f, x, num_trials=10, clear_memory=True):
     return total_time[1:]
 
 
-def timing_test_gpu(f, x, num_trials=10, clear_memory=True):
+def timing_test_gpu(f: Union[net.NN, torch.nn.Module], x: torch.Tensor,
+                    num_trials: int = 10, clear_memory: bool = True):
+    r"""
+    Timing test for one architecture on CPU.
+
+    Test is run ``num_trials`` times and the timing for each trial is returned.
+
+    Each trial includes a ``torch.cuda.synchonize`` call.
+
+    The timing includes one dry run for the first iteration that is not returned.
+
+    Memory is cleared after the completion of all trials.
+    """
 
     total_time = torch.zeros(num_trials + 1)
     for i in range(num_trials + 1):
@@ -93,8 +132,42 @@ def timing_test_gpu(f, x, num_trials=10, clear_memory=True):
     return total_time[1:]
 
 
-def timing_test(in_feature_range, out_feature_range, nex=10, num_trials=10, width=20, depth=4,
-                network_wrapper='hessQuik', network_type='resnet', device='cpu', clear_memory=True):
+def timing_test(in_feature_range: torch.Tensor, out_feature_range: torch.Tensor, nex: int = 10, num_trials: int = 10, 
+                width: int = 16, depth: int = 4, network_wrapper: str = 'hessQuik', 
+                network_type: str = 'resnet', device: str = 'cpu', clear_memory: bool = True) -> dict:
+    r"""
+    
+    :param in_feature_range: available input feature dimensions
+    :type in_feature_range: torch.Tensor
+    :param out_feature_range: available output feature dimensions
+    :type out_feature_range: torch.Tensor
+    :param nex: number of examples for network input. Default: 10
+    :type nex: int, optional
+    :param num_trials: number of trials per input-output feature combination. Default: 10
+    :type num_trials: int, optional
+    :param width: width of network. Default: 16
+    :type width: int, optional
+    :param depth: depth of network. Default: 4
+    :type depth: int, optional
+    :param network_wrapper: type of network wrapper. Default: 'hessQuik'. Options: 'hessQuik', 'PytorchAD', 'PytorchHessian'
+    :type network_wrapper: str, optional
+    :param network_type: network architecture. Default: 'resnet'. Options: 'resnet', 'fully_connected', 'icnn'
+    :type network_type: str, optional
+    :param device: device for testing. Default: 'cpu'
+    :type device: str, optional
+    :param clear_memory: flag to clear memory after each set of trials
+    :type clear_memory: bool, optional
+    :return: dictionary containing keys
+
+        - **'timing_trials'** (*torch.Tensor*) - time (in seconds) for each trial and each architecture
+        - **'timing_trials_mean'** (*torch.Tensor*) - average over trials for each architecture
+        - **'timing_trials_std'** (*torch.Tensor*) - standard deviation over trials for each architecture
+        - **'in_feature_range'** (*torch.Tensor*) - available input feature dimensions
+        - **'out_feature_range'** (*torch.Tensor*) - available output feature dimensions
+        - **'nex'** (*int*) - number of samples for the input data
+        - **'num_trials'** (*int*) - number of trials per architecture
+
+    """
 
     # initialize
     timing_trials = torch.zeros(len(in_feature_range), len(out_feature_range), num_trials)
