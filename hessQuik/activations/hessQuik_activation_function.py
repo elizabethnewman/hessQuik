@@ -16,6 +16,7 @@ class hessQuikActivationFunction(nn.Module):
             -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
         r"""
         Applies a pointwise activation function to the incoming data.
+        
         :param x: input into the activation function. :math:`(*)` where :math:`*` means any size.
         :type x: torch.Tensor
         :param do_gradient: If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
