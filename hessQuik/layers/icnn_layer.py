@@ -30,7 +30,7 @@ class ICNNLayer(hessQuikLayer):
         :param input_dim: dimension of network inputs
         :type input_dim: int
         :param in_features: number of input features. For first ICNN layer, set ``in_features = None``
-        :type in_features: int or ``None``
+        :type in_features: int or``None``
         :param out_features: number of output features
         :type out_features: int
         :param act: activation function

@@ -32,6 +32,7 @@ class quadraticICNNLayer(hessQuikLayer):
         :type rank: int
         :var v: weight vector for network inputs of size :math:`(d,)`
         :var w: weight vector for input features of size :math:`(n_{in},)`
+        :var A: weight matrix for quadratic term of size :math:`(d, r)`
         :var mu: additive scalar bias
         :var nonneg: pointwise function to force :math:`l` to have nonnegative weights. Default ``torch.nn.functional.softplus``
         """
@@ -84,30 +85,27 @@ class quadraticICNNLayer(hessQuikLayer):
                 dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None) \
             -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
-        Forward propagation through ICNN layer of the form
+        Forward propagation through ICNN layer of the form, for one sample :math:`n_s = 1`,
 
         .. math::
 
             f(x) =
             \left[\begin{array}{c}u(x) & x\end{array}\right]
-            \left[\begin{array}{c}w^+ \\ v\end{array}\right] + \frac{1}{2} x^\top @ A^\top A  x + \mu
+            \left[\begin{array}{c}w^+ \\ v\end{array}\right] + \frac{1}{2} x  A A^\top  x^\top + \mu
 
         Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
         a function of the input of the network, :math:`x` of size :math:`(n_s, d)`.
         The output features, :math:`f(x)`, are of size :math:`(n_s, 1)`.
         The notation :math:`(\cdot)^+` is a function that makes the weights of a matrix nonnegative.
 
-        As an example, the gradient with respect to :math:`x` is of the form
+        As an example, for one sample, :math:`n_s = 1`, the gradient with respect to :math:`x` is of the form
 
         .. math::
 
-            \nabla_x f = \text{diag}\left(\sigma'\left(\left[\begin{array}{c}u(x) & x\end{array}\right]
-            \left[\begin{array}{c}L^+ \\ K\end{array}\right] + b\right)\right)
-            \left[\begin{array}{c}(L^+)^\top & K^\top\end{array}\right]
-            \left[\begin{array}{c}\nabla_x u \\ I\end{array}\right]
+                \nabla_x f = \left[\begin{array}{c}(w^+)^\top & v^\top\end{array}\right]
+                \left[\begin{array}{c} \nabla_x u \\ I\end{array}\right] + x A A^\top
 
-        where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix and :math:`I` is
-        the :math:`d \times d` identity matrix.
+        where :math:`I` is the :math:`d \times d` identity matrix.
 
         """
         (df, d2f) = (None, None)
@@ -165,6 +163,23 @@ class quadraticICNNLayer(hessQuikLayer):
     def backward(self, do_Hessian: bool = False,
                  dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None) \
             -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
+        r"""
+        Backward propagation through quadratic ICNN layer of the form, for one sample :math:`n_s = 1`,
+
+        .. math::
+
+                f\left(\begin{bmatrix} u & x \end{bmatrix}\right) =\left[\begin{array}{c}u & x\end{array}\right]
+                \left[\begin{array}{c}w^+ \\ v\end{array}\right] + \frac{1}{2} x  A A^\top x^\top + \mu
+
+        Here, the network is :math:`g` is a function of :math:`f(u)`.
+
+        The gradient of the layer with respect to :math:`\begin{bmatrix} u & x \end{bmatrix}` is of the form
+
+        .. math::
+
+            \nabla_{[u,x]} f = \begin{bmatrix}(w^+)^\top & v^\top + x A A^\top\end{bmatrix}.
+
+        """
         d2f = None
 
         ux = self.ctx[0]
