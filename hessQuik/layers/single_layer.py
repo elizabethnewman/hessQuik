@@ -6,22 +6,33 @@ import hessQuik.activations as act
 
 
 class singleLayer(hessQuikLayer):
-    """
+    r"""
     Forward propagation through single layer of the form
 
-        f(u(x)) = act(u(x) @ K + b).
+    .. math::
 
-    Here, u(x) is the input into the layer and x is the input into the network of shapes
+        f(u(x)) = \sigma(u(x) @ K + b)
 
-        x : (N, d) torch.Tensor
-        u(x) : (N, in_features) torch.Tensor
-        f(u(x)) : (N, out_features) torch.Tensor
+    Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})`
+    which is a function of the input of the network, :math:`x`.
+    The output features, :math:`f(u(x))`, are of size :math:`(n_s, n_{out})`.
 
-    where N is the number of examples and d is the number of input features into the network.
+    :var K: weight matrix of size :math:`(n_{in}, n_{out})`
+    :var b: bias vector of size :math:`(n_{out},)`
     """
 
-    def __init__(self, in_features, out_features, act: act.hessQuikActivationFunction = act.identityActivation(),
+    def __init__(self, in_features: int, out_features: int,
+                 act: act.hessQuikActivationFunction = act.identityActivation(),
                  device=None, dtype=None):
+        r"""
+
+        :param in_features: number of input features
+        :type in_features: int
+        :param out_features: number of output features
+        :type out_features: int
+        :param act: activation function
+        :type act: hessQuikActivationFunction
+        """
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(singleLayer, self).__init__()
 

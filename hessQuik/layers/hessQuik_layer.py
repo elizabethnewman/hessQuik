@@ -33,7 +33,7 @@ class hessQuikLayer(nn.Module):
         r"""
         Forward pass through the layer that maps input features :math:`u` of size :math:`(n_s, n_{in})`
         to output features :math:`f` of size :math:`(n_s, n_{out})` where :math:`n_s` is the number of samples,
-         :math:`n_{in}` is the number of input features, and :math:`n_{out}` is the number of output features.
+        :math:`n_{in}` is the number of input features, and :math:`n_{out}` is the number of output features.
 
         The input features :math:`u(x)` is a function of the network input :math:`x` of size :math:`(n_s, d)`
         where :math:`d` is the dimension of the network input.
@@ -82,7 +82,7 @@ class hessQuikLayer(nn.Module):
             - **d2gd2u** (*torch.Tensor* or ``None``) - if ``forward_mode = True``, Hessian of the network with respect to input features :math:`u` with shape :math:`(n_s, n_{in}, n_{in}, m)`
 
         """
-        
+
         raise NotImplementedError
 
 
