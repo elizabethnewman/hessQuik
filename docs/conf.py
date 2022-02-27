@@ -70,3 +70,6 @@ autodoc_member_order = 'bysource'
 # unit titles (such as .. function::).
 add_module_names = False
 
+# for building
+master_doc = 'index'
+
