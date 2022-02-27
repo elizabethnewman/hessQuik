@@ -2,10 +2,73 @@ import torch
 from math import log2, floor, ceil
 import hessQuik
 from hessQuik.utils import convert_to_base
+from typing import Callable, Tuple, Optional
 
 
-def input_derivative_check(f, x, do_Hessian=False, forward_mode=True, num_test=15, base=2.0, tol=0.1, verbose=False):
+def input_derivative_check(f: Callable, x: torch.Tensor, do_Hessian: bool = False, forward_mode: bool = True,
+                           num_test: int = 15, base: float = 2.0, tol: float = 0.1, verbose: float = False) \
+        -> Tuple[Optional[bool], Optional[bool]]:
+    r"""
+    Taylor approximation test to verify derivatives.  Form the approximation by perturbing the input :math:`x`
+    in the direction :math:`p` with step size :math:`h > 0` via
 
+    .. math::
+
+        f(x + h p) \approx f(x) + h\nabla f(x)^\top p + \frac{1}{2}p^\top \nabla^2f(x) p
+
+    As :math:`h \downarrow 0^+`, the error between the approximation and the true value will decrease.
+    The rate of decrease indicates the accuracy of the derivative computation.
+    For details, see Chapter 5 of `Computational Methods for Electromagnetics`_ by Eldad Haber.
+
+    .. _Computational Methods for Electromagnetics: https://epubs.siam.org/doi/book/10.1137/1.9781611973808
+
+    Examples::
+
+        >>> from hessQuik.layers import singleLayer
+        >>> torch.set_default_dtype(torch.float64)  # use double precision to check implementations
+        >>> x = torch.randn(10, 4)
+        >>> f = singleLayer(4, 7, act=act.softplusActivation())
+        >>> input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
+            h                           E0                      E1                      E2
+            1.00 x 2^(00)		1.62 x 2^(-02)		1.70 x 2^(-07)		1.02 x 2^(-12)
+            1.00 x 2^(-01)		1.63 x 2^(-03)		1.70 x 2^(-09)		1.06 x 2^(-15)
+            1.00 x 2^(-02)		1.63 x 2^(-04)		1.69 x 2^(-11)		1.08 x 2^(-18)
+            1.00 x 2^(-03)		1.63 x 2^(-05)		1.69 x 2^(-13)		1.09 x 2^(-21)
+            1.00 x 2^(-04)		1.63 x 2^(-06)		1.69 x 2^(-15)		1.09 x 2^(-24)
+            1.00 x 2^(-05)		1.63 x 2^(-07)		1.69 x 2^(-17)		1.10 x 2^(-27)
+            1.00 x 2^(-06)		1.63 x 2^(-08)		1.69 x 2^(-19)		1.10 x 2^(-30)
+            1.00 x 2^(-07)		1.63 x 2^(-09)		1.69 x 2^(-21)		1.10 x 2^(-33)
+            1.00 x 2^(-08)		1.63 x 2^(-10)		1.69 x 2^(-23)		1.10 x 2^(-36)
+            1.00 x 2^(-09)		1.63 x 2^(-11)		1.69 x 2^(-25)		1.10 x 2^(-39)
+            1.00 x 2^(-10)		1.63 x 2^(-12)		1.69 x 2^(-27)		1.10 x 2^(-42)
+            1.00 x 2^(-11)		1.63 x 2^(-13)		1.69 x 2^(-29)		1.10 x 2^(-45)
+            1.00 x 2^(-12)		1.63 x 2^(-14)		1.69 x 2^(-31)		1.15 x 2^(-48)
+            1.00 x 2^(-13)		1.63 x 2^(-15)		1.69 x 2^(-33)		1.33 x 2^(-50)
+            1.00 x 2^(-14)		1.63 x 2^(-16)		1.69 x 2^(-35)		1.70 x 2^(-51)
+            Gradient PASSED!
+            Hessian PASSED!
+
+    :param f: callable function that returns value, gradient, and Hessian
+    :type f: Callable
+    :param x: input data
+    :type x: torch.Tensor
+    :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
+    :type do_Hessian: bool, optional
+    :param forward_mode:  If set to ``False``, the derivatives will be computed in backward mode. Default: ``True``
+    :type forward_mode: bool, optional
+    :param num_test: number of perturbations to
+    :type num_test: int
+    :param base: step size :math:`h = base^k`
+    :type base: float
+    :param tol: small tolerance to account for numerical errors when computing the order of approximation
+    :type tol: float
+    :param verbose: printout flag
+    :type verbose: bool
+    :return:
+            - **grad_check** (*bool*) - if ``True``, gradient check passes
+            - **hess_check** (*bool, optional*) -  if ``True``, Hessian check passes
+
+    """
     # initial evaluation
     f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=do_Hessian, forward_mode=forward_mode)
 
@@ -78,8 +141,10 @@ def input_derivative_check(f, x, do_Hessian=False, forward_mode=True, num_test=1
     return grad_check, hess_check
 
 
-def input_derivative_check_finite_difference(f, x, do_Hessian=False, forward_mode=True,
-                                             eps=1e-4, atol=1e-5, rtol=1e-3, verbose=False):
+def input_derivative_check_finite_difference(f: Callable, x: torch.Tensor,
+                                             do_Hessian: bool = False, forward_mode: bool = True,
+                                             eps: float = 1e-4, atol: float = 1e-5, rtol: float = 1e-3,
+                                             verbose: bool = False):
 
     # compute initial gradient
     f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=do_Hessian, forward_mode=forward_mode)

@@ -5,24 +5,24 @@ from typing import Tuple, Optional
 
 def peaks(y: Tensor, do_gradient: bool = False, do_Hessian: bool = False) -> \
         Tuple[Tensor, Optional[Tensor], Optional[Tensor]]:
+    r"""
+    Generate data from the `MATLAB 2D peaks function`_
+
+    .. _MATLAB 2D peaks function: https://www.mathworks.com/help/matlab/ref/peaks.html
+
+    :param y: (x, y) coordinates with shape :math:`(n_s, 2)` where :math:`n_s` is the number of samples
+    :type y: torch.Tensor
+    :param do_gradient: If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
+    :type do_gradient: bool, optional
+    :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
+    :type do_Hessian: bool, optional
+    :return:
+            - **f** (*torch.Tensor*) - value of peaks function at each coordinate with shape :math:`(n_s, 1)`
+            - **dfdx** (*torch.Tensor* or ``None``) - value of gradient at each coordinate  with shape :math:`(n_s, 2)`
+            - **d2fd2x** (*torch.Tensor* or ``None``) - value of Hessian at each coordinate with shape :math:`(n_s, 4)`
+
     """
-    Generate data from the MATLAB 2D peaks function
-    https://www.mathworks.com/help/matlab/ref/peaks.html
 
-    Inputs
-    ------
-    y : torch.Tensor, (x, y) coordinates, (n_samples, 2)
-    do_gradient: bool, optional (default = False), compute value of first derivatives at given (x, y) coordinates
-    do_Hessian: bool, optional (default = False), compute value of second derivatives at given (x, y) coordinates
-
-    Return
-    ------
-    f : torch.Tensor, function value at each (x, y) coordinate, (n_samples,)
-    df : torch.Tensor, optional, first derivative values at each (x, y) coordinate, (n_samples, 2)
-    d2f : torch.Tensor, optional, second derivative values at each (x, y) coordinate, (n_samples, 4)
-            Note: because the peaks function is twice continuously differentiable,
-
-    """
     df, d2f = None, None
 
     # function

@@ -7,4 +7,5 @@ hessQuik API
    hessQuik.activations
    hessQuik.layers
    hessQuik.networks
+   hessQuik.utils
 
