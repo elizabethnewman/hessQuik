@@ -26,9 +26,10 @@ class hessQuikActivationFunction(nn.Module):
         :param forward_mode:  If set to ``False``, the derivatives will be computed in backward mode. Default: ``True``
         :type forward_mode: bool, optional
         :return:
-            -sigma (:py:class:`torch.Tensor`) - value of activation function at input x, same size as x
-            -dsigma (:py:class:`Union[torch.Tensor, None]`, optional) - first derivative of activation function at input x, same size as x
-            -d2sigma (:py:class:`torch.Tensor`, optional) - second derivative of activation function at input x, same size as x
+
+            -sigma (*torch.Tensor*) - value of activation function at input x, same size as x
+            -dsigma (*torch.Tensor* or ``None``) - first derivative of activation function at input x, same size as x
+            -d2sigma (*torch.Tensor* or ``None``) - second derivative of activation function at input x, same size as x
 
         """
         raise NotImplementedError
