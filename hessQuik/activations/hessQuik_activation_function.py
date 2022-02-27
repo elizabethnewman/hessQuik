@@ -27,9 +27,9 @@ class hessQuikActivationFunction(nn.Module):
         :type forward_mode: bool, optional
         :return:
 
-            -sigma (*torch.Tensor*) - value of activation function at input x, same size as x
-            -dsigma (*torch.Tensor* or ``None``) - first derivative of activation function at input x, same size as x
-            -d2sigma (*torch.Tensor* or ``None``) - second derivative of activation function at input x, same size as x
+            - sigma (*torch.Tensor*) - value of activation function at input x, same size as x
+            - dsigma (*torch.Tensor* or ``None``) - first derivative of activation function at input x, same size as x
+            - d2sigma (*torch.Tensor* or ``None``) - second derivative of activation function at input x, same size as x
 
         """
         raise NotImplementedError
