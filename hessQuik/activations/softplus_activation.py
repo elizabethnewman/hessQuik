@@ -16,7 +16,7 @@ class softplusActivation(hessQuikActivationFunction):
 
     """
 
-    def __init__(self, beta=1.0, threshold=20.0):
+    def __init__(self, beta: float = 1.0, threshold: float = 20.0) -> None:
         r"""
 
         :param beta: parameter affecting steepness of the softplus function.  Default: 1.0
@@ -34,7 +34,7 @@ class softplusActivation(hessQuikActivationFunction):
 
         .. math::
 
-            \sigma(x)  = \frac{1}{\beta}\ln(1 + e^{\beta x})\
+            \sigma(x)  = \frac{1}{\beta}\ln(1 + e^{\beta x})
         """
 
         (dsigma, d2sigma) = (None, None)
