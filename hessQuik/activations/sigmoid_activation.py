@@ -4,15 +4,14 @@ from hessQuik.activations import hessQuikActivationFunction
 
 class sigmoidActivation(hessQuikActivationFunction):
     r"""
-    Sigmoid function
+    Applies the sigmoid activation function to each entry of the incoming data.
 
-    .. math::
+    Examples::
 
-        \begin{align}
-            \sigma(x)   &= \frac{1}{1 + e^{-x}}\\
-            \sigma'(x)  &= \sigma(x)(1 - \sigma(x))\\
-            \sigma''(x) &= \sigma'(x)(1 - 2 * \sigma(x))
-        \end{align}
+        >>> import hessQuik.activations as act
+        >>> act_func = act.sigmoidActivation()
+        >>> x = torch.randn(10, 4)
+        >>> sigma, dsigma, d2sigma = act_func(x, do_gradient=True, do_Hessian=True)
 
     """
 
@@ -20,8 +19,12 @@ class sigmoidActivation(hessQuikActivationFunction):
         super(sigmoidActivation, self).__init__()
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
-        """
-        :meta private:
+        r"""
+        Activates each entry of incoming data via
+
+        .. math::
+
+            \sigma(x)  = \frac{1}{1 + e^{-x}}
         """
         (dsigma, d2sigma) = (None, None)
 
@@ -38,8 +41,15 @@ class sigmoidActivation(hessQuikActivationFunction):
         return sigma, dsigma, d2sigma
 
     def compute_derivatives(self, *args, do_Hessian=False):
-        """
-        :meta private:
+        r"""
+        Computes the first and second derivatives of each entry of the incoming data via
+
+        .. math::
+            \begin{align}
+                \sigma'(x)  &= \sigma(x)(1 - \sigma(x))\\
+                \sigma''(x) &= \sigma'(x)(1 - 2 * \sigma(x))
+            \end{align}
+
         """
         sigma = args[0]
         dsigma = sigma * (1 - sigma)

@@ -4,15 +4,14 @@ from hessQuik.activations import hessQuikActivationFunction
 
 class antiTanhActivation(hessQuikActivationFunction):
     r"""
-    Antiderivative of hyperbolic tangent
+    Applies the antiderivative of the hyperbolic tangent activation function to each entry of the incoming data.
 
-    .. math::
+    Examples::
 
-        \begin{align}
-            \sigma(x)   &= \ln|\cosh(x)|\\
-            \sigma'(x)  &= \tanh(x)\\
-            \sigma''(x) &= 1 - \tanh^2(x)
-        \end{align}
+        >>> import hessQuik.activations as act
+        >>> act_func = act.antiTanhActivation()
+        >>> x = torch.randn(10, 4)
+        >>> sigma, dsigma, d2sigma = act_func(x, do_gradient=True, do_Hessian=True)
 
     """
 
@@ -20,8 +19,12 @@ class antiTanhActivation(hessQuikActivationFunction):
         super(antiTanhActivation, self).__init__()
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
-        """
-        :meta private:
+        r"""
+        Activates each entry of incoming data via
+
+        .. math::
+
+            \sigma(x)  = \ln(\cosh(x))
         """
 
         (dsigma, d2sigma) = (None, None)
@@ -39,8 +42,14 @@ class antiTanhActivation(hessQuikActivationFunction):
         return sigma, dsigma, d2sigma
 
     def compute_derivatives(self, *args, do_Hessian=False):
-        """
-        :meta private:
+        r"""
+        Computes the first and second derivatives of each entry of the incoming data via
+
+        .. math::
+            \begin{align}
+                \sigma'(x)  &= \tanh(x)\\
+                \sigma''(x) &= 1 - \tanh^2(x)
+            \end{align}
         """
         x = args[0]
         dsigma = torch.tanh(x)

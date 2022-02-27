@@ -8,10 +8,10 @@ class tanhActivation(hessQuikActivationFunction):
 
     Examples::
 
+        >>> import hessQuik.activations as act
         >>> act_func = act.tanhActivation()
         >>> x = torch.randn(10, 4)
-        >>> sigma, dsigma, d2sigma = act_func(x)
-
+        >>> sigma, dsigma, d2sigma = act_func(x, do_gradient=True, do_Hessian=True)
 
     """
 
@@ -20,7 +20,7 @@ class tanhActivation(hessQuikActivationFunction):
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
         r"""
-        Applies the hyperbolic tangent activation function to each entry of the incoming data.
+        Activates each entry of incoming data via
 
         .. math::
 
@@ -42,7 +42,7 @@ class tanhActivation(hessQuikActivationFunction):
 
     def compute_derivatives(self, *args, do_Hessian=False):
         r"""
-        Computes the first and second derivatives of each entry of the incoming data.
+        Computes the first and second derivatives of each entry of the incoming data via
 
         .. math::
             \begin{align}

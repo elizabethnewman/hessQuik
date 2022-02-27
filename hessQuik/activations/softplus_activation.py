@@ -5,27 +5,38 @@ from hessQuik.activations import hessQuikActivationFunction
 
 class softplusActivation(hessQuikActivationFunction):
     r"""
-    Softplus function
+    Applies the softplus activation function to each entry of the incoming data.
 
-    .. math::
+    Examples::
 
-        \begin{align}
-            \sigma(x)   &= \frac{1}{\beta}\ln(1 + e^{\beta x})\\
-            \sigma'(x)  &= \frac{1}{1 + e^{-\beta x}}\\
-            \sigma''(x) &= \frac{\beta}{2\cosh(\beta x) + 2}
-        \end{align}
+        >>> import hessQuik.activations as act
+        >>> act_func = act.softplusActivation()
+        >>> x = torch.randn(10, 4)
+        >>> sigma, dsigma, d2sigma = act_func(x, do_gradient=True, do_Hessian=True)
 
     """
 
-    def __init__(self, beta=1, threshold=20):
+    def __init__(self, beta=1.0, threshold=20.0):
+        r"""
+
+        :param beta: parameter affecting steepness of the softplus function.  Default: 1.0
+        :type beta: float
+        :param threshold: parameter for numerical stability.  Uses identity function when :math:`\beta x > threshold`
+        :type threshold: float
+        """
         super(softplusActivation, self).__init__()
         self.beta = beta
         self.threshold = threshold
 
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
+        r"""
+        Activates each entry of incoming data via
+
+        .. math::
+
+            \sigma(x)  = \frac{1}{\beta}\ln(1 + e^{\beta x})\
         """
-        :meta private:
-        """
+
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -42,8 +53,15 @@ class softplusActivation(hessQuikActivationFunction):
         return sigma, dsigma, d2sigma
 
     def compute_derivatives(self, *args, do_Hessian=False):
-        """
-        :meta private:
+        r"""
+        Computes the first and second derivatives of each entry of the incoming data via
+
+        .. math::
+            \begin{align}
+                \sigma'(x)  &= \frac{1}{1 + e^{-\beta x}}\\
+                \sigma''(x) &= \frac{\beta}{2\cosh(\beta x) + 2}
+            \end{align}
+
         """
         x = args[0]
         d2sigma = None

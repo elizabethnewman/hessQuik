@@ -49,8 +49,8 @@ class hessQuikActivationFunction(nn.Module):
     def compute_derivatives(self, *args, do_Hessian: bool = False) -> Tuple[Tensor, Union[Tensor, None]]:
         r"""
 
-        :param args: tuple of variables needed to compute derivatives
-        :type args: tuple
+        :param args: variables needed to compute derivatives
+        :type args: torch.Tensor
         :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
         :type do_Hessian: bool, optional
         :return:
