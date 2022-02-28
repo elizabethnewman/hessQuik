@@ -6,6 +6,9 @@ from math import log2, floor
 
 
 def module_getattr(obj: Module, names: Tuple or List or str):
+    r"""
+    Get specific attribute of module at any level
+    """
     if isinstance(names, str) or len(names) == 1:
         if len(names) == 1:
             names = names[0]
@@ -16,6 +19,9 @@ def module_getattr(obj: Module, names: Tuple or List or str):
 
 
 def module_setattr(obj: Module, names: Tuple or List, val: Tensor):
+    r"""
+    Set specific attribute of module at any level
+    """
     if isinstance(names, str) or len(names) == 1:
         if len(names) == 1:
             names = names[0]
@@ -26,6 +32,9 @@ def module_setattr(obj: Module, names: Tuple or List, val: Tensor):
 
 
 def extract_data(net: Module, attr: str = 'data') -> (Tensor, Tuple, Tuple):
+    """
+    Extract data stored in specific attribute and store as 1D array
+    """
     theta = torch.empty(0)
     for name, w in net.named_parameters():
         if getattr(w, attr) is None:
@@ -39,7 +48,9 @@ def extract_data(net: Module, attr: str = 'data') -> (Tensor, Tuple, Tuple):
 
 
 def insert_data(net: Module, theta: Tensor) -> None:
-
+    """
+    Insert 1D array of data into specific attribute
+    """
     count = 0
     for name, w in net.named_parameters():
         name_split = name.split('.')
@@ -48,7 +59,12 @@ def insert_data(net: Module, theta: Tensor) -> None:
         count += n
 
 
-def convert_to_base(a, b=2.0):
+def convert_to_base(a: tuple, b: float = 2.0) -> tuple:
+    """
+    Convert tuple of floats to a base-exponent pair for nice printouts.
+
+    See use in, e.g., :py:func:`hessQuik.utils.input_derivative_check.input_derivative_check`.
+    """
     outputs = ()
     for i in range(len(a)):
         if a[i] <= 0:

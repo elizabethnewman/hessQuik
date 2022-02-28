@@ -161,7 +161,7 @@ class TestBlockNetwork(unittest.TestCase):
         x = self.setup_data()
         d = x.shape[1]
         width = 7
-        depth = 8
+        depth = 3
 
         f = net.NN(lay.singleLayer(d, width, act=act.antiTanhActivation()),
                    net.resnetNN(width, depth, h=0.8, act=act.softplusActivation()),

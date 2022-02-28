@@ -1,7 +1,45 @@
 import torch
+from torch import Tensor
+from typing import Tuple, Optional
 
 
-def peaks(y, do_gradient=False, do_Hessian=False):
+def peaks(y: Tensor, do_gradient: bool = False, do_Hessian: bool = False) -> \
+        Tuple[Tensor, Optional[Tensor], Optional[Tensor]]:
+    r"""
+    Generate data from the `MATLAB 2D peaks function`_
+
+    .. _MATLAB 2D peaks function: https://www.mathworks.com/help/matlab/ref/peaks.html
+
+    Examples::
+
+         import matplotlib.pyplot as plt
+         from matplotlib import cm
+         from mpl_toolkits import mplot3d
+         x, y = torch.linspace(-3, 3, 100), torch.linspace(-3, 3, 100)
+         grid_x, grid_y = torch.meshgrid(x, y)
+         grid_xy = torch.concat((grid_x.reshape(-1, 1), grid_y.reshape(-1, 1)), dim=1)
+         grid_z, *_ = peaks(grid_xy)
+         fig = plt.figure()
+         ax = plt.axes(projection='3d')
+         surf = ax.plot_surface(grid_x, grid_y, grid_z.reshape(grid_x.shape), cmap=cm.viridis)
+         ax.set_xlabel('x')
+         ax.set_ylabel('y')
+         ax.set_zlabel('z')
+         plt.show()
+
+    :param y: (x, y) coordinates with shape :math:`(n_s, 2)` where :math:`n_s` is the number of samples
+    :type y: torch.Tensor
+    :param do_gradient: If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
+    :type do_gradient: bool, optional
+    :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
+    :type do_Hessian: bool, optional
+    :return:
+            - **f** (*torch.Tensor*) - value of peaks function at each coordinate with shape :math:`(n_s, 1)`
+            - **dfdx** (*torch.Tensor* or ``None``) - value of gradient at each coordinate  with shape :math:`(n_s, 2)`
+            - **d2fd2x** (*torch.Tensor* or ``None``) - value of Hessian at each coordinate with shape :math:`(n_s, 4)`
+
+    """
+
     df, d2f = None, None
 
     # function

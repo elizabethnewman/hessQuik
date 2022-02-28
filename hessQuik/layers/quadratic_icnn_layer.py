@@ -3,14 +3,39 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from hessQuik.layers import hessQuikLayer
+from typing import Union, Tuple
 
 
 class quadraticICNNLayer(hessQuikLayer):
-    """
-    f(x) = u @ nonneg(w) + x @ v + 0.5 * x.t() @ A.t() @ A @ x + mu
+    r"""
+    Evaluate and compute derivatives of a ICNN quadratic layer.
+
+    Examples::
+
+        >>> import hessQuik.layers as lay
+        >>> f = lay.quadraticICNNLayer(4, None, 2)
+        >>> x = torch.randn(10, 4)
+        >>> fx, dfdx, d2fd2x = f(x, do_gradient=True, do_Hessian=True)
+        >>> print(fx.shape, dfdx.shape, d2fd2x.shape)
+        torch.Size([10, 1]) torch.Size([10, 4, 1]) torch.Size([10, 4, 4, 1])
+
     """
 
-    def __init__(self, input_dim, in_features, rank, device=None, dtype=None, reverse_mode=False):
+    def __init__(self, input_dim: int, in_features: Union[int, None], rank: int, device=None, dtype=None) -> None:
+        r"""
+
+        :param input_dim: dimension of network inputs
+        :type input_dim: int
+        :param in_features: number of input features, :math:`n_{in}`.  For only ICNN quadratic layer, set ``in_features = None``
+        :type in_features: int or ``None``
+        :param rank: number of columns of quadratic matrix, :math:`r`.  In practice, :math:`r < n_{in}`
+        :type rank: int
+        :var v: weight vector for network inputs of size :math:`(d,)`
+        :var w: weight vector for input features of size :math:`(n_{in},)`
+        :var A: weight matrix for quadratic term of size :math:`(d, r)`
+        :var mu: additive scalar bias
+        :var nonneg: pointwise function to force :math:`l` to have nonnegative weights. Default ``torch.nn.functional.softplus``
+        """
         factory_kwargs = {'device': device, 'dtype': dtype}
         super(quadraticICNNLayer, self).__init__()
 
@@ -19,10 +44,8 @@ class quadraticICNNLayer(hessQuikLayer):
         self.rank = rank
         self.ctx = None
         self.nonneg = F.softplus
-        self.reverse_mode = reverse_mode
 
         # create final layer
-
         if in_features is not None:
             self.w = nn.Parameter(torch.empty(in_features, **factory_kwargs))
         else:
@@ -33,7 +56,7 @@ class quadraticICNNLayer(hessQuikLayer):
         self.A = nn.Parameter(torch.empty(rank, input_dim, **factory_kwargs))
         self.reset_parameters()
 
-    def reset_parameters(self):
+    def reset_parameters(self) -> None:
 
         if self.in_features is not None:
             bound = 1 / math.sqrt(self.in_features)
@@ -46,23 +69,52 @@ class quadraticICNNLayer(hessQuikLayer):
         bound = 1 / math.sqrt(self.input_dim)
         nn.init.uniform_(self.A, a=-bound, b=bound)
 
-    def dim_input(self):
+    def dim_input(self) -> int:
+        r"""
+        number of input features + dimension of network inputs
+        """
         return self.in_features + self.input_dim
 
-    def dim_output(self):
+    def dim_output(self) -> int:
+        r"""
+        scalar
+        """
         return 1
 
-    @property
-    def reverse_mode(self):
-        return self._reverse_mode
+    def forward(self, ux: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True,
+                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
+        r"""
+        Forward propagation through ICNN layer of the form, for one sample :math:`n_s = 1`,
 
-    @reverse_mode.setter
-    def reverse_mode(self, reverse_mode):
-        self._reverse_mode = reverse_mode
+        .. math::
 
+            f(x) =
+            \left[\begin{array}{c}u(x) & x\end{array}\right]
+            \left[\begin{array}{c}w^+ \\ v\end{array}\right] + \frac{1}{2} x  A A^\top  x^\top + \mu
+
+<<<<<<< HEAD
     def forward(self, ux, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
 
         (df, d2f, lap_f) = (None, None, None)
+=======
+        Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
+        a function of the input of the network, :math:`x` of size :math:`(n_s, d)`.
+        The output features, :math:`f(x)`, are of size :math:`(n_s, 1)`.
+        The notation :math:`(\cdot)^+` is a function that makes the weights of a matrix nonnegative.
+
+        As an example, for one sample, :math:`n_s = 1`, the gradient with respect to :math:`x` is of the form
+
+        .. math::
+
+                \nabla_x f = \left[\begin{array}{c}(w^+)^\top & v^\top\end{array}\right]
+                \left[\begin{array}{c} \nabla_x u \\ I\end{array}\right] + x A A^\top
+
+        where :math:`I` is the :math:`d \times d` identity matrix.
+
+        """
+        (df, d2f) = (None, None)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         AtA = self.A.t() @ self.A
 
         if self.w is None:
@@ -76,11 +128,8 @@ class quadraticICNNLayer(hessQuikLayer):
         # forward propagate
         f = ux @ wv + 0.5 * torch.sum((x @ AtA) * x, dim=1) + self.mu
 
-        if self.reverse_mode is not False:
-            self.ctx = (ux,)
-
         # ------------------------------------------------------------------------------------------------------------ #
-        if (do_gradient or do_Hessian) and self.reverse_mode is False:
+        if (do_gradient or do_Hessian) and forward_mode is True:
             if self.in_features is None:
                 z = torch.empty(ux.shape[0], 0)
             else:
@@ -99,6 +148,10 @@ class quadraticICNNLayer(hessQuikLayer):
                                       + torch.cat((z, x @ AtA), dim=1)).unsqueeze(1).unsqueeze(-1)).squeeze()
 
                 d2f = d2f.unsqueeze(-1)
+                if d2f.ndim < 4:
+                    e = torch.ones(x.shape[0], device=x.device, dtype=x.dtype).view(-1, 1, 1, 1)
+                    d2f = e * d2f.unsqueeze(0)
+
             # -------------------------------------------------------------------------------------------------------- #
             # finish computing gradient
             if dudx is not None:
@@ -106,13 +159,44 @@ class quadraticICNNLayer(hessQuikLayer):
 
             df = df.unsqueeze(-1)
 
+<<<<<<< HEAD
         if (do_gradient or do_Hessian) and self.reverse_mode is True:
             df, d2f, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
+=======
+        if (do_gradient or do_Hessian) and forward_mode is not True:
+            self.ctx = (ux,)
+            if forward_mode is False:
+                df, d2f = self.backward(do_Hessian=do_Hessian)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
         return f.unsqueeze(-1), df, d2f, lap_f
 
+<<<<<<< HEAD
     def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
         (d2f, lap_f) = (None, None)
+=======
+    def backward(self, do_Hessian: bool = False,
+                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
+        r"""
+        Backward propagation through quadratic ICNN layer of the form, for one sample :math:`n_s = 1`,
+
+        .. math::
+
+                f\left(\begin{bmatrix} u & x \end{bmatrix}\right) =\left[\begin{array}{c}u & x\end{array}\right]
+                \left[\begin{array}{c}w^+ \\ v\end{array}\right] + \frac{1}{2} x  A A^\top x^\top + \mu
+
+        Here, the network is :math:`g` is a function of :math:`f(u)`.
+
+        The gradient of the layer with respect to :math:`\begin{bmatrix} u & x \end{bmatrix}` is of the form
+
+        .. math::
+
+            \nabla_{[u,x]} f = \begin{bmatrix}(w^+)^\top & v^\top + x A A^\top\end{bmatrix}.
+
+        """
+        d2f = None
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
         ux = self.ctx[0]
         x = ux[:, -self.input_dim:]
@@ -149,9 +233,7 @@ if __name__ == '__main__':
     f = quadraticICNNLayer(d, None, m)
 
     print('======= FORWARD =======')
-    f.reverse_mode = False
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
     print('======= BACKWARD =======')
-    f.reverse_mode = True
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
