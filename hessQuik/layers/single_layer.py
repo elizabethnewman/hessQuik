@@ -99,7 +99,7 @@ class singleLayer(hessQuikLayer):
                 # Gauss-Newton approximation
                 if d2ud2x is not None:
                     d2fd2x = dudx.unsqueeze(1) @ (d2fd2x.permute(0, 3, 1, 2) @ dudx.permute(0, 2, 1).unsqueeze(1))
-                    d2fd2x = 0.8 * d2fd2x.permute(0, 2, 3, 1)
+                    d2fd2x = d2fd2x.permute(0, 2, 3, 1)
 
                     # extra term to compute full Hessian
                     d2fd2x += d2ud2x @ dfdx.unsqueeze(1)
