@@ -1,9 +1,5 @@
-hessQuik Derivations (coming soon!)
-===================================
+hessQuik Derivations
+====================
 
-.. toctree::
-   :maxdepth: 2
-   :Caption: hessQuik Derivations (coming soon!)
-
-   hessQuik.singleLayer_derivation
+Coming Soon!
 

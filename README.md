@@ -7,7 +7,7 @@ Deep neural networks (DNNs) and other composition-based models have become a sta
 
 Knowledge of second-order derivatives is paramount in many growing fields and can provide insight into the optimization problem solved to build a good model. Hessians are notoriously challenging to compute efficiently with AD and cumbersome to derive and debug analytically.  Hence, many algorithms approximate Hessian information, resulting in suboptimal performance.  To address these challenges, `hessQuik` computes Hessians analytically and efficiently with an implementation that is accelerated on GPUs.
 
-## Documentation (in progress)
+## Documentation
 
 For detailed documentation, visit [https://hessquik.readthedocs.io/](https://hessquik.readthedocs.io/en/latest/index.html).
 
@@ -53,10 +53,6 @@ fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
 To make the code accessible, we provide some introductory Google Colaboratory notebooks.
 
 [Practical Use: Hermite Interpolation](https://github.com/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikPeaksHermiteInterpolation.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikPeaksHermiteInterpolation.ipynb) 
-
-[comment]: <> ([![Open In Colab]&#40;https://colab.research.google.com/assets/colab-badge.svg&#41;]&#40;https://colab.research.google.com/drive/1zTgU0pcZJMRmSL4Rgt_oNSYcBI2cIj04?usp=sharing&#41; Timing Test)
-
-[comment]: <> ([![Open In Colab]&#40;https://colab.research.google.com/assets/colab-badge.svg&#41;]&#40;https://colab.research.google.com/drive/1C-CQbOSGuSkXbpfLo2zlP2BQJJwegI09?usp=sharing&#41; hessQuik Profiler)
 
 [Tutorial: Constructing and Testing ```hessQuik``` Layers](https://github.com/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikSingleLayerTutorial.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikSingleLayerTutorial.ipynb)
 

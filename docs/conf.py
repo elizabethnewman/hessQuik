@@ -39,7 +39,6 @@ extensions = [
 	'sphinx.ext.viewcode',
 ]
 
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -57,7 +56,9 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 import sphinx_rtd_theme
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_theme_options = {'sticky_navigation': True}
+html_theme_options = {'sticky_navigation': True, 'logo_only': False}
+
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
