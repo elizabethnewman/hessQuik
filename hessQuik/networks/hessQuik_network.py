@@ -3,7 +3,6 @@ import torch.nn as nn
 from torch.autograd import grad
 from torch.autograd.functional import hessian
 from typing import Union
-from hessQuik.utils import check_compatible_composition
 
 
 class NN(nn.Sequential):
@@ -14,7 +13,14 @@ class NN(nn.Sequential):
         r"""
         :param args: sequence of hessQuik layers to be concatenated
         """
-        check_compatible_composition(*args)
+        # check compatible composition
+        for i, _ in enumerate(args[1:], start=1):
+            n_out = args[i - 1].dim_output()
+            n_in = args[i].dim_input()
+
+            if not (n_out == n_in):
+                raise ValueError("incompatible composition for block " + str(i - 1) + " to block " + str(i))
+
         super(NN, self).__init__(*args)
 
     def dim_input(self) -> int:
