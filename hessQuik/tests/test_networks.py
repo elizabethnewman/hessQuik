@@ -4,7 +4,7 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
-from hessQuik.tests.utils import run_all_tests
+from utils import run_all_tests
 
 
 class TestNN(unittest.TestCase):

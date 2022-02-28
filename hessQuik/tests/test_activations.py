@@ -1,7 +1,7 @@
 import unittest
 import torch
 import hessQuik.activations as act
-from hessQuik.tests.utils import run_all_tests
+from utils import run_all_tests
 
 
 class TestActivation(unittest.TestCase):
