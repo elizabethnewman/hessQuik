@@ -2,22 +2,47 @@ import torch
 import torch.nn as nn
 from torch.autograd import grad
 from torch.autograd.functional import hessian
+from typing import Union
+from hessQuik.utils.utils import check_compatible_composition
 
 
 class NN(nn.Sequential):
-    """
-    Forward propagation through network composed of forward Hessian layers
+    r"""
+    Wrapper for hessQuik networks built upon torch.nn.Sequential.
     """
     def __init__(self, *args):
+        r"""
+        :param args: sequence of hessQuik layers to be concatenated
+        """
+        check_compatible_composition(*args)
         super(NN, self).__init__(*args)
 
-    def dim_input(self):
+    def dim_input(self) -> int:
+        r"""
+        Number of network input features
+        """
         return self[0].dim_input()
 
     def dim_output(self):
+        r"""
+        Number of network output features
+        """
         return self[-1].dim_output()
 
     def setup_forward_mode(self, **kwargs):
+        r"""
+        Setup forward or backward mode.
+
+        If ``kwargs`` does not include a ``forward_mode`` key, then the heuristic is to use ``forward_mode = True``
+        if :math:`n_{in} < n_{out}` where :math:`n_{in}` is the number of input features and
+        :math:`n_{out}` is the number of output features.
+
+        There are three possible options once ``forward_mode`` is a key of ``kwargs``:
+
+            - If ``forward_mode = True``, then the network computes derivatives during forward propagation.
+            - If ``forward_mode = False``, then the network calls the backward routine to compute derivatives after forward propagating.
+            - If ``forward_mode = None``, then the network will compute derivatives in backward mode, but will not call the backward routine.  This enables concatenation of networks, not just layers.
+        """
         if not ('forward_mode' in kwargs.keys()):
             if self.dim_input() < self.dim_output():
                 forward_mode = True  # compute the derivatives in forward mode
@@ -27,7 +52,26 @@ class NN(nn.Sequential):
 
         return kwargs['forward_mode']
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, dudx=None, d2ud2x=None, **kwargs):
+    def forward(self, x: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False,
+                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None, **kwargs):
+        r"""
+
+        :param x: input into network of shape :math:`(n_s, d)` where :math:`n_s` is the number of samples and :math:`d` is the number of input features
+        :type x: torch.Tensor
+        :param do_gradient: If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
+        :type do_gradient: bool, optional
+        :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
+        :type do_Hessian: bool, optional
+        :param dudx: if ``forward_mode = True``, gradient of features from previous layer with respect to network input :math:`x` with shape :math:`(n_s, d, n_{in})`
+        :type dudx: torch.Tensor or ``None``
+        :param d2ud2x: if ``forward_mode = True``, Hessian of features from previous layer with respect to network input :math:`x` with shape :math:`(n_s, d, d, n_{in})`
+        :type d2ud2x: torch.Tensor or ``None``
+        :param kwargs: additional options, such as ``forward_mode`` as a user input
+        :return:
+             - **f** (*torch.Tensor*) - output features of network with shape :math:`(n_s, m)` where :math:`m` is the number of network output features
+            - **dfdx** (*torch.Tensor* or ``None``) - if ``forward_mode = True``, gradient of output features with respect to network input :math:`x` with shape :math:`(n_s, d, m)`
+            - **d2fd2x** (*torch.Tensor* or ``None``) - if ``forward_mode = True``, Hessian of output features with respect to network input :math:`x` with shape :math:`(n_s, d, d, m)`
+        """
         forward_mode = self.setup_forward_mode(**kwargs)
 
         for module in self:

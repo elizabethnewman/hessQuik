@@ -77,3 +77,17 @@ def convert_to_base(a: tuple, b: float = 2.0) -> tuple:
         outputs += (c, d)
 
     return outputs
+
+
+def check_compatible_composition(*args):
+    """
+    Verify that network layers can be composed
+    """
+
+    for i, _ in enumerate(args[1:], start=1):
+        n_out = args[i - 1].dim_output()
+        n_in = args[i].dim_input()
+
+        if not (n_out == n_in):
+            raise ValueError("incompatible composition for block " + str(i - 1) + " to block " + str(i))
+

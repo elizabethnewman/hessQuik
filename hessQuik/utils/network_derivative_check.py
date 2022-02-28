@@ -173,7 +173,7 @@ if __name__ == '__main__':
     depth = 8
     f = net.NN(lay.singleLayer(d, width, act=act.tanhActivation()),
                net.resnetNN(width, depth, h=1.0, act=act.tanhActivation()),
-               lay.singleLayer(width, 1, act=act.identityActivation()))
+               lay.singleLayer(5, 1, act=act.identityActivation()))
 
     # width = 7
     # f = net.NN(lay.singleLayer(d, width, act=act.tanhActivation()),

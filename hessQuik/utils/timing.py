@@ -77,7 +77,7 @@ def setup_network(in_features: int, out_features: int, width: int, depth: int, n
 
 
 def timing_test_cpu(f: Union[net.NN, torch.nn.Module], x: torch.Tensor, num_trials: int = 10,
-                    clear_memory: bool = True) -> torch.tensor():
+                    clear_memory: bool = True) -> torch.Tensor:
     r"""
     Timing test for one architecture on CPU.
 

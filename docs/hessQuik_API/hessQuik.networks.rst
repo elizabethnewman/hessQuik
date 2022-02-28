@@ -1,45 +1,33 @@
-hessQuik.networks package
-=========================
+hessQuik.networks
+=================
 
-Submodules
-----------
-
-hessQuik.networks.fully\_connected\_network module
---------------------------------------------------
-
-.. automodule:: hessQuik.networks.fully_connected_network
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-hessQuik.networks.hessQuik\_network module
-------------------------------------------
+hessQuik Network
+----------------
 
 .. automodule:: hessQuik.networks.hessQuik_network
    :members:
+   :special-members: __init__
    :undoc-members:
    :show-inheritance:
 
-hessQuik.networks.icnn\_network module
---------------------------------------
+Fully Connected Network
+-----------------------
+
+.. automodule:: hessQuik.networks.fully_connected_network
+   :members:
+   :show-inheritance:
+
+ICNN Network
+------------
 
 .. automodule:: hessQuik.networks.icnn_network
    :members:
-   :undoc-members:
    :show-inheritance:
 
-hessQuik.networks.resnet\_network module
-----------------------------------------
+Residual Neural Network
+-----------------------
 
 .. automodule:: hessQuik.networks.resnet_network
    :members:
-   :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: hessQuik.networks
-   :members:
-   :undoc-members:
-   :show-inheritance:

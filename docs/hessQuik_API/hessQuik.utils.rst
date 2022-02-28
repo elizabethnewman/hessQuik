@@ -7,6 +7,10 @@ Peaks Data
 .. automodule:: hessQuik.utils.data
    :members:
 
+.. image:: ../img/data/peaks.png
+   :width: 400
+   :align: center
+
 Input Derivative Checks
 -----------------------
 

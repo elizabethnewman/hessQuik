@@ -10,6 +10,23 @@ def peaks(y: Tensor, do_gradient: bool = False, do_Hessian: bool = False) -> \
 
     .. _MATLAB 2D peaks function: https://www.mathworks.com/help/matlab/ref/peaks.html
 
+    Examples::
+
+         import matplotlib.pyplot as plt
+         from matplotlib import cm
+         from mpl_toolkits import mplot3d
+         x, y = torch.linspace(-3, 3, 100), torch.linspace(-3, 3, 100)
+         grid_x, grid_y = torch.meshgrid(x, y)
+         grid_xy = torch.concat((grid_x.reshape(-1, 1), grid_y.reshape(-1, 1)), dim=1)
+         grid_z, *_ = peaks(grid_xy)
+         fig = plt.figure()
+         ax = plt.axes(projection='3d')
+         surf = ax.plot_surface(grid_x, grid_y, grid_z.reshape(grid_x.shape), cmap=cm.viridis)
+         ax.set_xlabel('x')
+         ax.set_ylabel('y')
+         ax.set_zlabel('z')
+         plt.show()
+
     :param y: (x, y) coordinates with shape :math:`(n_s, 2)` where :math:`n_s` is the number of samples
     :type y: torch.Tensor
     :param do_gradient: If set to ``True``, the gradient will be computed during the forward call. Default: ``False``
