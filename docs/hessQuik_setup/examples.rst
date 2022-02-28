@@ -23,7 +23,7 @@ Testing New Layers
 The package provides testing tools to ensure the derivatives are implemented correctly.
 Choosing the best implementation of a given layer requires taking timing and storage costs into account.
 
-Check out this `Google Colab notebook on testing layers`_ to see various implementations of the :py:class::`hessQuik.layers.single_layer.singleLayer` and testing methods!
+Check out this `Google Colab notebook on testing layers`_ to see various implementations of the :py:class:`hessQuik.layers.single_layer.singleLayer` and testing methods!
 
 .. _Google Colab notebook on testing layers: https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikSingleLayerTutorial.ipynb
 
