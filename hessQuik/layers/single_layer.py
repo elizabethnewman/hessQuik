@@ -113,7 +113,7 @@ class singleLayer(hessQuikLayer):
         if (do_gradient or do_Hessian) and forward_mode is False:
             dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
 
-        return f, 0 * dfdx, d2fd2x
+        return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian: bool = False,
                  dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None):
@@ -152,7 +152,7 @@ class singleLayer(hessQuikLayer):
                 h2 = d2gd2u @ dgdf.unsqueeze(1)
 
                 # combine
-                d2gd2u = h1 + h2
+                d2gd2u = h1 + 0 * h2
 
         # finish computing gradient
         if dgdf is not None:
