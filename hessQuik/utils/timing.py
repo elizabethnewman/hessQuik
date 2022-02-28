@@ -1,4 +1,5 @@
 import torch
+import hessQuik
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
@@ -7,7 +8,8 @@ import gc
 from typing import Union
 
 
-def setup_device_and_gradient(f: net.NN, network_wrapper: str = 'hessQuik', device: str = 'cpu'):
+def setup_device_and_gradient(f: hessQuik.networks.NN, network_wrapper: str = 'hessQuik', device: str = 'cpu') \
+        -> torch.nn.Module:
     r"""
     Setup network with correct wrapper and device
     """
@@ -23,7 +25,7 @@ def setup_device_and_gradient(f: net.NN, network_wrapper: str = 'hessQuik', devi
     return f
 
 
-def setup_resnet(in_features: int, out_features: int, width: int = 16, depth: int = 4) -> net.NN:
+def setup_resnet(in_features: int, out_features: int, width: int = 16, depth: int = 4) -> hessQuik.networks.NN:
     r"""
     Setup resnet architecture for timing tests
     """
@@ -34,7 +36,7 @@ def setup_resnet(in_features: int, out_features: int, width: int = 16, depth: in
     return f
 
 
-def setup_fully_connected(in_features: int, out_features: int, width: int = 16, depth: int = 4):
+def setup_fully_connected(in_features: int, out_features: int, width: int = 16, depth: int = 4) -> hessQuik.networks.NN:
     r"""
     Setup fully-connected architecture for timing tests
     """
@@ -42,7 +44,7 @@ def setup_fully_connected(in_features: int, out_features: int, width: int = 16, 
     return f
 
 
-def setup_icnn(in_features: int, out_features: int, width: int = 16, depth: int = 4):
+def setup_icnn(in_features: int, out_features: int, width: int = 16, depth: int = 4) -> hessQuik.networks.NN:
     r"""
     Setup ICNN architecture for timing tests.
 
@@ -76,7 +78,7 @@ def setup_network(in_features: int, out_features: int, width: int, depth: int, n
     return f
 
 
-def timing_test_cpu(f: Union[net.NN, torch.nn.Module], x: torch.Tensor, num_trials: int = 10,
+def timing_test_cpu(f: Union[hessQuik.networks.NN, torch.nn.Module], x: torch.Tensor, num_trials: int = 10,
                     clear_memory: bool = True) -> torch.Tensor:
     r"""
     Timing test for one architecture on CPU.
@@ -102,7 +104,7 @@ def timing_test_cpu(f: Union[net.NN, torch.nn.Module], x: torch.Tensor, num_tria
     return total_time[1:]
 
 
-def timing_test_gpu(f: Union[net.NN, torch.nn.Module], x: torch.Tensor,
+def timing_test_gpu(f: Union[hessQuik.networks.NN, torch.nn.Module], x: torch.Tensor,
                     num_trials: int = 10, clear_memory: bool = True):
     r"""
     Timing test for one architecture on CPU.

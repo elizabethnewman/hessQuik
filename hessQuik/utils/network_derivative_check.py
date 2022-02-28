@@ -129,7 +129,7 @@ def network_derivative_check(f: torch.nn.Module, x: torch.Tensor, do_Hessian: bo
                 loss_d2ft = 0.5 * torch.norm(d2ft) ** 2
 
             losst = loss_ft + loss_dft + loss_d2ft
-            E0.append((loss0 - losst).item())
+            E0.append(torch.norm(loss0 - losst).item())
             E1.append(torch.norm(loss0 + h * dfdtheta - losst).item())
 
             printouts = convert_to_base((E0[-1], E1[-1]))
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     depth = 8
     f = net.NN(lay.singleLayer(d, width, act=act.tanhActivation()),
                net.resnetNN(width, depth, h=1.0, act=act.tanhActivation()),
-               lay.singleLayer(5, 1, act=act.identityActivation()))
+               lay.singleLayer(width, 1, act=act.identityActivation()))
 
     # width = 7
     # f = net.NN(lay.singleLayer(d, width, act=act.tanhActivation()),

@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.autograd import grad
 from torch.autograd.functional import hessian
 from typing import Union
-from hessQuik.utils.utils import check_compatible_composition
+from hessQuik.utils import check_compatible_composition
 
 
 class NN(nn.Sequential):
