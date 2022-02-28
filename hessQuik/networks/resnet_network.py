@@ -5,9 +5,43 @@ from copy import deepcopy
 
 
 class resnetNN(NN):
+    r"""
+    Residual neural networks (ResNet) were popularized in the paper `Deep Residual Learning for Image Recognition`_ by He et al.
+    Here, every layer is a single layer plus a skip connection.
+    Let :math:`u_0` be the input into the ResNet.
+    The construction is of the form
 
-    def __init__(self, width: int, depth: int, h: float = 1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
+    .. _Deep Residual Learning for Image Recognition: https://ieeexplore.ieee.org/document/7780459
+
+    .. math::
+
+        \begin{align}
+            u_1 &= u_0 + h\sigma(K_1 u_0 + b_1)\\
+            u_2 &= u_1 + h\sigma(K_2 x + b_2)\\
+                &\vdots \\
+            u_{\ell} &= u_{\ell-1} + h\sigma(K_{\ell} u_{\ell-1} + b_{\ell})
+        \end{align}
+
+    where :math:`\ell` is the number of layers, called the depth of the network.
+    Each vector of features :math:`u_i` is of size :math:`(n_s, w)` where :math:`n_s` is the number of samples
+    and :math:`w` is the width of the network.
+    Users choose the width and depth of the network and the activation function :math:`\sigma`.
+    """
+
+    def __init__(self, width: int, depth: int, h: float = 1.0,
+                 act: act.hessQuikActivationFunction = act.softplusActivation(),
                  device=None, dtype=None):
+        r"""
+
+        :param width: dimension of hidden features
+        :type width: int
+        :param depth: number of ResNet layers
+        :type depth: int
+        :param h: step size, :math:`h > 0`. Default: 1.0
+        :type h: float
+        :param act: hessQuik activation function. Default: hessQuik.activations.softplusActivationFunction
+        :type act: hessQuik.activations.hessQuikActivationFunction
+        """
         factory_kwargs = {'device': device, 'dtype': dtype}
 
         args = ()

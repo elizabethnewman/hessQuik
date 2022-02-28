@@ -6,9 +6,33 @@ from copy import deepcopy
 
 
 class fullyConnectedNN(NN):
+    r"""
+    Fully-connected network where every layer is a single layer.  Let :math:`u_0 = x` be the input into the network.
+    The construction is of the form
 
-    def __init__(self, widths: Union[Tuple, List], act: act.hessQuikActivationFunction = act.identityActivation(),
+    .. math::
+
+        \begin{align}
+            u_1 &= \sigma(K_1 u_0 + b_1)\\
+            u_2 &= \sigma(K_2 u_1 + b_2)\\
+                &\vdots \\
+            u_{\ell} &= \sigma(K_{\ell} u_{\ell-1} + b_{\ell})
+        \end{align}
+
+    where :math:`\ell` is the number of layers.
+    Each vector of features :math:`u_i` is of size :math:`(n_s, n_i)` where :math:`n_s` is the number of samples
+    and :math:`n_i` is the dimension or width of the hidden features on layer :math:`i`.
+    Users choose the widths of the network and the activation function :math:`\sigma`.
+    """
+
+    def __init__(self, widths: Union[Tuple, List], act: act.hessQuikActivationFunction = act.softplusActivation(),
                  device=None, dtype=None):
+        r"""
+        :param widths: dimension of hidden features
+        :type widths: tuple or list
+        :param act: hessQuik activation function. Default: hessQuik.activations.softplusActivationFunction
+        :type act: hessQuik.activations.hessQuikActivationFunction
+        """
         factory_kwargs = {'device': device, 'dtype': dtype}
         args = ()
         for i in range(len(widths) - 1):

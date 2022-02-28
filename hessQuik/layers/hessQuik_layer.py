@@ -78,8 +78,8 @@ class hessQuikLayer(nn.Module):
         :type d2gd2f: torch.Tensor or ``None``
         :return:
 
-            - **dgdu** (*torch.Tensor* or ``None``) - if ``forward_mode = True``, gradient of the network with respect to input features :math:`u` with shape :math:`(n_s, n_{in}, m)`
-            - **d2gd2u** (*torch.Tensor* or ``None``) - if ``forward_mode = True``, Hessian of the network with respect to input features :math:`u` with shape :math:`(n_s, n_{in}, n_{in}, m)`
+            - **dgdu** (*torch.Tensor* or ``None``) -  gradient of the network with respect to input features :math:`u` with shape :math:`(n_s, n_{in}, m)`
+            - **d2gd2u** (*torch.Tensor* or ``None``) - Hessian of the network with respect to input features :math:`u` with shape :math:`(n_s, n_{in}, n_{in}, m)`
 
         """
 

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import grad
 from torch.autograd.functional import hessian
-from typing import Union
+from typing import Union, Tuple
 
 
 class NN(nn.Sequential):
@@ -13,7 +13,7 @@ class NN(nn.Sequential):
         r"""
         :param args: sequence of hessQuik layers to be concatenated
         """
-        # check compatible composition
+        # check for compatible composition
         for i, _ in enumerate(args[1:], start=1):
             n_out = args[i - 1].dim_output()
             n_in = args[i].dim_input()
@@ -59,8 +59,10 @@ class NN(nn.Sequential):
         return kwargs['forward_mode']
 
     def forward(self, x: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False,
-                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None, **kwargs):
+                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None, **kwargs) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
+        Forward propagate through network and compute derivatives
 
         :param x: input into network of shape :math:`(n_s, d)` where :math:`n_s` is the number of samples and :math:`d` is the number of input features
         :type x: torch.Tensor
@@ -74,7 +76,8 @@ class NN(nn.Sequential):
         :type d2ud2x: torch.Tensor or ``None``
         :param kwargs: additional options, such as ``forward_mode`` as a user input
         :return:
-             - **f** (*torch.Tensor*) - output features of network with shape :math:`(n_s, m)` where :math:`m` is the number of network output features
+
+            - **f** (*torch.Tensor*) - output features of network with shape :math:`(n_s, m)` where :math:`m` is the number of network output features
             - **dfdx** (*torch.Tensor* or ``None``) - if ``forward_mode = True``, gradient of output features with respect to network input :math:`x` with shape :math:`(n_s, d, m)`
             - **d2fd2x** (*torch.Tensor* or ``None``) - if ``forward_mode = True``, Hessian of output features with respect to network input :math:`x` with shape :math:`(n_s, d, d, m)`
         """
@@ -89,24 +92,59 @@ class NN(nn.Sequential):
 
         return x, dudx, d2ud2x
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+    def backward(self, do_Hessian: bool = False, dgdf: Union[torch.Tensor, None] = None,
+                 d2gd2f: Union[torch.Tensor, None] = None) -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
+        r"""
+        Compute derivatives using backward propagation.  This method is called during the forward pass if ``forward_mode = False``.
+
+        :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
+        :type do_Hessian: bool, optional
+        :param dgdf: gradient of the subsequent layer features, :math:`g(f)`, with respect to the layer outputs, :math:`f` with shape :math:`(n_s, n_{out}, m)`.
+        :type dgdf: torch.Tensor
+        :param d2gd2f: gradient of the subsequent layer features, :math:`g(f)`, with respect to the layer outputs, :math:`f` with shape :math:`(n_s, n_{out}, n_{out}, m)`.
+        :type d2gd2f: torch.Tensor or ``None``
+        :return:
+
+            - **dgdf** (*torch.Tensor* or ``None``) - gradient of the network with respect to input features :math:`x` with shape :math:`(n_s, d, m)`
+            - **d2gd2f** (*torch.Tensor* or ``None``) - Hessian of the network with respect to input features :math:`u` with shape :math:`(n_s, d, d, m)`
+
+        """
         for i in range(len(self) - 1, -1, -1):
             dgdf, d2gd2f = self[i].backward(do_Hessian=do_Hessian, dgdf=dgdf, d2gd2f=d2gd2f)
         return dgdf, d2gd2f
 
 
 class NNPytorchAD(nn.Module):
+    r"""
+    Compute the derivatives of a network using Pytorch's automatic differentiation.
+
+    The implementation follows that of `CP Flow`_.
+
+    .. _CP Flow: https://github.com/CW-Huang/CP-Flow
+    """
 
     def __init__(self, net: NN):
+        r"""
+        Create wrapper around hessQuik network.
+
+        :param net: hessQuik network
+        :type net: hessQuik.networks.NN
+        """
         super(NNPytorchAD, self).__init__()
         self.net = net
-        self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, **kwargs):
+    def forward(self, x: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, **kwargs) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
+        r"""
+        Forward propagate through the hessQuik network without computing derivatives.
+        Then, use automatic differentiation to compute derivatives using ``torch.autograd.grad``.
+        """
+
         (df, d2f) = (None, None)
         if do_gradient or do_Hessian:
             x.requires_grad = True
 
+        # forwaard propagate without compute derivatives
         f, *_ = self.net(x, do_gradient=False, do_Hessian=False, forward_mode=False)
 
         if do_gradient or do_Hessian:
@@ -135,13 +173,27 @@ class NNPytorchAD(nn.Module):
 
 
 class NNPytorchHessian(nn.Module):
+    r"""
+    Compute the derivatives of a network using Pytorch's Hessian functional.
+    """
 
     def __init__(self, net):
+        """
+        Create wrapper around hessQuik network.
+
+        :param net: hessQuik network
+        :type net: hessQuik.networks.NN
+        """
         super(NNPytorchHessian, self).__init__()
         self.net = net
-        self.ctx = None
 
-    def forward(self, x, do_gradient=False, do_Hessian=False, **kwargs):
+    def forward(self, x: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, **kwargs) \
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
+        r"""
+        Forward propagate through the hessQuik network without computing derivatives.
+        Then, use automatic differentiation to compute derivatives using ``torch.autograd.functional.hessian``.
+        """
+
         (df, d2f) = (None, None)
         if do_gradient or do_Hessian:
             x.requires_grad = True
