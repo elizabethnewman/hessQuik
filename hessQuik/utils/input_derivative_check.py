@@ -3,7 +3,7 @@ from math import log2, floor, ceil
 import hessQuik
 from hessQuik.utils import convert_to_base
 from typing import Callable, Tuple, Optional, Union
-
+import math
 
 def input_derivative_check(f: Union[torch.nn.Module, Callable], x: torch.Tensor, do_Hessian: bool = False,
                            forward_mode: bool = True, num_test: int = 15, base: float = 2.0, tol: float = 0.1,
@@ -117,14 +117,14 @@ def input_derivative_check(f: Union[torch.nn.Module, Callable], x: torch.Tensor,
     E0, E1, E2 = torch.tensor(E0), torch.tensor(E1), torch.tensor(E2)
 
     # ---------------------------------------------------------------------------------------------------------------- #
-    # check if order is 2 at least half of the time
+    # check if order is 2 enough of the time
     eps = torch.finfo(x.dtype).eps
-    grad_check = (sum((torch.log2(E1[:-1] / E1[1:]) / log2(base)) > (2 - tol)) > 3)
-    grad_check = (grad_check or (torch.kthvalue(E1, num_test // 3)[0] < (100 * eps)))
+    grad_check = (sum((torch.log2(E1[:-1] / E1[1:]) / log2(base)) > (2 - tol)) > num_test // 3)
+    grad_check = (grad_check or (torch.kthvalue(E1, num_test // 4)[0] < (100 * eps)))
 
     if curvx is not None:
-        hess_check = (sum(torch.log2(E2[:-1] / E2[1:]) / log2(base) > (3 - tol)) > 3)
-        hess_check = (hess_check or (torch.kthvalue(E2, num_test // 3)[0] < (100 * eps)))
+        hess_check = (sum((torch.log2(E2[:-1] / E2[1:]) / log2(base)) > (3 - tol)) > num_test // 3)
+        hess_check = (hess_check or (torch.kthvalue(E2, num_test // 4)[0] < (100 * eps)))
 
     if verbose:
         if grad_check:

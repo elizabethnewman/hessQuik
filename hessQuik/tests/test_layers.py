@@ -8,7 +8,7 @@ from hessQuik.tests.utils import run_all_tests
 class TestLayer(unittest.TestCase):
 
     def test_singleLayer(self):
-        # problem setup
+        torch.set_default_dtype(torch.float64)
         nex = 11  # no. of examples
         d = 4  # no. of input features
         m = 7  # no. of output features
@@ -19,6 +19,7 @@ class TestLayer(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_resnetLayer(self):
+        torch.set_default_dtype(torch.float64)
         nex = 11  # no. of examples
         width = 4  # no. of input features
         h = 0.25
@@ -28,7 +29,7 @@ class TestLayer(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_ICNNLayer(self):
-        # problem setup
+        torch.set_default_dtype(torch.float64)
         nex = 11  # no. of examples
         d = 3  # no. of input features
         m = 5  # no. of output features
@@ -39,7 +40,7 @@ class TestLayer(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_quadraticLayer(self):
-        # problem setup
+        torch.set_default_dtype(torch.float64)
         nex = 11  # no. of examples
         d = 4  # no. of input dimensiona features
         m = 7  # rank
@@ -50,7 +51,7 @@ class TestLayer(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_quadraticICNNLayer(self):
-        # problem setup
+        torch.set_default_dtype(torch.float64)
         nex = 11  # no. of examples
         d = 3  # no. of input features
         m = 5  # no. of output features

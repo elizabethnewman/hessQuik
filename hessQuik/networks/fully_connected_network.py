@@ -58,7 +58,6 @@ if __name__ == '__main__':
     print('======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
 
-
     # widths1 = [2, 3]
     # widths2 = [4, 5]
     # widths3 = [7, 6, 2]

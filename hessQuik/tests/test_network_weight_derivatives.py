@@ -10,12 +10,14 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
 
     @staticmethod
     def setup_data():
+        torch.set_default_dtype(torch.float64)
         nex = 11  # no. of examples
         d = 4  # no. of input features
         x = torch.randn(nex, d)
         return x
 
     def test_singleLayer(self):
+        torch.set_default_dtype(torch.float64)
         x = self.setup_data()
         d = x.shape[1]
         f = lay.singleLayer(d, 7, act=act.softplusActivation())
@@ -25,6 +27,7 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
         network_derivative_check(f, x, do_Hessian=True, forward_mode=False)
 
     def test_resnetNN(self):
+        torch.set_default_dtype(torch.float64)
         x = self.setup_data()
         d = x.shape[1]
         f = net.resnetNN(d, 4, act=act.softplusActivation())
@@ -34,6 +37,7 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
         network_derivative_check(f, x, do_Hessian=True, forward_mode=False)
 
     def test_blockNN(self):
+        torch.set_default_dtype(torch.float64)
         x = self.setup_data()
         d = x.shape[1]
         width = 7
@@ -49,6 +53,7 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
         network_derivative_check(f, x, do_Hessian=True, forward_mode=False)
 
     def test_ICNN(self):
+        torch.set_default_dtype(torch.float64)
         x = self.setup_data()
         d = x.shape[1]
         m = 4
@@ -63,5 +68,5 @@ class TestNetworkWeightDerivatives(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    torch.set_default_dtype(torch.float32)
+    torch.set_default_dtype(torch.float64)
     unittest.main()

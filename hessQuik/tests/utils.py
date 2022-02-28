@@ -63,4 +63,4 @@ def run_all_tests(f, x, num_test=15, base=2.0, tol=0.1, verbose=False):
     run_forward_gradient_test(f, x, num_test=num_test, base=base, tol=tol, verbose=verbose)
     run_forward_hessian_test(f, x, num_test=num_test, base=base, tol=tol, verbose=verbose)
     run_backward_gradient_test(f, x, num_test=num_test, base=base, tol=tol, verbose=verbose)
-    run_backward_hessian_test(f, x, num_test=num_test, base=base, tol=tol, verbose=verbose)
+    run_backward_hessian_test(f, x, num_test=num_test, base=base, tol=tol, verbose=True)

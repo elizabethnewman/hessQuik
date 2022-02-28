@@ -152,7 +152,7 @@ class singleLayer(hessQuikLayer):
                 h2 = d2gd2u @ dgdf.unsqueeze(1)
 
                 # combine
-                d2gd2u = h1 + 0 * h2
+                d2gd2u = h1 + h2
 
         # finish computing gradient
         if dgdf is not None:
