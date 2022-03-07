@@ -73,7 +73,7 @@ If your code passes the necessary numerical tests and is well-documented, your c
 
 ## Reporting Bugs
 
-If you notice an issue with this repository, please report it using [Github Issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues).  When reporting an implemetnation bug, include a small example that helps to reproduce the error.  The issue will be addressed as quickly as possible.
+If you notice an issue with this repository, please report it using [Github Issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues).  When reporting an implementation bug, include a small example that helps to reproduce the error.  The issue will be addressed as quickly as possible.
 
 ## How to Cite
 
