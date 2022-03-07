@@ -12,9 +12,13 @@ peaks.py
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1842TWdILPNhiqLMw9JMZjdZ6T-B6hzul?usp=sharing) Tutorial: Constructing and Testing ```hessQuik``` Layers
 
-We include a simple example of a timing test in ```ex_timing_test_hessQuik.py``` and we include the runs from our paper in the following bash scripts:
-```python
-run_timing_test_scalar_output.sh
-run_timing_test_vector_output.sh
-```
+We include a simple example of a timing test in ```ex_timing_test_hessQuik.py``` and we include the runs from our paper in the Google Colab notebook:
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb)
+
+These scripts are designed to be run on Google Colaboratory.  
+
+If you are interested in running the tests locally, please use the following from the command line:
+```python
+python run_timing_test.py
+```
