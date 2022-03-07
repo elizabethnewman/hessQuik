@@ -14,7 +14,7 @@ peaks.py
 
 We include a simple example of a timing test in ```ex_timing_test_hessQuik.py``` and we include the runs from our paper in the Google Colab notebook:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb) Timing Tests
 
 These scripts are designed to be run on Google Colaboratory.  
 
@@ -22,3 +22,9 @@ If you are interested in running the tests locally, please use the following fro
 ```python
 python run_timing_test.py
 ```
+
+For convenience, this script allows for various command line arguments.  Some examples include
+```python
+python run_timing_test.py --num-input 5 --num-output 4 --network-wrapper hessQuik
+```
+The above command runs the timing test with our hessQuik implementation for 5 different input feature sizes from :math:`2^0` to :math:`2^4` and 4 different output features sizes from :math:`2^0` to :math:`2^3`.    
