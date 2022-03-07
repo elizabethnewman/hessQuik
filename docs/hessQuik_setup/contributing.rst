@@ -3,8 +3,8 @@ Contributing
 
 There are many ways to contribute to ``hessQuik``.
 
-Contributing to the software
-----------------------------
+Contributing Software
+---------------------
 
 1. Fork the ``hessQuik`` repository
 2. Clone your fork using the command::
