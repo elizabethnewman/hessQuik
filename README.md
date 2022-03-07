@@ -13,7 +13,7 @@ For detailed documentation, visit [https://hessquik.readthedocs.io/](https://hes
 
 ## Installation
 
-From PyPi:
+From PyPI:
 ```console
 pip install hessQuik
 ```
