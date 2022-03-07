@@ -13,6 +13,12 @@ For detailed documentation, visit [https://hessquik.readthedocs.io/](https://hes
 
 ## Installation
 
+From PyPi:
+```console
+pip install hessQuik
+```
+
+From Github:
 ```console
 python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
