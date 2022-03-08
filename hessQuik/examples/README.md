@@ -27,4 +27,7 @@ For convenience, this script allows for various command line arguments.  Some ex
 ```python
 python run_timing_test.py --num-input 5 --num-output 4 --network-wrapper hessQuik
 ```
-The above command runs the timing test with our hessQuik implementation for 5 different input feature sizes from $2^0$ to $2^4$ and 4 different output features sizes from $2^0$ to $2^3$.    
+The above command runs the timing test with our hessQuik implementation for 5 different input feature sizes from $2^0$ to $2^4$ and 4 different output features sizes from $2^0$ to $2^3$.
+
+The flags used in the paper experiments are available in the notebook
+
