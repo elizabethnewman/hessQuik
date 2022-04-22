@@ -36,34 +36,34 @@ bibliography: paper.bib
 
 
 # Summary
-`hessQuik` is a lightweight repository for fast computation of second-order derivatives (Hessians) of composite functions (that is, functions formed via compositions) with respect to their inputs.  The core of `hessQuik` is the efficient computation of analytical Hessians with GPU acceleration. `hessQuik` is a PyTorch [@pytorch] package that is user-friendly and easily extendable.  The repository includes a variety of popular functions or layers, including residual layers and input convex layers, from which users can build complex models via composition.  `hessQuik` layers are designed for ease of composition - users need only select the layers and the package provides a convenient wrapper to compose the functions properly.  Each layer provides two modes for derivative computation and the mode is automatically selected to maximize computational efficiency. `hessQuik` includes easy-access, [illustrative tutorials](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikPeaksHermiteInterpolation.ipynb) on Google Colaboratory [@googleColab], [reproducible experiments](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb), and unit tests to verify implementations. `hessQuik` enables users to obtain valuable second-order informantion for their models simply and efficiently.
+`hessQuik` is a lightweight software library for fast computation of second-order derivatives (Hessians) of composite functions (that is, functions formed via compositions) with respect to their inputs.  The core of `hessQuik` is the efficient computation of analytical Hessians with GPU acceleration. `hessQuik` is a PyTorch [@pytorch] package that is user-friendly and easily extendable.  The repository includes a variety of popular functions and layers, including residual layers and input convex layers, from which users can build complex models through composition.  `hessQuik` layers are designed for ease of composition - users only need to select the layers and the package provides a convenient wrapper to compose the functions properly.  Each layer provides two modes for derivative computation and the mode is automatically selected to maximize computational efficiency. `hessQuik` includes easy-access, [illustrative tutorials](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikPeaksHermiteInterpolation.ipynb) on Google Colaboratory [@googleColab], [reproducible experiments](https://colab.research.google.com/github/elizabethnewman/hessQuik/blob/main/hessQuik/examples/hessQuikTimingTest.ipynb), and unit tests to verify implementations. `hessQuik` enables users to obtain valuable second-order information for their models simply and efficiently.
 
 # Statement of need
 
 Deep neural networks (DNNs) and other composition-based models have become a staple of data science, garnering state-of-the-art results in, e.g., image classification and speech recognition [@Goodfellow-et-al-2016], and gaining widespread use in the scientific community, particularly as surrogate models to replace expensive computations [@Anirudh9741]. The unrivaled universality and success of DNNs is due, in part, to the convenience of automatic differentiation (AD) which enables users to compute derivatives of complex functions without an explicit formula. Despite being a powerful tool to compute first-order derivatives (gradients), AD encounters computational obstacles when computing second-order derivatives.  
 
-Knowledge of second-order derivatives is paramount in many growing fields, such as physics-informed neural networks (PINNs) [@Raissi:2019hv], mean-field games [@Ruthotto9183], generative modeling [@ruthotto2021introduction], and adversarial learning [@papernot2016limitations].  In addition, second-order derivatives can provide insight into the optimization problem solved to build a good model [@olearyroseberry2020illposedness]. Hessians are notoriously challenging to compute efficiently with AD and cumbersome to derive and debug analytically.  Hence, many algorithms approximate Hessian information, resulting in suboptimal performance.  To address these challenges, `hessQuik` computes Hessians analytically and efficiently with an implementation that is accelerated on GPUs.
+Knowledge of second-order derivatives is paramount in many growing fields, such as physics-informed neural networks (PINNs) [@Raissi:2019hv], mean-field games [@Ruthotto9183], generative modeling [@ruthotto2021introduction], and adversarial learning [@papernot2016limitations].  In addition, second-order derivatives can provide insight into the optimization problem solved to build a good model [@olearyroseberry2020illposedness]. Hessians are notoriously challenging to compute efficiently with AD and cumbersome to derive and debug analytically.  Hence, many algorithms approximate Hessian information, resulting in sub-optimal performance.  To address these challenges, `hessQuik` computes Hessians analytically and efficiently with an implementation that is accelerated on GPUs.
 
 
 # `hessQuik` Building Blocks
 
-`hessQuik` builds complex functions constructed via composition of simpler functions, which we call \emph{layers}.  The package uses the chain rule to compute Hessians of composite functions, assuming the derivatives of the layers are implemented analytically.  We describe the process mathematically.
+`hessQuik` builds complex functions constructed through composition of simpler functions, which we call \emph{layers}.  The package uses the chain rule to compute Hessians of composite functions, assuming the derivatives of the layers are implemented analytically.  We describe the process mathematically.
 
 Let $f:\Rbb^{n_0} \to \Rbb^{n_\ell}$ be a twice continuously-differentiable function defined as
 	\begin{align}
 	f = g_{\ell} \circ g_{\ell - 1} \circ \cdots \circ g_1, \quad\text{where} \quad g_i: \Rbb^{n_{i-1}} \to \Rbb^{n_i} \quad \text{for }i=1,\dots, \ell.
 	\end{align}
-Here, $g_i$ represents the $i$-th layer and $n_i$ is the number of hidden features on the $i$-th layer.   We call $n_0$ the number of input features and $n_{\ell}$ the number of output features. We note that each layer can be parameterized by weights which we can tune by solving an optimization problem. Because `hessQuik` computes derivatives for the network inputs, we omit the weights from our notation. 
+Here, $g_i$ represents the $i$-th layer and $n_i$ is the number of hidden features on the $i$-th layer. We call $n_0$ the number of input features and $n_{\ell}$ the number of output features. We note that each layer can be parameterized by weights which we can tune by solving an optimization problem. Because `hessQuik` computes derivatives for the network inputs, we omit the weights from our notation. 
 
 ## Implemented `hessQuik` Layers
 
-`hessQuik` includes a variety of popular layers and their derivatives.  These layers can be composed to form complex models.  Each layer incorporates a nonlinear activation function, $\sigma: \Rbb \to \Rbb$, that is applied entry-wise.  The `hessQuik` package provides several activation functions, including sigmoid, hyperbolic tangent, and softplus.   Currently supported layers include the following:
+`hessQuik` includes a variety of popular layers and their derivatives.  These layers can be composed to form complex models. Each layer incorporates a non-linear activation function, $\sigma: \Rbb \to \Rbb$, that is applied entry-wise.  The `hessQuik` package provides several activation functions, including Sigmoid, Hyperbolic Tangent, and Softplus.   Currently supported layers include the following:
 
-* `singleLayer`: This layer consists of an affine transformation followed by pointwise nonlinearity
+* `singleLayer`: This layer consists of an affine transformation followed by pointwise non-linearity
 	\begin{align}
 	 g_{\text{single}}(\bfu) = \sigma(\bfK \bfu + \bfb)
 	\end{align}
-	where $\bfK$ and $\bfb$ are a weight matrix and bias vector, respectively, that can be tuned via optimization methods. Multilayer perceptron neural networks are built upon these layers.
+	where $\bfK$ and $\bfb$ are a weight matrix and bias vector, respectively, that can be tuned through optimization methods. Multilayer perceptron neural networks are built upon these layers.
 	
 * `residualLayer`: This layer differs from a single layer by including a skip connection
 	\begin{align}
@@ -80,12 +80,12 @@ Here, $g_i$ represents the $i$-th layer and $n_i$ is the number of hidden featur
 	
 * `quadraticLayer`, `quadraticICNNLayer`: These are layers that output scalar values and are typically reserved for the final layer of a model.
 
-The variety of implemented layers and activation functions makes designing a wide range of `hessQuik` models easy.
+The variety of implemented layers and activation functions makes the task of designing a wide range of `hessQuik` models easy.
 
 
 # Computing Derivatives with `hessQuik`
 
-In `hessQuik`, we offer two modes, forward and backward, to compute the gradient $\nabla_{\bfu_0} f$ and the Hessian $\nabla_{\bfu_0}^2 f$ of the function with respect to the input features. The cost of computing derivatives in each mode differs and depends on the number of input and output features.  `hessQuik` automatically selects the least costly method by which to compute derivatives.  We briefly describe the derivative calculations using the two methods.  
+In `hessQuik`, we offer two modes, forward and backward, to compute the gradient $\nabla_{\bfu_0} f$ and the Hessian $\nabla_{\bfu_0}^2 f$ of the function with respect to the input features. The cost of computing derivatives in each mode differs and depends on the number of input and output features. `hessQuik` automatically selects the least costly method by which to compute derivatives.  We briefly describe the derivative calculations using the two methods.  
 
 First, it is useful to express the evaluation of $f$ as an iterative process.  Let $\bfu_0\in \Rbb^{n_0}$ be a vector of input features.  Then, the function evaluated at $\bfu_0$ is
 	\begin{align}
@@ -115,7 +115,7 @@ The Hessian mapping in \autoref{eq:Hessian_ui} is illustrated in \autoref{fig:he
 
 ## Backward Mode
 
-Computing derivatives in backward mode is also known as \emph{backward propagation} and is the method by which automatic differentiation computes derivatives.  The process works as follows. We first forward propagate through the network \emph{without computing gradients or Hessians}. After we forward propagate, we build the gradient and Hessian starting from the output layer and working backwards to the input layer. We start by computing derivatives of the final layer with respect to the previous features; that is, 
+Computing derivatives in backward mode is also known as \emph{backward propagation} and is the method by which automatic differentiation computes derivatives.  The process works as follows: We first forward propagate through the network \emph{without computing gradients or Hessians}. After we forward propagate, we build the gradient and Hessian starting from the output layer and working backwards to the input layer. We start by computing derivatives of the final layer with respect to the previous features; that is, 
     \begin{align}
         \nabla_{\bfu_{\ell-1}} \bfu_\ell &= \nabla_{\bfu_{\ell-1}} g_{\ell}(\bfu_{\ell-1}) && \in \Rbb^{n_{\ell-1}\times n_\ell}\\
          \nabla_{\bfu_{\ell-1}}^2 \bfu_\ell &= \nabla_{\bfu_{\ell-1}}^2 g_{\ell}(\bfu_{\ell-1}) && \in \Rbb^{n_{\ell-1}\times n_{\ell-1}\times n_\ell}.
@@ -157,7 +157,7 @@ In \autoref{fig:scalar} and \autoref{fig:vector}, we compare the performance of 
 ![Average time over $10$ trials to compute the Hessian with respect to the input features with variable number of input and output features. Each row corresponds to a number of input features, $n_0$, each column corresponds to a number of output features, $n_{\ell}$, and color represents the amount of time to compute (in seconds). \label{fig:vector}](img/hessQuik_timing_vector.png){ width=80% }
 
 # Conclusions
-`hessQuik` is a simple, user-friendly repository for computing second-order derivatives of composite functions with respect to their inputs.  This PyTorch package includes many popular built-in layers, tutorial repositories, reproducibile experiments, and unit testing for ease of use.  The implementation scales well in time with various input and output feature dimensions and performance is accelerated on GPUs, notably faster than automatic-differentiation-based second-order derivative computations.  We hope the accessibility and efficiency of this package will encourage researchers to use and contribute to `hessQuik` in the future.
+`hessQuik` is a simple, user-friendly software library for computing second-order derivatives of composite functions with respect to their inputs.  This PyTorch package includes many popular built-in layers, tutorial repositories, reproducible experiments, and unit testing for ease of use.  The implementation scales well in time with various input and output feature dimensions and performance is accelerated on GPUs, notably faster than automatic-differentiation-based second-order derivative computations.  We hope the accessibility and efficiency of this package will encourage researchers to use and contribute to `hessQuik` in the future.
 
 # Acknowledgements
 The development of `hessQuik` was supported in part by the US National Science Foundation under Grant Number 1751636, the Air Force Office of Scientific Research Award FA9550-20-1-0372, and the US DOE Office of Advanced Scientific Computing Research Field Work Proposal 20-023231. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the funding agencies.
