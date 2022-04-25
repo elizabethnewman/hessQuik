@@ -10,6 +10,8 @@ Knowledge of second-order derivatives is paramount in many growing fields and ca
 
 ## Documentation
 
+For package usage and details, see our paper in the [Journal of Open Source Software](https://joss.theoj.org/papers/10.21105/joss.04171#).
+
 For detailed documentation, visit [https://hessquik.readthedocs.io/](https://hessquik.readthedocs.io/en/latest/index.html).
 
 ## Installation
