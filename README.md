@@ -84,6 +84,7 @@ If you notice an issue with this repository, please report it using [Github Issu
 
 ## How to Cite
 
+```
 @article{Newman2022,
   doi = {10.21105/joss.04171},
   url = {https://doi.org/10.21105/joss.04171},
@@ -96,6 +97,7 @@ If you notice an issue with this repository, please report it using [Github Issu
   title = {`hessQuik`: Fast Hessian computation of composite functions},
   journal = {Journal of Open Source Software}
 }
+```
 
 
 ## Acknowledgements
