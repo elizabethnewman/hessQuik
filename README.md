@@ -1,4 +1,5 @@
 # hessQuik
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.04171/status.svg)](https://doi.org/10.21105/joss.04171)
 
 A lightweight package for fast, GPU-accelerated computation of gradients and Hessians of functions constructed via composition.
 
@@ -83,7 +84,19 @@ If you notice an issue with this repository, please report it using [Github Issu
 
 ## How to Cite
 
-To Be Added
+@article{Newman2022,
+  doi = {10.21105/joss.04171},
+  url = {https://doi.org/10.21105/joss.04171},
+  year = {2022},
+  publisher = {The Open Journal},
+  volume = {7},
+  number = {72},
+  pages = {4171},
+  author = {Elizabeth Newman and Lars Ruthotto},
+  title = {`hessQuik`: Fast Hessian computation of composite functions},
+  journal = {Journal of Open Source Software}
+}
+
 
 ## Acknowledgements
 
