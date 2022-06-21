@@ -8,6 +8,13 @@ hessQuik Layer
    :members:
    :show-inheritance:
 
+lapQuik Layer
+-------------
+
+.. automodule:: hessQuik.layers.lapQuik_layer
+   :members:
+   :show-inheritance:
+
 ICNN Layer
 ----------
 
@@ -40,7 +47,6 @@ Residual Layer
    :special-members: __init__
    :show-inheritance:
 
-
 Single Layer
 ------------
 
@@ -49,7 +55,6 @@ Single Layer
    :special-members: __init__
    :show-inheritance:
 
-
 Residual Layer Laplacian
 ------------------------
 
@@ -57,7 +62,6 @@ Residual Layer Laplacian
    :members:
    :special-members: __init__
    :show-inheritance:
-
 
 Single Layer Laplacian
 ----------------------
