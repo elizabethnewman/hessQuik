@@ -49,3 +49,20 @@ Single Layer
    :special-members: __init__
    :show-inheritance:
 
+
+Residual Layer Laplacian
+------------------------
+
+.. automodule:: hessQuik.layers.resnet_layer_lapQuik
+   :members:
+   :special-members: __init__
+   :show-inheritance:
+
+
+Single Layer Laplacian
+----------------------
+
+.. automodule:: hessQuik.layers.single_layer_lapQuik
+   :members:
+   :special-members: __init__
+   :show-inheritance:
