@@ -10,6 +10,15 @@ hessQuik Network
    :undoc-members:
    :show-inheritance:
 
+lapQuik Network
+---------------
+
+.. automodule:: hessQuik.networks.lapQuik_network
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+
 Fully Connected Network
 -----------------------
 
