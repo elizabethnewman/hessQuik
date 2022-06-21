@@ -59,10 +59,10 @@ fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
 
 If you only require Laplacians, not full Hessians, you can obtain the gradients and Laplacians via
 ```python
-fLapQuik = net.NN(lay.singleLayerLapQuik(d, widths[0], act.antiTanhActivation()), 
-                  lay.resnetLayerLapQuik(widths[0], h=1.0, act.softplusActivation()),
-                  lay.singleLayerLapQuik(widths[0], widths[1], act.quadraticActivation())
-                  )
+fLapQuik = net.NNLapQuik(lay.singleLayerLapQuik(d, widths[0], act.antiTanhActivation()), 
+                         lay.resnetLayerLapQuik(widths[0], h=1.0, act.softplusActivation()),
+                         lay.singleLayerLapQuik(widths[0], widths[1], act.quadraticActivation())
+                        )
            
 nex = 20 # number of examples
 x = torch.randn(nex, d)
