@@ -57,18 +57,31 @@ x = torch.randn(nex, d)
 fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
 ```
 
+### Support for Laplacians and Directional Derivatives
+
 If you only require Laplacians, not full Hessians, you can obtain the gradients and Laplacians via
 ```python
-fLapQuik = net.NNLapQuik(lay.singleLayerLapQuik(d, widths[0], act.antiTanhActivation()), 
-                         lay.resnetLayerLapQuik(widths[0], h=1.0, act.softplusActivation()),
-                         lay.singleLayerLapQuik(widths[0], widths[1], act.quadraticActivation())
-                        )
-           
-nex = 20 # number of examples
-x = torch.randn(nex, d)
-fx, dfx, lapfd2x = fLapQuik(x, do_gradient=True, do_Laplacian=True)
+fx, dfx, lapfd2x = f(x, do_gradient=True, do_Laplacian=True)
 ```
 
+If you only require evaluations of the Jacobian and Hessian along certain directions, you can provide the directions in `forward_mode` via
+```python
+k = 3  # number of directions
+v = torch.randn(k, d)
+fx, vdfx, vd2fxv = f(x, do_gradient=True, do_Hessian=True, v=v, forward_mode=True)
+```
+and in `backward_mode` via
+```python
+m = widths[-1]  # dimension of output features
+v = torch.randn(m, k)
+fx, dfxv, d2fxv = f(x, do_gradient=True, do_Hessian=True, v=v, forward_mode=False)
+```
+
+Some important notes:
+* Currently, this functionality is only supported for `singleLayer`, `resnetLayer`, and networks using only these types of layers, including `fullyConnectedNN` and `resnetNN`.
+* If `do_Hessian=True`, then the full Hessian will be computed, even if `do_Laplacian=True` as well.
+* Laplacians can only be computed in forward mode.  Hence, if `do_Laplacian=True` and full Hessians are not requested, `hessQuik` will compute derivatives with `forward_mode=True` automatically.
+* For computing evaluations of derivatives along certain directions, the user must specify the mode of differentiation.  Currently, this choise is not automated.
 
 ## Examples
 To make the code accessible, we provide some introductory Google Colaboratory notebooks.
