@@ -51,10 +51,8 @@ class resnetLayer(hessQuikLayer):
         """
         return self.width
 
-    def forward(self, u: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, do_Laplacian: bool = False,
-                forward_mode: bool = True,
-                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None, v: Union[torch.Tensor, None] = None) \
-            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
+    def forward(self, u, do_gradient=False, do_Hessian=False, do_Laplacian=False, forward_mode=True,
+                dudx=None, d2ud2x=None, v=None):
         r"""
         Forward propagation through resnet layer of the form
 
@@ -105,8 +103,7 @@ class resnetLayer(hessQuikLayer):
 
         return f, dfdx, d2fd2x
 
-    def backward(self, do_Hessian: bool = False,
-                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None, v: Union[torch.Tensor, None] = None):
+    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None, v=None):
         r"""
         Backward propagation through single layer of the form
 

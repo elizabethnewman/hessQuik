@@ -65,7 +65,8 @@ class quadraticLayer(hessQuikLayer):
         """
         return 1
 
-    def forward(self, u, do_gradient=False, do_Hessian=False, forward_mode=True, dudx=None, d2ud2x=None):
+    def forward(self, u, do_gradient=False, do_Hessian=False, do_Laplacian=False, forward_mode=True,
+                dudx=None, d2ud2x=None, v=None):
         r"""
         Forward propagation through quadratic layer of the form, for one sample :math:`n_s = 1`,
 
@@ -113,7 +114,7 @@ class quadraticLayer(hessQuikLayer):
 
         return f.unsqueeze(-1), df, d2f
 
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
+    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None, v=None):
         r"""
         Backward propagation through quadratic ICNN layer of the form, for one sample :math:`n_s = 1`,
 

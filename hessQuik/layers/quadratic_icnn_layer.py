@@ -81,9 +81,8 @@ class quadraticICNNLayer(hessQuikLayer):
         """
         return 1
 
-    def forward(self, ux: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True,
-                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None) \
-            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
+    def forward(self, ux, do_gradient=False, do_Hessian=False, do_Laplacian=False, forward_mode=True,
+                dudx=None, d2ud2x=None, v=None):
         r"""
         Forward propagation through ICNN layer of the form, for one sample :math:`n_s = 1`,
 
@@ -160,9 +159,7 @@ class quadraticICNNLayer(hessQuikLayer):
 
         return f.unsqueeze(-1), df, d2f
 
-    def backward(self, do_Hessian: bool = False,
-                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None) \
-            -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
+    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None, v=None):
         r"""
         Backward propagation through quadratic ICNN layer of the form, for one sample :math:`n_s = 1`,
 
