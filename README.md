@@ -57,6 +57,8 @@ x = torch.randn(nex, d)
 fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
 ```
 
+### Support for Laplacians and Directional Derivatives
+
 If you only require Laplacians, not full Hessians, you can obtain the gradients and Laplacians via
 ```python
 fx, dfx, lapfd2x = f(x, do_gradient=True, do_Laplacian=True)
@@ -74,6 +76,9 @@ m = widths[-1]  # dimension of output features
 v = torch.randn(m, k)
 fx, dfxv, d2fxv = f(x, do_gradient=True, do_Hessian=True, v=v, forward_mode=False)
 ```
+
+**Currently, this functionality is only supported for `singleLayer`, `resnetLayer`, and networks using only these types of layers, including `fullyConnectedNN` and `resnetNN`.**
+
 
 ## Examples
 To make the code accessible, we provide some introductory Google Colaboratory notebooks.
