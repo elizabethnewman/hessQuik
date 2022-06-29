@@ -6,7 +6,7 @@ import hessQuik.networks as net
 from hessQuik.tests.utils import run_all_tests_laplacian
 
 
-class TestNNLapQuik(unittest.TestCase):
+class TestNN(unittest.TestCase):
 
     @staticmethod
     def setup_network(m):
@@ -16,23 +16,23 @@ class TestNNLapQuik(unittest.TestCase):
         ms = [2, 7, 5]
         x = torch.randn(nex, d)
 
-        f = net.NNLapQuik(lay.singleLayerLapQuik(d, ms[0], act=act.softplusActivation()),
-                          lay.singleLayerLapQuik(ms[0], ms[1], act=act.softplusActivation()),
-                          lay.resnetLayerLapQuik(ms[1], h=0.25, act=act.antiTanhActivation()),
-                          lay.singleLayerLapQuik(ms[1], ms[2], act=act.softplusActivation()),
-                          lay.resnetLayerLapQuik(ms[2], h=0.5, act=act.quadraticActivation()),
-                          lay.singleLayerLapQuik(ms[2], m, act=act.softplusActivation()))
+        f = net.NN(lay.singleLayer(d, ms[0], act=act.softplusActivation()),
+                   lay.singleLayer(ms[0], ms[1], act=act.softplusActivation()),
+                   lay.resnetLayer(ms[1], h=0.25, act=act.antiTanhActivation()),
+                   lay.singleLayer(ms[1], ms[2], act=act.softplusActivation()),
+                   lay.resnetLayer(ms[2], h=0.5, act=act.quadraticActivation()),
+                   lay.singleLayer(ms[2], m, act=act.softplusActivation()))
 
         return f, x
 
-    def test_NNLapQuik_scalar_output(self):
+    def test_NN_scalar_output(self):
         torch.set_default_dtype(torch.float64)
         f, x = self.setup_network(1)
 
         print(self, ': scalar output')
         run_all_tests_laplacian(f, x)
 
-    def test_NNLapQuik_vector_output(self):
+    def test_NN_vector_output(self):
         torch.set_default_dtype(torch.float64)
         m = 3
         f, x = self.setup_network(m)
@@ -41,15 +41,15 @@ class TestNNLapQuik(unittest.TestCase):
         run_all_tests_laplacian(f, x)
 
 
-class TestFullyConnectedNNLapQuik(unittest.TestCase):
+class TestFullyConnectedNN(unittest.TestCase):
 
-    def test_fullyConnectedNNLapQuik(self):
+    def test_fullyConnectedNN(self):
         torch.set_default_dtype(torch.float64)
         nex = 11
         d = 3
         widths = [2, 5, 1]
 
-        f = net.fullyConnectedNNLapQuik([d] + widths, act=act.softplusActivation())
+        f = net.fullyConnectedNN([d] + widths, act=act.softplusActivation())
 
         x = torch.randn(nex, d)
 
@@ -57,14 +57,14 @@ class TestFullyConnectedNNLapQuik(unittest.TestCase):
         run_all_tests_laplacian(f, x)
 
 
-class TestResnetNNLapQuik(unittest.TestCase):
+class TestResnetNN(unittest.TestCase):
 
-    def test_resnetNNLapQuik(self):
+    def test_resnetNN(self):
         torch.set_default_dtype(torch.float64)
         nex = 11
         width = 3
         depth = 4
-        f = net.resnetNNLapQuik(width, depth, h=0.25, act=act.quadraticActivation())
+        f = net.resnetNN(width, depth, h=0.25, act=act.quadraticActivation())
 
         x = torch.randn(nex, width)
 

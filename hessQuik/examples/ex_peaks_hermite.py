@@ -2,10 +2,11 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
-from hessQuik.utils import peaks, train_one_epoch, test
+from hessQuik.utils import peaks, train_one_epoch, test, print_headers
 from time import time
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 # define device
 device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -16,13 +17,13 @@ n_val = 50
 n_test = 50
 x = -3 + 6 * torch.rand(n_train + n_val + n_test, 2, device=device)
 yc, dy, d2y = peaks(x, do_gradient=True, do_Hessian=True)
-y = {'f': yc, 'df': dy, 'd2f': d2y}
+y = torch.cat((yc, dy.view(yc.shape[0], -1), d2y.view(yc.shape[0], -1)), dim=1)
 
 # split
 idx = torch.randperm(n_train + n_val + n_test)
-x_train, y_train = x[idx[:n_train]], {'f': yc[idx[:n_train]], 'df': dy[idx[:n_train]], 'd2f': d2y[idx[:n_train]]}
-x_val, y_val = x[idx[n_train:n_train + n_val]],  {'f': yc[idx[n_train:n_train + n_val]], 'df': dy[idx[n_train:n_train + n_val]], 'd2f': d2y[idx[n_train:n_train + n_val]]}
-x_test, y_test = x[idx[n_train + n_val:]], {'f': yc[idx[n_train + n_val:]], 'df': dy[idx[n_train + n_val:]], 'd2f': d2y[idx[n_train + n_val:]]}
+x_train, y_train = x[idx[:n_train]], y[idx[:n_train]]
+x_val, y_val = x[idx[n_train:n_train + n_val]], y[idx[n_train:n_train + n_val]]
+x_test, y_test = x[idx[n_train + n_val:]], y[idx[n_train + n_val:]]
 
 # %% create network
 width = 16
@@ -35,52 +36,54 @@ f = net.NN(lay.singleLayer(2, width, act=act.tanhActivation()),
 optimizer = torch.optim.Adam(f.parameters(), lr=1e-3)
 
 # %% train!
-headers = ('', '', '', '|', 'running', '', '', '', '|', 'train', '', '', '', '|', 'valid', '', '', '')
 
-tmp = ('|', 'loss', 'loss_f', 'loss_df', 'loss_df2')
-printouts = ('epoch', '|K1|', 'time') + 3 * tmp
-
-tmp = '{:<2s}{:<15.4e}{:<15.4e}{:<15.4e}{:<15.4e}'
-printouts_frmt = '{:<15d}{:<15.4e}{:<15.4f}' + 3 * tmp
-
-tmp = '{:<2s}{:<15s}{:<15s}{:<15s}{:<15s}'
-print(('{:<15s}{:<15s}{:<15s}' + 3 * tmp).format(*headers))
-print(('{:<15s}{:<15s}{:<15s}' + 3 * tmp).format(*printouts))
-
+# training parameters
 max_epochs = 50
 batch_size = 5
 loss_weights = (1.0, 1.0, 1.0)
-do_gradient = False
-do_Hessian = False
+do_gradient = True
+do_Hessian = True
 
+# get printouts
+headers, printouts_str, printouts_frmt = print_headers(do_gradient=do_gradient, do_Hessian=do_Hessian, loss_weights=loss_weights)
+
+# ---------------------------------------------------------------------------- #
 # initial evaluation
 loss_train = test(f, x_train, y_train, do_gradient=do_gradient, do_Hessian=do_Hessian, loss_weights=loss_weights)
 loss_val = test(f, x_val, y_val, do_gradient=do_gradient, do_Hessian=do_Hessian, loss_weights=loss_weights)
 
+n_loss = 2 + do_gradient + do_Hessian
+his_iter = (-1, 0.0) + ('|',) + (n_loss * (0,)) + ('|',) + loss_train + ('|',) + loss_val
+print(printouts_frmt.format(*his_iter))
 
-his = (-1, torch.norm(f[0].K.data).item(), 0.0) + ('|',) + (4 * (0,)) + ('|',) + loss_train + ('|',) + loss_val
-print(printouts_frmt.format(*his))
+# store history
+his = np.array([x for x in his_iter if not (x == '|')]).reshape(1, -1)
 
-His = np.array([x for x in his if not (x == '|')]).reshape(1, -1)
+# ---------------------------------------------------------------------------- #
+# main iteration
 
-
+log_interval = 5 # how often printouts appear
 for epoch in range(max_epochs):
-    t0 = time()
+    t0 = time.perf_counter()
     running_loss = train_one_epoch(f, x_train, y_train, optimizer, batch_size,
                                    do_gradient=do_gradient, do_Hessian=do_Hessian, loss_weights=loss_weights)
-    t1 = time()
+    t1 = time.perf_counter()
 
     # test
     loss_train = test(f, x_train, y_train, do_gradient=do_gradient, do_Hessian=do_Hessian, loss_weights=loss_weights)
     loss_val = test(f, x_val, y_val, do_gradient=do_gradient, do_Hessian=do_Hessian, loss_weights=loss_weights)
 
-    his = (epoch, torch.norm(f[0].K.data).item(), t1 - t0) + ('|',) + running_loss + ('|',) + loss_train + ('|',) + loss_val
-    print(printouts_frmt.format(*his))
+    his_iter = (epoch, t1 - t0) + ('|',) + running_loss + ('|',) + loss_train + ('|',) + loss_val
 
-    His = np.concatenate((His, np.array([x for x in his if not (x == '|')]).reshape(1, -1)), axis=0)
+    if epoch % log_interval == 0:
+        print(printouts_frmt.format(*his_iter))
 
+    # store history
+    his = np.concatenate((his, np.array([x for x in his_iter if not (x == '|')]).reshape(1, -1)), axis=0)
+
+# ---------------------------------------------------------------------------- #
 # overall performance on test data
-loss_test = test(f, x_test, y_test, loss_weights=loss_weights)
+loss_test = test(f, x_test, y_test, do_gradient=do_gradient, do_Hessian=do_Hessian, loss_weights=loss_weights)
 print('Test Loss: %0.4e' % loss_test[0])
 
 #%%
@@ -121,19 +124,21 @@ ax.axis('off')
 
 plt.show()
 
+# convergence plots
 plt.figure()
 linewidth = 3
-plt.semilogy(His[:, 0], His[:, 8], linewidth=linewidth, label='f')
+idx = [idx for idx, n in enumerate(np.array([x for x in printouts_str if not (x == '|')])) if n == 'loss_f'][1]
+
+plt.semilogy(his[:, 0], his[:, idx], linewidth=linewidth, label='f')
 
 if do_gradient:
-    plt.semilogy(His[:, 0], His[:, 9], linewidth=linewidth, label='df')
+  plt.semilogy(his[:, 0], his[:, idx + 1], linewidth=linewidth, label='df')
 
 if do_Hessian:
-    plt.semilogy(His[:, 0], His[:, 10], linewidth=linewidth, label='d2f')
+  plt.semilogy(his[:, 0], his[:, idx + 2], linewidth=linewidth, label='d2f')
 
 plt.xlabel('epoch')
 plt.ylabel('loss')
-plt.ylim([1e-3, 1e1])
+plt.title('training loss')
 plt.legend()
 plt.show()
-

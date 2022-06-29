@@ -58,8 +58,8 @@ class NN(nn.Sequential):
 
         return kwargs['forward_mode']
 
-    def forward(self, x: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False,
-                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None, **kwargs) \
+    def forward(self, x: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, do_Laplacian: bool = False,
+                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None, v: Union[torch.Tensor, None] = None, **kwargs) \
             -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
         Forward propagate through network and compute derivatives
@@ -83,17 +83,27 @@ class NN(nn.Sequential):
         """
         forward_mode = self.setup_forward_mode(**kwargs)
 
+        if do_Laplacian and not do_Hessian:
+            forward_mode = True
+
+        # loop counter
+        first_loop = True
         for module in self:
-            x, dudx, d2ud2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x,
-                                     forward_mode=True if forward_mode is True else None)
+            if not first_loop and forward_mode:
+                v = None
+
+            x, dudx, d2ud2x = module(x, do_gradient=do_gradient, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian,
+                                     dudx=dudx, d2ud2x=d2ud2x,
+                                     forward_mode=True if forward_mode is True else None, v=v)
+            first_loop = False
 
         if (do_gradient or do_Hessian) and forward_mode is False:
-            dudx, d2ud2x = self.backward(do_Hessian=do_Hessian)
+            dudx, d2ud2x = self.backward(do_Hessian=do_Hessian, v=v)
 
         return x, dudx, d2ud2x
 
     def backward(self, do_Hessian: bool = False, dgdf: Union[torch.Tensor, None] = None,
-                 d2gd2f: Union[torch.Tensor, None] = None) -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
+                 d2gd2f: Union[torch.Tensor, None] = None, v: Union[torch.Tensor, None] = None) -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
         r"""
         Compute derivatives using backward propagation.  This method is called during the forward pass if ``forward_mode = False``.
 
@@ -109,8 +119,13 @@ class NN(nn.Sequential):
             - **d2gd2f** (*torch.Tensor* or ``None``) - Hessian of the network with respect to input features :math:`u` with shape :math:`(n_s, d, d, m)`
 
         """
+        first_loop = True
         for i in range(len(self) - 1, -1, -1):
-            dgdf, d2gd2f = self[i].backward(do_Hessian=do_Hessian, dgdf=dgdf, d2gd2f=d2gd2f)
+            if not first_loop:
+                v = None
+            dgdf, d2gd2f = self[i].backward(do_Hessian=do_Hessian, dgdf=dgdf, d2gd2f=d2gd2f, v=v)
+            first_loop = False
+
         return dgdf, d2gd2f
 
 

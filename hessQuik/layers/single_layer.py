@@ -5,6 +5,7 @@ from hessQuik.layers import hessQuikLayer
 import hessQuik.activations as act
 from typing import Union, Tuple
 
+
 class singleLayer(hessQuikLayer):
     r"""
     Evaluate and compute derivatives of a single layer.
@@ -63,8 +64,8 @@ class singleLayer(hessQuikLayer):
         """
         return self.out_features
 
-    def forward(self, u: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True,
-                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None) \
+    def forward(self, u: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, do_Laplacian: bool = False, forward_mode: bool = True,
+                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None, v: Union[torch.Tensor, None] = None) \
             -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
         Forward propagation through single layer of the form
@@ -85,16 +86,32 @@ class singleLayer(hessQuikLayer):
 
         where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix.
         """
+        if do_Laplacian and not do_Hessian:
+            forward_mode = True
+
         (dfdx, d2fd2x) = (None, None)
-        f, dsig, d2sig = self.act(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian,
+        f, dsig, d2sig = self.act(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian or do_Laplacian,
                                   forward_mode=True if forward_mode is True else None)
         # ------------------------------------------------------------------------------------------------------------ #
         # forward mode
-        if (do_gradient or do_Hessian) and forward_mode is True:
-            dfdx = dsig.unsqueeze(1) * self.K
+        if (do_gradient or do_Hessian or do_Laplacian) and forward_mode is True:
+            K = self.K
+
+            # apply direction
+            if v is not None:
+                K = v @ self.K
+
+            dfdx = dsig.unsqueeze(1) * K
+            # -------------------------------------------------------------------------------------------------------- #
+            if do_Laplacian and not do_Hessian:
+                if d2ud2x is None:
+                    d2fd2x = (d2sig.unsqueeze(1) * (torch.sum(K ** 2, dim=0, keepdim=True)))
+                else:
+                    d2fd2x = (d2sig.unsqueeze(1) * (torch.sum((dudx @ K) ** 2, dim=1, keepdim=True)))
+                    d2fd2x += (d2ud2x.unsqueeze(1) @ dfdx.unsqueeze(1)).squeeze(1)
             # -------------------------------------------------------------------------------------------------------- #
             if do_Hessian:
-                d2fd2x = (d2sig.unsqueeze(1) * self.K).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
+                d2fd2x = (d2sig.unsqueeze(1) * K).unsqueeze(2) * K.unsqueeze(0).unsqueeze(0)
 
                 # Gauss-Newton approximation
                 if d2ud2x is not None:
@@ -111,12 +128,13 @@ class singleLayer(hessQuikLayer):
         # ------------------------------------------------------------------------------------------------------------ #
         # backward mode (if layer is not wrapped in NN)
         if (do_gradient or do_Hessian) and forward_mode is False:
-            dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
+            dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian, v=v)
 
         return f, dfdx, d2fd2x
 
     def backward(self, do_Hessian: bool = False,
-                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None):
+                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None,
+                 v: Union[torch.Tensor, None] = None):
         r"""
         Backward propagation through single layer of the form
 
@@ -138,10 +156,23 @@ class singleLayer(hessQuikLayer):
 
         d2gd2u = None
         dsig, d2sig = self.act.backward(do_Hessian=do_Hessian)
+
+        # if v is not None:
+        #     dsig = dsig.unsqueeze(2) * v
+        #     dgdu = self.K @ dsig
+        # else:
+        #     # compute gradient
         dgdu = dsig.unsqueeze(1) * self.K
 
+        if v is not None:
+            dgdu = dgdu @ v
+
         if do_Hessian:
+
             d2gd2u = (d2sig.unsqueeze(1) * self.K.unsqueeze(0)).unsqueeze(2) * self.K.unsqueeze(0).unsqueeze(0)
+
+            if v is not None:
+                d2gd2u = d2gd2u @ v
 
             if d2gd2f is not None:
                 # Gauss-Newton approximation
@@ -170,7 +201,7 @@ class singleLayer(hessQuikLayer):
 
 
 if __name__ == '__main__':
-    from hessQuik.utils import input_derivative_check
+    from hessQuik.utils import input_derivative_check, directional_derivative_check, directional_derivative_laplacian_check, input_derivative_check_finite_difference_laplacian
     torch.set_default_dtype(torch.float64)
 
     nex = 11  # no. of examples
@@ -180,8 +211,15 @@ if __name__ == '__main__':
 
     f = singleLayer(d, m, act=act.softplusActivation())
 
-    print('======= FORWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
+    # test directional derivative
+    directional_derivative_check(f, x, verbose=True)
+    directional_derivative_laplacian_check(f, x, verbose=True)
 
-    print('======= BACKWARD =======')
-    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
+    # test Laplacian
+    input_derivative_check_finite_difference_laplacian(f, x, do_Laplacian=True, verbose=True)
+
+    # print('======= FORWARD =======')
+    # input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
+    #
+    # print('======= BACKWARD =======')
+    # input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)

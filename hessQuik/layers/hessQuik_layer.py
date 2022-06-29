@@ -27,8 +27,11 @@ class hessQuikLayer(nn.Module):
         """
         raise NotImplementedError
 
-    def forward(self, u: Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True,
-                dudx: Union[Tensor, None] = None, d2ud2x: Union[Tensor, None] = None) \
+    def forward(self, u: Tensor,
+                do_gradient: bool = False, do_Hessian: bool = False, do_Laplacian: bool = False,
+                forward_mode: bool = True,
+                dudx: Union[Tensor, None] = None, d2ud2x: Union[Tensor, None] = None,
+                v: Union[Tensor, None] = None) \
             -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
         r"""
         Forward pass through the layer that maps input features :math:`u` of size :math:`(n_s, n_{in})`
@@ -44,12 +47,16 @@ class hessQuikLayer(nn.Module):
         :type do_gradient: bool, optional
         :param do_Hessian: If set to ``True``, the Hessian will be computed during the forward call. Default: ``False``
         :type do_Hessian: bool, optional
+        :param do_Laplacian: If set to ``True``, the Laplacian will be computed during the forward call. Default: ``False``
+        :type do_Laplacian: bool, optional
         :param forward_mode:  If set to ``False``, the derivatives will be computed in backward mode. Default: ``True``
         :type forward_mode: bool, optional
         :param dudx: if ``forward_mode = True``, gradient of features from previous layer with respect to network input :math:`x` with shape :math:`(n_s, d, n_{in})`
         :type dudx: torch.Tensor or ``None``
         :param d2ud2x: if ``forward_mode = True``, Hessian of features from previous layer with respect to network input :math:`x` with shape :math:`(n_s, d, d, n_{in})`
         :type d2ud2x: torch.Tensor or ``None``
+        :param v: if ``forward_mode = True``, direction(s) to apply Jacobian and Hessian :math:`x` with shape :math:`(d, k)`
+        :type v: torch.Tensor or ``None``
         :return:
 
             - **f** (*torch.Tensor*) - output features of layer with shape :math:`(n_s, n_{out})`
@@ -61,7 +68,8 @@ class hessQuikLayer(nn.Module):
         raise NotImplementedError
 
     def backward(self, do_Hessian: bool = False,
-                 dgdf: Union[Tensor, None] = None, d2gd2f: Union[Tensor, None] = None) \
+                 dgdf: Union[Tensor, None] = None, d2gd2f: Union[Tensor, None] = None,
+                 v: Union[Tensor, None] = None) \
             -> Tuple[Tensor, Union[Tensor, None]]:
         r"""
         Backward pass through the layer that maps the gradient of the network :math:`g`
@@ -76,6 +84,8 @@ class hessQuikLayer(nn.Module):
         :type dgdf: torch.Tensor
         :param d2gd2f: gradient of the subsequent layer features, :math:`g(f)`, with respect to the layer outputs, :math:`f` with shape :math:`(n_s, n_{out}, n_{out}, m)`.
         :type d2gd2f: torch.Tensor or ``None``
+        :param v: direction(s) to apply Jacobian transpose and Hessian :math:`x` with shape :math:`(d, k)`
+        :type v: torch.Tensor or ``None``
         :return:
 
             - **dgdu** (*torch.Tensor* or ``None``) -  gradient of the network with respect to input features :math:`u` with shape :math:`(n_s, n_{in}, m)`

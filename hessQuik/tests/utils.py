@@ -1,4 +1,4 @@
-from hessQuik.utils import input_derivative_check, input_derivative_check_finite_difference_laplacian
+from hessQuik.utils import input_derivative_check, input_derivative_check_finite_difference_laplacian, directional_derivative_laplacian_check, directional_derivative_check
 
 
 def run_forward_gradient_test(f, x, **kwargs):
@@ -98,3 +98,9 @@ def run_forward_laplacian_test(f, x, **kwargs):
 def run_all_tests_laplacian(f, x, eps=1e-4, atol=1e-5, rtol=1e-3, verbose=False):
     run_forward_gradient_test_finite_difference(f, x, eps=eps, atol=atol, rtol=rtol, verbose=verbose)
     run_forward_laplacian_test(f, x, eps=eps, atol=atol, rtol=rtol, verbose=verbose)
+
+
+def run_all_tests_directional(f, x, k=3, tol=1e-10, verbose=False):
+    directional_derivative_check(f, x, k=k, tol=tol, verbose=verbose)
+    directional_derivative_laplacian_check(f, x, k=k, tol=tol, verbose=verbose)
+

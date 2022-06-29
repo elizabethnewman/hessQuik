@@ -2,7 +2,7 @@ import unittest
 import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
-from hessQuik.tests.utils import run_all_tests_laplacian
+from hessQuik.tests.utils import run_all_tests_directional
 
 
 class TestLayer(unittest.TestCase):
@@ -13,10 +13,10 @@ class TestLayer(unittest.TestCase):
         d = 4  # no. of input features
         m = 7  # no. of output features
         x = torch.randn(nex, d)
-        f = lay.singleLayerLapQuik(d, m, act=act.softplusActivation())
+        f = lay.singleLayer(d, m, act=act.softplusActivation())
 
         print(self)
-        run_all_tests_laplacian(f, x)
+        run_all_tests_directional(f, x)
 
     def test_resnetLayer(self):
         torch.set_default_dtype(torch.float64)
@@ -24,9 +24,9 @@ class TestLayer(unittest.TestCase):
         width = 4  # no. of input features
         h = 0.25
         x = torch.randn(nex, width)
-        f = lay.resnetLayerLapQuik(width, h=h, act=act.softplusActivation())
+        f = lay.resnetLayer(width, h=h, act=act.softplusActivation())
         print(self)
-        run_all_tests_laplacian(f, x)
+        run_all_tests_directional(f, x)
 
 
 if __name__ == '__main__':
