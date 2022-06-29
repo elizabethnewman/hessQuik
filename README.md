@@ -81,7 +81,7 @@ Some important notes:
 * Currently, this functionality is only supported for `singleLayer`, `resnetLayer`, and networks using only these types of layers, including `fullyConnectedNN` and `resnetNN`.
 * If `do_Hessian=True`, then the full Hessian will be computed, even if `do_Laplacian=True` as well.
 * Laplacians can only be computed in forward mode.  Hence, if `do_Laplacian=True` and full Hessians are not requested, `hessQuik` will compute derivatives with `forward_mode=True` automatically.
-* For computing evaluations of derivatives along certain directions, the user must specify the mode of differentiation.  Currently, this choise is not automated.
+* For evaluating of derivatives along certain directions, the user must specify the mode of differentiation.  Currently, this choice is not automated.
 
 ## Examples
 To make the code accessible, we provide some introductory Google Colaboratory notebooks.
