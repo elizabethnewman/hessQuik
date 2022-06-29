@@ -133,7 +133,7 @@ class resnetLayer(hessQuikLayer):
 
             if dgdf is None:
                 if v is None:
-                    torch.eye(self.width, dtype=dgdu.dtype, device=dgdu.device)
+                    v = torch.eye(self.width, dtype=dgdu.dtype, device=dgdu.device)
 
                 dgdu = v + self.h * dgdu
             else:
