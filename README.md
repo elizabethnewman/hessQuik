@@ -78,6 +78,7 @@ fx, dfxv, d2fxv = f(x, do_gradient=True, do_Hessian=True, v=v, forward_mode=Fals
 ```
 
 Some important notes:
+* To use this functionality, you must install from github.
 * Currently, this functionality is only supported for `singleLayer`, `resnetLayer`, and networks using only these types of layers, including `fullyConnectedNN` and `resnetNN`.
 * If `do_Hessian=True`, then the full Hessian will be computed, even if `do_Laplacian=True` as well.
 * Laplacians can only be computed in forward mode.  Hence, if `do_Laplacian=True` and full Hessians are not requested, `hessQuik` will compute derivatives with `forward_mode=True` automatically.
