@@ -3,7 +3,7 @@ from typing import Union
 
 
 def train_one_epoch(f: torch.nn.Module, x: torch.Tensor, y: torch.Tensor, optimizer: torch.optim.Optimizer,
-                    batch_size: int = 5, do_gradient: bool = True, do_Hessian: bool = True,
+                    batch_size: int = 5, do_gradient: bool = False, do_Hessian: bool = False,
                     loss_weights: Union[tuple, list] = (1.0, 1.0, 1.0)):
     r"""
     Training mean-square loss for one epoch where the loss function is
@@ -82,7 +82,7 @@ def train_one_epoch(f: torch.nn.Module, x: torch.Tensor, y: torch.Tensor, optimi
     return output
 
 
-def test(f: torch.nn.Module, x: torch.Tensor, y: torch.Tensor, do_gradient: bool = True, do_Hessian: bool = True,
+def test(f: torch.nn.Module, x: torch.Tensor, y: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False,
          loss_weights: Union[tuple, list] = (1.0, 1.0, 1.0)):
     r"""
     Evaluate mean-squared loss function without training
