@@ -116,7 +116,7 @@ def test(f: torch.nn.Module, x: torch.Tensor, y: torch.Tensor, do_gradient: bool
     return output
 
 
-def print_headers(do_gradient: bool = True, do_Hessian: bool = True, verbose: bool = True,
+def print_headers(do_gradient: bool = True, do_Hessian: bool = False, verbose: bool = False,
                   loss_weights: Union[tuple, list] = (1.0, 1.0, 1.0)):
     r"""
     Print headers for nice training
