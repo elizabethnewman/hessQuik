@@ -72,11 +72,6 @@ class quadraticLayer(hessQuikLayer):
 
         .. math::
 
-<<<<<<< HEAD
-    def forward(self, u, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
-
-        (df, d2f, lap_f) = (None, None, None)
-=======
             f(x) = u(x) v + \frac{1}{2} u(x)  A A^\top  u(x)^\top + \mu
 
         Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
@@ -91,7 +86,6 @@ class quadraticLayer(hessQuikLayer):
 
         """
         (df, d2f) = (None, None)
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         AtA = self.A.t() @ self.A
         f = u @ self.v + 0.5 * torch.sum((u @ AtA) * u, dim=1) + self.mu
 
@@ -113,27 +107,14 @@ class quadraticLayer(hessQuikLayer):
             if dudx is not None:
                 df = dudx @ df
 
-<<<<<<< HEAD
-        if (do_gradient or do_Hessian) and self.reverse_mode is True:
-            df, d2f, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
-=======
         if (do_gradient or do_Hessian) and forward_mode is not True:
             self.ctx = (u,)
             if forward_mode is False:
                 df, d2f = self.backward(do_Hessian=do_Hessian)
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
-        return f.unsqueeze(-1), df, d2f, lap_f
+        return f.unsqueeze(-1), df, d2f
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
-        (d2f, lap_f) = (None, None)
-=======
-    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None):
-=======
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None, v=None):
->>>>>>> main
         r"""
         Backward propagation through quadratic ICNN layer of the form, for one sample :math:`n_s = 1`,
 
@@ -151,7 +132,6 @@ class quadraticLayer(hessQuikLayer):
 
         """
         d2f = None
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
         x = self.ctx[0]
         AtA = self.A.t() @ self.A  # TODO: recompute this or store it?
@@ -161,7 +141,7 @@ class quadraticLayer(hessQuikLayer):
             # TODO: improve wasteful storage
             d2f = (torch.ones(x.shape[0], 1, 1, dtype=AtA.dtype, device=AtA.device) * AtA).unsqueeze(-1)
 
-        return df.unsqueeze(-1), d2f, lap_f
+        return df.unsqueeze(-1), d2f
 
 
 if __name__ == '__main__':
@@ -180,5 +160,3 @@ if __name__ == '__main__':
 
     print('======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
-
-

@@ -28,9 +28,6 @@ class softplusActivation(hessQuikActivationFunction):
         self.beta = beta
         self.threshold = threshold
 
-<<<<<<< HEAD
-    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
-=======
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
         r"""
         Activates each entry of incoming data via
@@ -40,7 +37,6 @@ class softplusActivation(hessQuikActivationFunction):
             \sigma(x)  = \frac{1}{\beta}\ln(1 + e^{\beta x})
         """
 
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -48,22 +44,14 @@ class softplusActivation(hessQuikActivationFunction):
 
         # compute derivatives
         if do_gradient or do_Hessian:
-<<<<<<< HEAD
-            if self.reverse_mode is not None:
-                dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
-=======
             if forward_mode is not None:
                 dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian)
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
             else:
                 # backward mode, but do not compute yet
                 self.ctx = (x,)
 
         return sigma, dsigma, d2sigma
 
-<<<<<<< HEAD
-    def compute_derivatives(self, *args, do_Hessian=False, do_Laplacian=False):
-=======
     def compute_derivatives(self, *args, do_Hessian=False):
         r"""
         Computes the first and second derivatives of each entry of the incoming data via
@@ -75,15 +63,9 @@ class softplusActivation(hessQuikActivationFunction):
             \end{align}
 
         """
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         x = args[0]
         d2sigma = None
 
-<<<<<<< HEAD
-        if do_Hessian or do_Laplacian:
-            d2sigma = torch.zeros_like(x)
-            d2sigma[idx] = self.beta * torch.exp(self.beta * x[idx]) / ((1 + torch.exp(self.beta * x[idx])) ** 2)
-=======
         dsigma = 1 / (1 + torch.exp(-self.beta * x))
         if do_Hessian:
             d2sigma = self.beta / (2 + 2 * torch.cosh(self.beta * x))
@@ -94,7 +76,6 @@ class softplusActivation(hessQuikActivationFunction):
             dsigma[idx] = 1.0
             if do_Hessian:
                 d2sigma[idx] = 0.0
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
         return dsigma, d2sigma
 

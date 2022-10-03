@@ -18,9 +18,6 @@ class identityActivation(hessQuikActivationFunction):
     def __init__(self):
         super(identityActivation, self).__init__()
 
-<<<<<<< HEAD
-    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
-=======
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
         r"""
         Activates each entry of incoming data via
@@ -29,30 +26,20 @@ class identityActivation(hessQuikActivationFunction):
 
             \sigma(x)  = x
         """
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
         sigma = x
 
         # compute derivatives
-<<<<<<< HEAD
-        if do_gradient or do_Hessian or do_Laplacian:
-            if self.reverse_mode is not None:
-                dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
-=======
         if do_gradient or do_Hessian:
             if forward_mode is not None:
                 dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian)
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
             else:
                 self.ctx = (x,)
 
         return sigma, dsigma, d2sigma
 
-<<<<<<< HEAD
-    def compute_derivatives(self, *args, do_Hessian=False, do_Laplacian=False):
-=======
     def compute_derivatives(self, *args, do_Hessian=False):
         r"""
         Computes the first and second derivatives of each entry of the incoming data via
@@ -64,12 +51,11 @@ class identityActivation(hessQuikActivationFunction):
             \end{align}
 
         """
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         x = args[0]
         d2sigma = None
         dsigma = torch.ones_like(x)
 
-        if do_Hessian or do_Laplacian:
+        if do_Hessian:
             d2sigma = torch.zeros_like(x)
 
         return dsigma, d2sigma
@@ -91,4 +77,3 @@ if __name__ == '__main__':
 
     print('======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
-

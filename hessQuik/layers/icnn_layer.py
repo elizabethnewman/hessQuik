@@ -24,6 +24,7 @@ class ICNNLayer(hessQuikLayer):
 
     def __init__(self, input_dim: int, in_features: Union[int, None], out_features: int,
                  act: act.hessQuikActivationFunction = act.softplusActivation(),
+                 bias: bool = True,
                  device=None, dtype=None) -> None:
         r"""
 
@@ -58,7 +59,11 @@ class ICNNLayer(hessQuikLayer):
         else:
             self.register_parameter('L', None)
 
-        self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))
+        if bias:
+            self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))
+        else:
+            self.register_parameter('b', None)
+
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -71,7 +76,9 @@ class ICNNLayer(hessQuikLayer):
             fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.K)
 
         bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
-        nn.init.uniform_(self.b, -bound, bound)
+
+        if self.b is not None:
+            nn.init.uniform_(self.b, -bound, bound)
 
     def dim_input(self) -> int:
         r"""
@@ -117,19 +124,19 @@ class ICNNLayer(hessQuikLayer):
         where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix and :math:`I` is
         the :math:`d \times d` identity matrix.
 
-<<<<<<< HEAD
-    def forward(self, ux, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
-=======
         """
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
-        (dfdx, d2fd2x, lap_f) = (None, None, None)
+        (dfdx, d2fd2x) = (None, None)
 
         M = self.K
         if self.L is not None:
             M = torch.cat((self.nonneg(self.L), M), dim=0)
 
-        z = ux @ M + self.b
+        # affine transformation
+        z = ux @ M
+
+        if self.b is not None:
+            z += self.b
 
         # forward pass
         f, dsig, d2sig = self.act.forward(z, do_gradient=do_gradient, do_Hessian=do_Hessian,
@@ -166,26 +173,12 @@ class ICNNLayer(hessQuikLayer):
                 * torch.eye(self.input_dim, dtype=dfdx.dtype, device=dfdx.device).unsqueeze(0)
             dfdx = torch.cat((dfdx, I), dim=-1)
 
-<<<<<<< HEAD
-        if (do_gradient or do_Hessian) and self.reverse_mode is True:
-            dfdx, d2fd2x, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
-=======
         if (do_gradient or do_Hessian) and forward_mode is False:
             dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
-        return f, dfdx, d2fd2x, lap_f
+        return f, dfdx, d2fd2x
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
-=======
-    def backward(self, do_Hessian: bool = False,
-                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None)\
-            -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
-=======
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None, v=None):
->>>>>>> main
         r"""
         Backward propagation through ICNN layer of the form
 
@@ -208,7 +201,6 @@ class ICNNLayer(hessQuikLayer):
         where :math:`\odot` denotes the pointwise product.
 
         """
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         M = self.K
         if self.L is not None:
             M = torch.cat((self.nonneg(self.L), M), dim=0)
@@ -256,11 +248,7 @@ class ICNNLayer(hessQuikLayer):
         if dgdf is not None:
             dgdux = dgdux @ dgdf
 
-<<<<<<< HEAD
-        return dgdx, d2gd2x, lap_g
-=======
         return dgdux, d2gd2ux
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
 
 if __name__ == '__main__':
@@ -274,12 +262,7 @@ if __name__ == '__main__':
     f = ICNNLayer(d, None, m, act=act.softplusActivation())
 
     print('======= FORWARD =======')
-<<<<<<< HEAD
-    f.reverse_mode = False
-    input_derivative_check(f, x, do_Hessian=True, verbose=True)
-=======
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
     print('======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)

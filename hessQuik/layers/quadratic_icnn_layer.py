@@ -92,11 +92,6 @@ class quadraticICNNLayer(hessQuikLayer):
             \left[\begin{array}{c}u(x) & x\end{array}\right]
             \left[\begin{array}{c}w^+ \\ v\end{array}\right] + \frac{1}{2} x  A A^\top  x^\top + \mu
 
-<<<<<<< HEAD
-    def forward(self, ux, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
-
-        (df, d2f, lap_f) = (None, None, None)
-=======
         Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
         a function of the input of the network, :math:`x` of size :math:`(n_s, d)`.
         The output features, :math:`f(x)`, are of size :math:`(n_s, 1)`.
@@ -113,7 +108,6 @@ class quadraticICNNLayer(hessQuikLayer):
 
         """
         (df, d2f) = (None, None)
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         AtA = self.A.t() @ self.A
 
         if self.w is None:
@@ -158,29 +152,14 @@ class quadraticICNNLayer(hessQuikLayer):
 
             df = df.unsqueeze(-1)
 
-<<<<<<< HEAD
-        if (do_gradient or do_Hessian) and self.reverse_mode is True:
-            df, d2f, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
-=======
         if (do_gradient or do_Hessian) and forward_mode is not True:
             self.ctx = (ux,)
             if forward_mode is False:
                 df, d2f = self.backward(do_Hessian=do_Hessian)
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
-        return f.unsqueeze(-1), df, d2f, lap_f
+        return f.unsqueeze(-1), df, d2f
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
-        (d2f, lap_f) = (None, None)
-=======
-    def backward(self, do_Hessian: bool = False,
-                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None) \
-            -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
-=======
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None, v=None):
->>>>>>> main
         r"""
         Backward propagation through quadratic ICNN layer of the form, for one sample :math:`n_s = 1`,
 
@@ -199,7 +178,6 @@ class quadraticICNNLayer(hessQuikLayer):
 
         """
         d2f = None
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
         ux = self.ctx[0]
         x = ux[:, -self.input_dim:]
@@ -221,7 +199,7 @@ class quadraticICNNLayer(hessQuikLayer):
             d2f[:, -self.input_dim:, -self.input_dim:] = e * AtA
             d2f = d2f.unsqueeze(-1)
 
-        return df.unsqueeze(-1), d2f, lap_f
+        return df.unsqueeze(-1), d2f
 
 
 if __name__ == '__main__':

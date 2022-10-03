@@ -18,9 +18,6 @@ class quadraticActivation(hessQuikActivationFunction):
     def __init__(self):
         super(quadraticActivation, self).__init__()
 
-<<<<<<< HEAD
-    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
-=======
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
         r"""
         Activates each entry of incoming data via
@@ -29,7 +26,6 @@ class quadraticActivation(hessQuikActivationFunction):
 
             \sigma(x)  = \frac{1}{2}x^2
         """
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -37,21 +33,13 @@ class quadraticActivation(hessQuikActivationFunction):
 
         # compute derivatives
         if do_gradient or do_Hessian:
-<<<<<<< HEAD
-            if self.reverse_mode is not None:
-                dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
-=======
             if forward_mode is not None:
                 dsigma, d2sigma = self.compute_derivatives(x, do_Hessian=do_Hessian)
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
             else:
                 self.ctx = (x,)
 
         return sigma, dsigma, d2sigma
 
-<<<<<<< HEAD
-    def compute_derivatives(self, *args, do_Hessian=False, do_Laplacian=False):
-=======
     def compute_derivatives(self, *args, do_Hessian=False):
         r"""
         Computes the first and second derivatives of each entry of the incoming data via
@@ -63,10 +51,9 @@ class quadraticActivation(hessQuikActivationFunction):
             \end{align}
 
         """
->>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         dsigma = args[0]
         d2sigma = None
-        if do_Hessian or do_Laplacian:
+        if do_Hessian:
             d2sigma = torch.ones_like(dsigma)
 
         return dsigma, d2sigma
