@@ -23,6 +23,7 @@ class singleLayer(hessQuikLayer):
 
     def __init__(self, in_features: int, out_features: int,
                  act: act.hessQuikActivationFunction = act.identityActivation(),
+                 bias: bool = True,
                  device=None, dtype=None) -> None:
         r"""
         :param in_features: number of input features, :math:`n_{in}`
@@ -31,6 +32,8 @@ class singleLayer(hessQuikLayer):
         :type out_features: int
         :param act: activation function
         :type act: hessQuikActivationFunction
+        :param bias: additive bias
+        :type bias: bool
         :var K: weight matrix of size :math:`(n_{in}, n_{out})`
         :var b: bias vector of size :math:`(n_{out},)`
         """
@@ -40,9 +43,14 @@ class singleLayer(hessQuikLayer):
         self.in_features = in_features
         self.out_features = out_features
         self.act = act
+        self.bias = bias
 
         self.K = nn.Parameter(torch.empty(in_features, out_features, **factory_kwargs))
-        self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))
+
+        if self.bias:
+            self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))
+        else:
+            self.register_parameter('b', None)
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
@@ -50,7 +58,9 @@ class singleLayer(hessQuikLayer):
 
         fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.K)
         bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
-        nn.init.uniform_(self.b, -bound, bound)
+
+        if self.bias:
+            nn.init.uniform_(self.b, -bound, bound)
 
     def dim_input(self) -> int:
         r"""
@@ -89,7 +99,12 @@ class singleLayer(hessQuikLayer):
             forward_mode = True
 
         (dfdx, d2fd2x) = (None, None)
-        f, dsig, d2sig = self.act(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian or do_Laplacian,
+
+        z = u @ self.K
+        if self.bias:
+            z += self.b
+
+        f, dsig, d2sig = self.act(z, do_gradient=do_gradient, do_Hessian=do_Hessian or do_Laplacian,
                                   forward_mode=True if forward_mode is True else None)
         # ------------------------------------------------------------------------------------------------------------ #
         # forward mode

@@ -21,6 +21,7 @@ class resnetLayer(hessQuikLayer):
     """
 
     def __init__(self, width: int, h: float = 1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
+                 bias: bool = False,
                  device=None, dtype=None) -> None:
         r"""
         :param width: number of input and output features, :math:`w`
@@ -29,6 +30,8 @@ class resnetLayer(hessQuikLayer):
         :type h: float
         :param act: activation function
         :type act: hessQuikActivationFunction
+        :param bias: additive bias
+        :type bias: bool
 
         :var layer: singleLayer with :math:`w` input features and :math:`w` output features
         """
@@ -37,7 +40,7 @@ class resnetLayer(hessQuikLayer):
 
         self.width = width
         self.h = h
-        self.layer = singleLayer(width, width, act=act, **factory_kwargs)
+        self.layer = singleLayer(width, width, act=act, bias=bias, **factory_kwargs)
 
     def dim_input(self) -> int:
         r"""
