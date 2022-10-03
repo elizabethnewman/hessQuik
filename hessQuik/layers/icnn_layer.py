@@ -117,9 +117,13 @@ class ICNNLayer(hessQuikLayer):
         where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix and :math:`I` is
         the :math:`d \times d` identity matrix.
 
+<<<<<<< HEAD
+    def forward(self, ux, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
+=======
         """
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
-        (dfdx, d2fd2x) = (None, None)
+        (dfdx, d2fd2x, lap_f) = (None, None, None)
 
         M = self.K
         if self.L is not None:
@@ -162,12 +166,26 @@ class ICNNLayer(hessQuikLayer):
                 * torch.eye(self.input_dim, dtype=dfdx.dtype, device=dfdx.device).unsqueeze(0)
             dfdx = torch.cat((dfdx, I), dim=-1)
 
+<<<<<<< HEAD
+        if (do_gradient or do_Hessian) and self.reverse_mode is True:
+            dfdx, d2fd2x, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
+=======
         if (do_gradient or do_Hessian) and forward_mode is False:
             dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
-        return f, dfdx, d2fd2x
+        return f, dfdx, d2fd2x, lap_f
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
+=======
+    def backward(self, do_Hessian: bool = False,
+                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None)\
+            -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
+=======
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None, v=None):
+>>>>>>> main
         r"""
         Backward propagation through ICNN layer of the form
 
@@ -190,6 +208,7 @@ class ICNNLayer(hessQuikLayer):
         where :math:`\odot` denotes the pointwise product.
 
         """
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         M = self.K
         if self.L is not None:
             M = torch.cat((self.nonneg(self.L), M), dim=0)
@@ -237,7 +256,11 @@ class ICNNLayer(hessQuikLayer):
         if dgdf is not None:
             dgdux = dgdux @ dgdf
 
+<<<<<<< HEAD
+        return dgdx, d2gd2x, lap_g
+=======
         return dgdux, d2gd2ux
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
 
 if __name__ == '__main__':
@@ -251,7 +274,12 @@ if __name__ == '__main__':
     f = ICNNLayer(d, None, m, act=act.softplusActivation())
 
     print('======= FORWARD =======')
+<<<<<<< HEAD
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+=======
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
     print('======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)

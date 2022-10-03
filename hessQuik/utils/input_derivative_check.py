@@ -5,6 +5,9 @@ from hessQuik.utils import convert_to_base
 from typing import Callable, Tuple, Optional, Union
 import math
 
+<<<<<<< HEAD
+def input_derivative_check(f, x, do_Hessian=False, num_test=15, base=2.0, tol=0.1, verbose=False):
+=======
 def input_derivative_check(f: Union[torch.nn.Module, Callable], x: torch.Tensor, do_Hessian: bool = False,
                            forward_mode: bool = True, num_test: int = 15, base: float = 2.0, tol: float = 0.1,
                            verbose: float = False) -> Tuple[Optional[bool], Optional[bool]]:
@@ -74,15 +77,21 @@ def input_derivative_check(f: Union[torch.nn.Module, Callable], x: torch.Tensor,
 
     # ---------------------------------------------------------------------------------------------------------------- #
     # directional derivatives
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
     dx = torch.randn_like(x)
     dx = dx / torch.norm(x)
     curvx = None
+
+    # initial evaluation
     if isinstance(f, hessQuik.activations.hessQuikActivationFunction):
+        f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=do_Hessian)
         dfdx = df0 * dx
 
         if d2f0 is not None:
             curvx = torch.sum(dx.unsqueeze(0) * d2f0 * dx.unsqueeze(0), dim=0)
+
     else:
+        f0, df0, d2f0, _ = f(x, do_gradient=True, do_Hessian=do_Hessian)
         dfdx = torch.matmul(df0.transpose(1, 2), dx.unsqueeze(2)).squeeze(2)
 
         if d2f0 is not None:

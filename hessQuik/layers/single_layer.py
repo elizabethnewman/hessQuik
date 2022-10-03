@@ -23,6 +23,7 @@ class singleLayer(hessQuikLayer):
 
     def __init__(self, in_features: int, out_features: int,
                  act: act.hessQuikActivationFunction = act.identityActivation(),
+                 bias: bool = True,
                  device=None, dtype=None) -> None:
         r"""
         :param in_features: number of input features, :math:`n_{in}`
@@ -31,6 +32,8 @@ class singleLayer(hessQuikLayer):
         :type out_features: int
         :param act: activation function
         :type act: hessQuikActivationFunction
+        :param bias: additive bias
+        :type bias: bool
         :var K: weight matrix of size :math:`(n_{in}, n_{out})`
         :var b: bias vector of size :math:`(n_{out},)`
         """
@@ -40,9 +43,14 @@ class singleLayer(hessQuikLayer):
         self.in_features = in_features
         self.out_features = out_features
         self.act = act
+        self.bias = bias
 
         self.K = nn.Parameter(torch.empty(in_features, out_features, **factory_kwargs))
-        self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))
+
+        if self.bias:
+            self.b = nn.Parameter(torch.empty(out_features, **factory_kwargs))
+        else:
+            self.register_parameter('b', None)
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
@@ -50,7 +58,9 @@ class singleLayer(hessQuikLayer):
 
         fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.K)
         bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
-        nn.init.uniform_(self.b, -bound, bound)
+
+        if self.bias:
+            nn.init.uniform_(self.b, -bound, bound)
 
     def dim_input(self) -> int:
         r"""
@@ -71,6 +81,13 @@ class singleLayer(hessQuikLayer):
 
         .. math::
 
+<<<<<<< HEAD
+    def forward(self, u, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
+
+        (dfdx, d2fd2x, lap_f) = (None, None, None)
+        f, dsig, d2sig = self.act.forward(u @ self.K + self.b,
+                                          do_gradient=do_gradient, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
+=======
             f(x) = \sigma(u(x) K + b)
 
         Here, :math:`u(x)` is the input into the layer of size :math:`(n_s, n_{in})` which is
@@ -82,6 +99,7 @@ class singleLayer(hessQuikLayer):
         .. math::
 
             \nabla_x f = \text{diag}(\sigma'(u(x) K + b))K^\top \nabla_x u
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
         where :math:`\text{diag}` transforms a vector into the entries of a diagonal matrix.
         """
@@ -89,10 +107,23 @@ class singleLayer(hessQuikLayer):
             forward_mode = True
 
         (dfdx, d2fd2x) = (None, None)
-        f, dsig, d2sig = self.act(u @ self.K + self.b, do_gradient=do_gradient, do_Hessian=do_Hessian or do_Laplacian,
+
+        z = u @ self.K
+        if self.bias:
+            z += self.b
+
+        f, dsig, d2sig = self.act(z, do_gradient=do_gradient, do_Hessian=do_Hessian or do_Laplacian,
                                   forward_mode=True if forward_mode is True else None)
         # ------------------------------------------------------------------------------------------------------------ #
         # forward mode
+<<<<<<< HEAD
+<<<<<<< HEAD
+        if (do_gradient or do_Hessian or do_Laplacian) and self.reverse_mode is False:
+=======
+        if (do_gradient or do_Hessian) and forward_mode is True:
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
+            dfdx = dsig.unsqueeze(1) * self.K
+=======
         if (do_gradient or do_Hessian or do_Laplacian) and forward_mode is True:
             K = self.K
 
@@ -108,6 +139,7 @@ class singleLayer(hessQuikLayer):
                 else:
                     d2fd2x = (d2sig.unsqueeze(1) * (torch.sum((dudx @ K) ** 2, dim=1, keepdim=True)))
                     d2fd2x += (d2ud2x.unsqueeze(1) @ dfdx.unsqueeze(1)).squeeze(1)
+>>>>>>> main
             # -------------------------------------------------------------------------------------------------------- #
             if do_Hessian:
                 d2fd2x = (d2sig.unsqueeze(1) * K).unsqueeze(2) * K.unsqueeze(0).unsqueeze(0)
@@ -118,7 +150,25 @@ class singleLayer(hessQuikLayer):
                     d2fd2x = d2fd2x.permute(0, 2, 3, 1)
 
                     # extra term to compute full Hessian
+<<<<<<< HEAD
+                    d2fd2x += d2ud2x @ dfdx.unsqueeze(1)  # I already compute this in gradient
+
+                if do_Laplacian:
+                    lap_f = d2fd2x[:, torch.arange(d2fd2x.shape[1]), torch.arange(d2fd2x.shape[1]), :].sum(1)
+
+            if do_Laplacian and not do_Hessian:
+
+                if dudx is None:
+                    lap_f = ((self.K ** 2).unsqueeze(0) * d2sig.unsqueeze(1)).sum(1)
+
+                if lap_u is not None:
+                    # lap_u = d2ud2x[:, torch.arange(d2ud2x.shape[1]), torch.arange(d2ud2x.shape[1]), :].sum(1)
+                    lap1 = (lap_u.unsqueeze(-1) * dfdx).sum(1)
+                    lap2 = (((dudx @ self.K) ** 2) * d2sig.unsqueeze(1)).sum(1)  # TODO: can we speed this up?
+                    lap_f = lap1 + lap2
+=======
                     d2fd2x += d2ud2x @ dfdx.unsqueeze(1)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
             # -------------------------------------------------------------------------------------------------------- #
             # finish computing gradient
             if dudx is not None:
@@ -126,12 +176,32 @@ class singleLayer(hessQuikLayer):
 
         # ------------------------------------------------------------------------------------------------------------ #
         # backward mode (if layer is not wrapped in NN)
+<<<<<<< HEAD
+        if (do_gradient or do_Hessian or do_Laplacian) and self.reverse_mode is True:
+            dfdx, d2fd2x, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
+=======
         if (do_gradient or do_Hessian) and forward_mode is False:
+<<<<<<< HEAD
+            dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
+=======
             dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian, v=v)
+>>>>>>> main
 
-        return f, dfdx, d2fd2x
+        return f, dfdx, d2fd2x, lap_f
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
+        (d2gd2x, lap_gx) = (None, None)
+        dsig, d2sig = self.act.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
+        dgdx = dsig.unsqueeze(1) * self.K
+=======
+    def backward(self, do_Hessian: bool = False,
+                 dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None):
+=======
     def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None, v=None):
+>>>>>>> main
         r"""
         Backward propagation through single layer of the form
 
@@ -160,6 +230,7 @@ class singleLayer(hessQuikLayer):
         # else:
         #     # compute gradient
         dgdu = dsig.unsqueeze(1) * self.K
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
         if v is not None:
             dgdu = dgdu @ v
@@ -182,11 +253,29 @@ class singleLayer(hessQuikLayer):
                 # combine
                 d2gd2u = h1 + h2
 
+                if do_Laplacian:
+                    lap_gx = d2gd2x[:, torch.arange(d2gd2x.shape[1]), torch.arange(d2gd2x.shape[1]), :].sum(1)
+
+        if do_Laplacian and not do_Hessian:
+
+            if dgdf is None:
+                lap_gx = ((self.K ** 2).unsqueeze(0) * d2sig.unsqueeze(1)).sum(1)
+
+            if lap_g is not None:
+                # lap_u = d2ud2x[:, torch.arange(d2ud2x.shape[1]), torch.arange(d2ud2x.shape[1]), :].sum(1)
+                lap1 = (lap_g.unsqueeze(-1) * dgdx).sum(1)
+                lap2 = (((dgdx @ self.K) ** 2) * d2sig.unsqueeze(1)).sum(1)  # TODO: can we speed this up?
+                lap_gx = lap1 + lap2
+
         # finish computing gradient
         if dgdf is not None:
             dgdu = dgdu @ dgdf
 
+<<<<<<< HEAD
+        return dgdx, d2gd2x, lap_gx
+=======
         return dgdu, d2gd2u
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
     def extra_repr(self) -> str:
         r"""
@@ -198,7 +287,11 @@ class singleLayer(hessQuikLayer):
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
+    from hessQuik.utils import input_derivative_check, laplacian_check_using_hessian
+=======
     from hessQuik.utils import input_derivative_check, directional_derivative_check, directional_derivative_laplacian_check, input_derivative_check_finite_difference_laplacian
+>>>>>>> main
     torch.set_default_dtype(torch.float64)
 
     nex = 11  # no. of examples
@@ -212,6 +305,24 @@ if __name__ == '__main__':
     directional_derivative_check(f, x, verbose=True)
     directional_derivative_laplacian_check(f, x, verbose=True)
 
+<<<<<<< HEAD
+    print('======= BACKWARD =======')
+<<<<<<< HEAD
+    f = singleLayer(d, m, act=act.softplusActivation())
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+
+    print('======= LAPLACIAN: FORWARD =======')
+    f.reverse_mode = False
+    laplacian_check_using_hessian(f, x)
+
+    print('======= LAPLACIAN: BACKWARD =======')
+    f.reverse_mode = True
+    laplacian_check_using_hessian(f, x)
+=======
+    input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
+=======
     # test Laplacian
     input_derivative_check_finite_difference_laplacian(f, x, do_Laplacian=True, verbose=True)
 
@@ -220,3 +331,4 @@ if __name__ == '__main__':
     #
     # print('======= BACKWARD =======')
     # input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
+>>>>>>> main

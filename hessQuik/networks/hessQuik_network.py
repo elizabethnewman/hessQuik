@@ -43,6 +43,17 @@ class NN(nn.Sequential):
         if :math:`n_{in} < n_{out}` where :math:`n_{in}` is the number of input features and
         :math:`n_{out}` is the number of output features.
 
+<<<<<<< HEAD
+    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False, dudx=None, d2ud2x=None, lap_u=None):
+
+        for module in self:
+            x, dudx, d2ud2x, lap_u = module(x,
+                                            do_gradient=do_gradient, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian,
+                                            dudx=dudx, d2ud2x=d2ud2x, lap_u=lap_u)
+
+        if self._reverse_mode is True:
+            dudx, d2ud2x, lap_u = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
+=======
         There are three possible options once ``forward_mode`` is a key of ``kwargs``:
 
             - If ``forward_mode = True``, then the network computes derivatives during forward propagation.
@@ -98,10 +109,18 @@ class NN(nn.Sequential):
             first_loop = False
 
         if (do_gradient or do_Hessian) and forward_mode is False:
+<<<<<<< HEAD
+            dudx, d2ud2x = self.backward(do_Hessian=do_Hessian)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
+=======
             dudx, d2ud2x = self.backward(do_Hessian=do_Hessian, v=v)
+>>>>>>> main
 
-        return x, dudx, d2ud2x
+        return x, dudx, d2ud2x, lap_u
 
+<<<<<<< HEAD
+    def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
+=======
     def backward(self, do_Hessian: bool = False, dgdf: Union[torch.Tensor, None] = None,
                  d2gd2f: Union[torch.Tensor, None] = None, v: Union[torch.Tensor, None] = None) -> Tuple[torch.Tensor, Union[torch.Tensor, None]]:
         r"""
@@ -119,6 +138,13 @@ class NN(nn.Sequential):
             - **d2gd2f** (*torch.Tensor* or ``None``) - Hessian of the network with respect to input features :math:`u` with shape :math:`(n_s, d, d, m)`
 
         """
+<<<<<<< HEAD
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
+        for i in range(len(self) - 1, -1, -1):
+            dgdf, d2gd2f, lap_g = self[i].backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian,
+                                                   dgdf=dgdf, d2gd2f=d2gd2f, lap_g=lap_g)
+        return dgdf, d2gd2f, lap_g
+=======
         first_loop = True
         for i in range(len(self) - 1, -1, -1):
             if not first_loop:
@@ -127,6 +153,7 @@ class NN(nn.Sequential):
             first_loop = False
 
         return dgdf, d2gd2f
+>>>>>>> main
 
 
 class NNPytorchAD(nn.Module):
@@ -148,6 +175,12 @@ class NNPytorchAD(nn.Module):
         super(NNPytorchAD, self).__init__()
         self.net = net
 
+<<<<<<< HEAD
+    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
+        (df, d2f, lap_f) = (None, None, None)
+        f, *_ = self.net(x)
+
+=======
     def forward(self, x: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, **kwargs) \
             -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
@@ -162,6 +195,7 @@ class NNPytorchAD(nn.Module):
         # forwaard propagate without compute derivatives
         f, *_ = self.net(x, do_gradient=False, do_Hessian=False, forward_mode=False)
 
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         if do_gradient or do_Hessian:
             f = f.view(x.shape[0], -1)
             df = []
@@ -184,7 +218,7 @@ class NNPytorchAD(nn.Module):
             if df.dim() < 3:
                 df = df.unsqueeze(-1)
 
-        return f, df, d2f
+        return f, df, d2f, lap_f
 
 
 class NNPytorchHessian(nn.Module):
@@ -202,6 +236,11 @@ class NNPytorchHessian(nn.Module):
         super(NNPytorchHessian, self).__init__()
         self.net = net
 
+<<<<<<< HEAD
+    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
+        (df, d2f, lap_f) = (None, None, None)
+        f, *_ = self.net(x, do_gradient=False, do_Hessian=False)
+=======
     def forward(self, x: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, **kwargs) \
             -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
         r"""
@@ -214,6 +253,7 @@ class NNPytorchHessian(nn.Module):
             x.requires_grad = True
 
         f, *_ = self.net(x, do_gradient=False, do_Hessian=False, forward_mode=False)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
 
         if f.squeeze().ndim > 1:
             raise ValueError(type(self), " must have scalar outputs per example")
@@ -226,14 +266,14 @@ class NNPytorchHessian(nn.Module):
             d2f = hessian(lambda x: self.net(x)[0].sum(), x).sum(dim=2)
             d2f = d2f.unsqueeze(-1)
 
-        return f, df, d2f
+        return f, df, d2f, lap_f
 
 
 if __name__ == '__main__':
     import torch
     import hessQuik.activations as act
     import hessQuik.layers as lay
-    from hessQuik.utils import input_derivative_check
+    from hessQuik.utils import input_derivative_check, laplacian_check_using_hessian
     torch.set_default_dtype(torch.float64)
 
     # problem setup
@@ -248,6 +288,25 @@ if __name__ == '__main__':
            lay.singleLayer(ms[1], ms[2], act=act.softplusActivation()),
            lay.singleLayer(ms[2], m, act=act.softplusActivation()))
 
+<<<<<<< HEAD
+    # f = NNPytorchAD(f)
+    # x.requires_grad = True
+    print('======= FORWARD =======')
+    f.reverse_mode = False
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+
+    print('======= BACKWARD =======')
+    f.reverse_mode = True
+    input_derivative_check(f, x, do_Hessian=True, verbose=True)
+
+    print('======= LAPLACIAN: FORWARD =======')
+    f.reverse_mode = False
+    laplacian_check_using_hessian(f, x)
+
+    print('======= LAPLACIAN: BACKWARD =======')
+    f.reverse_mode = True
+    laplacian_check_using_hessian(f, x)
+=======
     # f = NNPytorchHessian(f)
     # x.requires_grad = True
 
@@ -256,3 +315,4 @@ if __name__ == '__main__':
 
     print('======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4

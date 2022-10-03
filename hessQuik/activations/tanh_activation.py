@@ -18,6 +18,9 @@ class tanhActivation(hessQuikActivationFunction):
     def __init__(self):
         super(tanhActivation, self).__init__()
 
+<<<<<<< HEAD
+    def forward(self, x, do_gradient=False, do_Hessian=False, do_Laplacian=False):
+=======
     def forward(self, x, do_gradient=False, do_Hessian=False, forward_mode=True):
         r"""
         Activates each entry of incoming data via
@@ -26,6 +29,7 @@ class tanhActivation(hessQuikActivationFunction):
 
             \sigma(x)  = \tanh(x)
         """
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         (dsigma, d2sigma) = (None, None)
 
         # forward propagate
@@ -33,13 +37,21 @@ class tanhActivation(hessQuikActivationFunction):
 
         # compute derivatives
         if do_gradient or do_Hessian:
+<<<<<<< HEAD
+            if self.reverse_mode is not None:
+                dsigma, d2sigma = self.compute_derivatives(sigma, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
+=======
             if forward_mode is not None:
                 dsigma, d2sigma = self.compute_derivatives(sigma, do_Hessian=do_Hessian)
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
             else:
                 self.ctx = (sigma,)
 
         return sigma, dsigma, d2sigma
 
+<<<<<<< HEAD
+    def compute_derivatives(self, *args, do_Hessian=False, do_Laplacian=False):
+=======
     def compute_derivatives(self, *args, do_Hessian=False):
         r"""
         Computes the first and second derivatives of each entry of the incoming data via
@@ -51,10 +63,11 @@ class tanhActivation(hessQuikActivationFunction):
             \end{align}
 
         """
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         sigma = args[0]
         d2sigma = None
         dsigma = 1 - sigma ** 2
-        if do_Hessian:
+        if do_Hessian or do_Laplacian:
             d2sigma = -2 * sigma * (1 - sigma ** 2)
 
         return dsigma, d2sigma

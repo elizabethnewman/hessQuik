@@ -12,6 +12,27 @@ class hessQuikActivationFunction(nn.Module):
         super(hessQuikActivationFunction, self).__init__()
         self.ctx = None  # context variable
 
+<<<<<<< HEAD
+    @property
+    def reverse_mode(self):
+        return self._reverse_mode
+
+    @reverse_mode.setter
+    def reverse_mode(self, reverse_mode):
+        self._reverse_mode = reverse_mode
+
+    def forward(self, x: Tensor, do_gradient: bool = False, do_Hessian: bool = False, do_Laplacian: bool = False) -> \
+            Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
+        raise NotImplementedError
+
+    def backward(self, do_Hessian: bool = False, do_Laplacian: bool = False) -> Tuple[Tensor, Union[Tensor, None]]:
+        dsigma, d2sigma = self.compute_derivatives(*self.ctx, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
+
+        return dsigma, d2sigma
+
+    def compute_derivatives(self, *args, do_Hessian: bool = False,  do_Laplacian: bool = False) \
+            -> Tuple[Tensor, Union[Tensor, None]]:
+=======
     def forward(self, x: Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True) \
             -> Tuple[Tensor, Union[Tensor, None], Union[Tensor, None]]:
         r"""
@@ -59,4 +80,5 @@ class hessQuikActivationFunction(nn.Module):
             - **d2sigma** (*torch.Tensor* or ``None``) - second derivative of activation function at input x, same size as x
 
         """
+>>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
         raise NotImplementedError
