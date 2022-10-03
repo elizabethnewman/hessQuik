@@ -111,31 +111,31 @@ def network_derivative_check(f: torch.nn.Module, x: torch.Tensor, do_Hessian: bo
         headers = ('h', 'E0', 'E1')
         print(('{:<20s}' * len(headers)).format(*headers))
 
-    with torch.no_grad():
-        E0, E1 = [], []
-        loss_dft, loss_d2ft = 0.0, 0.0
-        for k in range(num_test):
-            h = base ** (-k)
-            insert_data(f, theta0 + h * dtheta)
-            ft, dft, d2ft = f(x, do_gradient=True, do_Hessian=do_Hessian)
+    # with torch.no_grad():
+    E0, E1 = [], []
+    loss_dft, loss_d2ft = 0.0, 0.0
+    for k in range(num_test):
+        h = base ** (-k)
+        insert_data(f, theta0 + h * dtheta)
+        ft, dft, d2ft = f(x, do_gradient=True, do_Hessian=do_Hessian)
 
-            # compute loss
-            loss_ft = 0.5 * torch.norm(ft) ** 2
+        # compute loss
+        loss_ft = 0.5 * torch.norm(ft) ** 2
 
-            if df0 is not None:
-                loss_dft = 0.5 * torch.norm(dft) ** 2
+        if df0 is not None:
+            loss_dft = 0.5 * torch.norm(dft) ** 2
 
-            if d2f0 is not None:
-                loss_d2ft = 0.5 * torch.norm(d2ft) ** 2
+        if d2f0 is not None:
+            loss_d2ft = 0.5 * torch.norm(d2ft) ** 2
 
-            losst = loss_ft + loss_dft + loss_d2ft
-            E0.append(torch.norm(loss0 - losst).item())
-            E1.append(torch.norm(loss0 + h * dfdtheta - losst).item())
+        losst = loss_ft + loss_dft + loss_d2ft
+        E0.append(torch.norm(loss0 - losst).item())
+        E1.append(torch.norm(loss0 + h * dfdtheta - losst).item())
 
-            printouts = convert_to_base((E0[-1], E1[-1]))
+        printouts = convert_to_base((E0[-1], E1[-1]))
 
-            if verbose:
-                print(((1 + len(printouts) // 2) * '%0.2f x 2^(%0.2d)\t\t') % ((1, -k) + printouts))
+        if verbose:
+            print(((1 + len(printouts) // 2) * '%0.2f x 2^(%0.2d)\t\t') % ((1, -k) + printouts))
 
     E0, E1 = torch.tensor(E0), torch.tensor(E1)
 
