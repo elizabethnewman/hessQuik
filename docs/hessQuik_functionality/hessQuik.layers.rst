@@ -40,7 +40,6 @@ Residual Layer
    :special-members: __init__
    :show-inheritance:
 
-
 Single Layer
 ------------
 
@@ -48,4 +47,3 @@ Single Layer
    :members:
    :special-members: __init__
    :show-inheritance:
-

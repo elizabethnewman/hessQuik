@@ -21,6 +21,7 @@ class resnetLayer(hessQuikLayer):
     """
 
     def __init__(self, width: int, h: float = 1.0, act: act.hessQuikActivationFunction = act.identityActivation(),
+                 bias: bool = False,
                  device=None, dtype=None) -> None:
         r"""
         :param width: number of input and output features, :math:`w`
@@ -29,6 +30,8 @@ class resnetLayer(hessQuikLayer):
         :type h: float
         :param act: activation function
         :type act: hessQuikActivationFunction
+        :param bias: additive bias
+        :type bias: bool
 
         :var layer: singleLayer with :math:`w` input features and :math:`w` output features
         """
@@ -37,7 +40,7 @@ class resnetLayer(hessQuikLayer):
 
         self.width = width
         self.h = h
-        self.layer = singleLayer(width, width, act=act, **factory_kwargs)
+        self.layer = singleLayer(width, width, act=act, bias=bias, **factory_kwargs)
 
     def dim_input(self) -> int:
         r"""
@@ -51,9 +54,8 @@ class resnetLayer(hessQuikLayer):
         """
         return self.width
 
-    def forward(self, u: torch.Tensor, do_gradient: bool = False, do_Hessian: bool = False, forward_mode: bool = True,
-                dudx: Union[torch.Tensor, None] = None, d2ud2x: Union[torch.Tensor, None] = None) \
-            -> Tuple[torch.Tensor, Union[torch.Tensor, None], Union[torch.Tensor, None]]:
+    def forward(self, u, do_gradient=False, do_Hessian=False, do_Laplacian=False, forward_mode=True,
+                dudx=None, d2ud2x=None, v=None):
         r"""
         Forward propagation through resnet layer of the form
 
@@ -80,10 +82,20 @@ class resnetLayer(hessQuikLayer):
 
         where :math:`I` denotes the :math:`w \times w` identity matrix.
         """
+
+        if do_Laplacian and not do_Hessian:
+            forward_mode = True
+
         (dfdx, d2fd2x) = (None, None)
+<<<<<<< HEAD
         fi, dfi, d2fi = self.layer(u, do_gradient=do_gradient, do_Hessian=do_Hessian, dudx=dudx, d2ud2x=d2ud2x,
                                    forward_mode=True if forward_mode is True else None)
 >>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
+=======
+        fi, dfi, d2fi = self.layer(u, do_gradient=do_gradient, do_Hessian=do_Hessian, do_Laplacian=do_Laplacian,
+                                   dudx=dudx, d2ud2x=d2ud2x,
+                                   forward_mode=True if forward_mode is True else None, v=v)
+>>>>>>> main
 
         # skip connection
         f = u + self.h * fi
@@ -91,11 +103,13 @@ class resnetLayer(hessQuikLayer):
         if do_gradient and forward_mode is True:
 
             if dudx is None:
-                dfdx = torch.eye(self.width, dtype=dfi.dtype, device=dfi.device) + self.h * dfi
+                if v is None:
+                    v = torch.eye(self.width, dtype=dfi.dtype, device=dfi.device)
+                dfdx = v + self.h * dfi
             else:
                 dfdx = dudx + self.h * dfi
 
-        if do_Hessian and forward_mode is True:
+        if (do_Hessian or do_Laplacian) and forward_mode is True:
             d2fd2x = self.h * d2fi
             if d2ud2x is not None:
                 d2fd2x += d2ud2x
@@ -105,11 +119,16 @@ class resnetLayer(hessQuikLayer):
             dfdx, d2fd2x, lap_f = self.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian)
 =======
         if (do_gradient or do_Hessian) and forward_mode is False:
+<<<<<<< HEAD
             dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian)
 >>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
+=======
+            dfdx, d2fd2x = self.backward(do_Hessian=do_Hessian, v=v)
+>>>>>>> main
 
         return f, dfdx, d2fd2x, lap_f
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     def backward(self, do_Hessian=False, do_Laplacian=False, dgdf=None, d2gd2f=None, lap_g=None):
         d2gd2x = None
@@ -120,6 +139,9 @@ class resnetLayer(hessQuikLayer):
 =======
     def backward(self, do_Hessian: bool = False,
                  dgdf: Union[torch.Tensor, None] = None, d2gd2f: Union[torch.Tensor, None] = None):
+=======
+    def backward(self, do_Hessian=False, dgdf=None, d2gd2f=None, v=None):
+>>>>>>> main
         r"""
         Backward propagation through single layer of the form
 
@@ -142,18 +164,32 @@ class resnetLayer(hessQuikLayer):
         d2gd2u = None
         if not do_Hessian:
 
+<<<<<<< HEAD
             dgdu = self.layer.backward(do_Hessian=False, dgdf=dgdf, d2gd2f=None)[0]
 >>>>>>> c846faf2d50607569f3f073aa019d49e967371c4
+=======
+            dgdu = self.layer.backward(do_Hessian=False, dgdf=dgdf, d2gd2f=None, v=v)[0]
+>>>>>>> main
 
             if dgdf is None:
-                dgdu = torch.eye(self.width, dtype=dgdu.dtype, device=dgdu.device) + self.h * dgdu
+                if v is None:
+                    v = torch.eye(self.width, dtype=dgdu.dtype, device=dgdu.device)
+
+                dgdu = v + self.h * dgdu
             else:
                 dgdu = dgdf + self.h * dgdu
         else:
+<<<<<<< HEAD
             dfdx, d2fd2x = self.layer.backward(do_Hessian=do_Hessian, do_Laplacian=do_Laplacian,
                                                dgdf=None, d2gd2f=None, lap_g=None)[:2]
+=======
+            dfdx, d2fd2x = self.layer.backward(do_Hessian=do_Hessian, dgdf=None, d2gd2f=None, v=v)[:2]
+>>>>>>> main
 
-            dgdu = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device) + self.h * dfdx
+            if v is None:
+                v = torch.eye(self.width, dtype=dfdx.dtype, device=dfdx.device)
+
+            dgdu = v + self.h * dfdx
             if dgdf is not None:
                 dgdu = dgdu @ dgdf
 
@@ -187,7 +223,7 @@ class resnetLayer(hessQuikLayer):
 
 
 if __name__ == '__main__':
-    from hessQuik.utils import input_derivative_check
+    from hessQuik.utils import input_derivative_check, directional_derivative_check, directional_derivative_laplacian_check, input_derivative_check_finite_difference_laplacian
     torch.set_default_dtype(torch.float64)
 
     nex = 11  # no. of examples
@@ -196,10 +232,15 @@ if __name__ == '__main__':
     x = torch.randn(nex, width)
     f = resnetLayer(width, h=h, act=act.softplusActivation())
 
-    f0, df0, d2f0 = f(x, do_gradient=True, do_Hessian=True, forward_mode=False)
-
-    print('======= FORWARD =======')
+    print('\n======= FORWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
-    print('======= BACKWARD =======')
+    print('\n======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
+
+    print('\n======= LAPLACIAN =======')
+    input_derivative_check_finite_difference_laplacian(f, x, do_Laplacian=True, verbose=True)
+
+    print('\n======= DIRECTIONAL =======')
+    directional_derivative_check(f, x, verbose=True)
+    directional_derivative_laplacian_check(f, x, verbose=True)

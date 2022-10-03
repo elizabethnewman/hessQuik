@@ -53,7 +53,7 @@ class resnetNN(NN):
 
 if __name__ == '__main__':
     import torch
-    from hessQuik.utils import input_derivative_check
+    from hessQuik.utils import input_derivative_check, input_derivative_check_finite_difference_laplacian, directional_derivative_check, directional_derivative_laplacian_check
     torch.set_default_dtype(torch.float64)
 
     # problem setup
@@ -62,8 +62,15 @@ if __name__ == '__main__':
     x = torch.randn(nex, d)
     f = resnetNN(d, 4, h=0.5, act=act.softplusActivation())
 
+    # test directional derivative
+    directional_derivative_check(f, x, verbose=True)
+    directional_derivative_laplacian_check(f, x, verbose=True)
+
     print('======= FORWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
     print('======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
+
+    print('======= LAPLACIAN =======')
+    input_derivative_check_finite_difference_laplacian(f, x, do_Laplacian=True, verbose=True)

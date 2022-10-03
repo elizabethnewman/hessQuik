@@ -1,4 +1,5 @@
 # hessQuik
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.04171/status.svg)](https://doi.org/10.21105/joss.04171)
 
 A lightweight package for fast, GPU-accelerated computation of gradients and Hessians of functions constructed via composition.
 
@@ -9,10 +10,18 @@ Knowledge of second-order derivatives is paramount in many growing fields and ca
 
 ## Documentation
 
+For package usage and details, see our paper in the [Journal of Open Source Software](https://joss.theoj.org/papers/10.21105/joss.04171#).
+
 For detailed documentation, visit [https://hessquik.readthedocs.io/](https://hessquik.readthedocs.io/en/latest/index.html).
 
 ## Installation
 
+From PyPI:
+```console
+pip install hessQuik
+```
+
+From Github:
 ```console
 python -m pip install git+https://github.com/elizabethnewman/hessQuik.git
 ```
@@ -48,6 +57,32 @@ x = torch.randn(nex, d)
 fx, dfx, d2fx = f(x, do_gradient=True, do_Hessian=True)
 ```
 
+### Support for Laplacians and Directional Derivatives
+
+If you only require Laplacians, not full Hessians, you can obtain the gradients and Laplacians via
+```python
+fx, dfx, lapfd2x = f(x, do_gradient=True, do_Laplacian=True)
+```
+
+If you only require evaluations of the Jacobian and Hessian along certain directions, you can provide the directions in `forward_mode` via
+```python
+k = 3  # number of directions
+v = torch.randn(k, d)
+fx, vdfx, vd2fxv = f(x, do_gradient=True, do_Hessian=True, v=v, forward_mode=True)
+```
+and in `backward_mode` via
+```python
+m = widths[-1]  # dimension of output features
+v = torch.randn(m, k)
+fx, dfxv, d2fxv = f(x, do_gradient=True, do_Hessian=True, v=v, forward_mode=False)
+```
+
+Some important notes:
+* To use this functionality, you must install from github.
+* Currently, this functionality is only supported for `singleLayer`, `resnetLayer`, and networks using only these types of layers, including `fullyConnectedNN` and `resnetNN`.
+* If `do_Hessian=True`, then the full Hessian will be computed, even if `do_Laplacian=True` as well.
+* Laplacians can only be computed in forward mode.  Hence, if `do_Laplacian=True` and full Hessians are not requested, `hessQuik` will compute derivatives with `forward_mode=True` automatically.
+* For evaluating of derivatives along certain directions, the user must specify the mode of differentiation.  Currently, this choice is not automated.
 
 ## Examples
 To make the code accessible, we provide some introductory Google Colaboratory notebooks.
@@ -73,11 +108,25 @@ If your code passes the necessary numerical tests and is well-documented, your c
 
 ## Reporting Bugs
 
-If you notice an issue with this repository, please report it using [Github Issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues).  When reporting an implemetnation bug, include a small example that helps to reproduce the error.  The issue will be addressed as quickly as possible.
+If you notice an issue with this repository, please report it using [Github Issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues).  When reporting an implementation bug, include a small example that helps to reproduce the error.  The issue will be addressed as quickly as possible.
 
 ## How to Cite
 
-To Be Added
+```
+@article{Newman2022,
+  doi = {10.21105/joss.04171},
+  url = {https://doi.org/10.21105/joss.04171},
+  year = {2022},
+  publisher = {The Open Journal},
+  volume = {7},
+  number = {72},
+  pages = {4171},
+  author = {Elizabeth Newman and Lars Ruthotto},
+  title = {`hessQuik`: Fast Hessian computation of composite functions},
+  journal = {Journal of Open Source Software}
+}
+```
+
 
 ## Acknowledgements
 

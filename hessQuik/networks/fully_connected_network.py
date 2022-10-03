@@ -43,21 +43,28 @@ class fullyConnectedNN(NN):
 
 if __name__ == '__main__':
     import torch
-    from hessQuik.utils import input_derivative_check
+    from hessQuik.utils import input_derivative_check, input_derivative_check_finite_difference_laplacian, directional_derivative_laplacian_check, directional_derivative_check
     torch.set_default_dtype(torch.float64)
 
     # problem setup
     nex = 11
-    d = 3
+    d = 8
+    m = 6
     x = torch.randn(nex, d)
-    f = fullyConnectedNN([d, 2, 5, 1], act=act.softplusActivation())
+    f = fullyConnectedNN([d, 2, 5, m], act=act.softplusActivation())
 
-    print('======= FORWARD =======')
+    print('\n======= FORWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=True)
 
-    print('======= BACKWARD =======')
+    print('\n======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
 
+    print('\n======= LAPLACIAN =======')
+    input_derivative_check_finite_difference_laplacian(f, x, do_Laplacian=True, verbose=True)
+
+    print('\n======= DIRECTIONAL =======')
+    directional_derivative_check(f, x, verbose=True)
+    directional_derivative_laplacian_check(f, x, verbose=True)
 
     # widths1 = [2, 3]
     # widths2 = [4, 5]

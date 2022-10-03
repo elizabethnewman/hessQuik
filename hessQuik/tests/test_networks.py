@@ -4,13 +4,14 @@ import torch
 import hessQuik.activations as act
 import hessQuik.layers as lay
 import hessQuik.networks as net
-from utils import run_all_tests
+from hessQuik.tests.utils import run_all_tests, input_derivative_check
 
 
 class TestNN(unittest.TestCase):
 
     @staticmethod
     def setup_network(m):
+        torch.set_default_dtype(torch.float64)
         nex = 11
         d = 3
         ms = [2, 7, 5]
@@ -26,14 +27,14 @@ class TestNN(unittest.TestCase):
         return f, x
 
     def test_NN_scalar_output(self):
-        # problem setup
+        torch.set_default_dtype(torch.float64)
         f, x = self.setup_network(1)
 
         print(self, ': scalar output')
         run_all_tests(f, x)
 
     def test_NNPytorchAD_scalar_output(self):
-        # problem setup
+        torch.set_default_dtype(torch.float64)
         f, x = self.setup_network(1)
 
         f = net.NNPytorchAD(f)
@@ -43,7 +44,7 @@ class TestNN(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_NNPytorchHessian_scalar_output(self):
-        # problem setup
+        torch.set_default_dtype(torch.float64)
         f, x = self.setup_network(1)
 
         f = net.NNPytorchHessian(f)
@@ -53,7 +54,7 @@ class TestNN(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_NN_vector_output(self):
-        # problem setup
+        torch.set_default_dtype(torch.float64)
         m = 3
         f, x = self.setup_network(m)
 
@@ -61,7 +62,7 @@ class TestNN(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_NNPytorchAD_vector_output(self):
-        # problem setup
+        torch.set_default_dtype(torch.float64)
         f, x = self.setup_network(8)
 
         f = net.NNPytorchAD(f)
@@ -74,11 +75,12 @@ class TestNN(unittest.TestCase):
 class TestFullyConnectedNN(unittest.TestCase):
 
     def test_fullyConnectedNN(self):
+        torch.set_default_dtype(torch.float64)
         nex = 11
         d = 3
-        widths = [2, 7, 5]
+        widths = [2, 5, 1]
 
-        f = net.fullyConnectedNN([d] + widths, act=act.antiTanhActivation())
+        f = net.fullyConnectedNN([d] + widths, act=act.softplusActivation())
 
         x = torch.randn(nex, d)
 
@@ -89,6 +91,7 @@ class TestFullyConnectedNN(unittest.TestCase):
 class TestResnetNN(unittest.TestCase):
 
     def test_resnetNN(self):
+        torch.set_default_dtype(torch.float64)
         nex = 11
         width = 3
         depth = 4
@@ -104,12 +107,14 @@ class TestICNNNetwork(unittest.TestCase):
 
     @staticmethod
     def setup_data():
+        torch.set_default_dtype(torch.float64)
         nex = 11
         d = 3
         x = torch.randn(nex, d)
         return x
 
     def test_ICNNNetworkLayers(self):
+        torch.set_default_dtype(torch.float64)
         x = self.setup_data()
         nex = 11  # no. of examples
         d = x.shape[1]  # no. of input features
@@ -123,6 +128,7 @@ class TestICNNNetwork(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_ICNN(self):
+        torch.set_default_dtype(torch.float64)
         x = self.setup_data()
         d = x.shape[1]
         ms = [None, 5, 2, 7]  # no. of output features
@@ -137,12 +143,14 @@ class TestBlockNetwork(unittest.TestCase):
 
     @staticmethod
     def setup_data():
+        torch.set_default_dtype(torch.float64)
         nex = 11
         d = 3
         x = torch.randn(nex, d)
         return x
 
     def test_blockFullyConnectedNN(self):
+        torch.set_default_dtype(torch.float64)
         x = self.setup_data()
         d = x.shape[1]
         widths1 = [2, 3]
@@ -158,6 +166,7 @@ class TestBlockNetwork(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_blockResnetNN(self):
+        torch.set_default_dtype(torch.float64)
         x = self.setup_data()
         d = x.shape[1]
         width = 7
@@ -172,6 +181,7 @@ class TestBlockNetwork(unittest.TestCase):
         run_all_tests(f, x)
 
     def test_blockICNN(self):
+        torch.set_default_dtype(torch.float64)
         x = self.setup_data()
         print(x.dtype)
         d = x.shape[1]
