@@ -66,16 +66,20 @@ class softplusActivation(hessQuikActivationFunction):
         x = args[0]
         d2sigma = None
 
-        dsigma = 1 / (1 + torch.exp(-self.beta * x))
-        if do_Hessian:
-            d2sigma = self.beta / (2 + 2 * torch.cosh(self.beta * x))
+        dsigma = torch.zeros_like(x)
+        idl = self.beta * x < -self.threshold  # input too small
+        idr = self.beta * x > self.threshold  # input too large
+        idok = self.beta * torch.abs(x) <= self.threshold # input in range
 
-        # for numerical stability
-        idx = (self.beta * x > self.threshold).nonzero(as_tuple=True)
-        if len(idx[0]) > 0:
-            dsigma[idx] = 1.0
-            if do_Hessian:
-                d2sigma[idx] = 0.0
+        dsigma[idr] = 1.0
+        dsigma[idl] = 0.0
+        dsigma[idok] = 1 / (1 + torch.exp(-self.beta * x[idok]))
+
+        if do_Hessian:
+            d2sigma = torch.zeros_like(x)
+            d2sigma[idok] = self.beta / (2 + 2 * torch.cosh(self.beta * x[idok]))
+            d2sigma[idr] = 0
+            d2sigma[idl] = 0
 
         return dsigma, d2sigma
 
@@ -87,7 +91,7 @@ if __name__ == '__main__':
     nex = 11  # no. of examples
     d = 4  # no. of input features
 
-    x = 100 * torch.randn(nex, d)
+    x = 1 * torch.randn(nex, d)
 
     f = softplusActivation()
 
@@ -96,3 +100,10 @@ if __name__ == '__main__':
 
     print('======= BACKWARD =======')
     input_derivative_check(f, x, do_Hessian=True, verbose=True, forward_mode=False)
+
+    x.requires_grad=True
+    g,dg,d2g = f(1000*x, do_gradient=True, do_Hessian=True)
+    fun = torch.sum(g)+torch.sum(dg)+torch.sum(d2g)
+    fun.backward()
+    print(fun)
+    print(x.grad)
