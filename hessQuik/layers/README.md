@@ -17,7 +17,7 @@ No matter the setting of ```forward_mode```, the output of ```hessQuikLayer``` w
 All hessQuik layers should inherit the methods from ```hessQuikLayer``` which include
 ```python
 def dim_input(self):               # return the dimension of the input into the layer 
-def dim_outout(self):              # return the dimension of the output from the layer
+def dim_output(self):              # return the dimension of the output from the layer
 def forward(self, *args, **kwargs):  # propagate through network and compute derivatives in either forward or backward more
 def backward(self, **kwargs):        # method to compute derivatives in backward mode; this method will be called in forward()
 ```
