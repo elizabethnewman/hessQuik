@@ -44,9 +44,9 @@ You can construct a hessQuik network from layers as follows:
 ```python
 d = 10 # dimension of the input features
 widths = [32, 64] # hidden channel dimensions
-f = net.NN(lay.singleLayer(d, widths[0], act.antiTanhActivation()), 
-           lay.resnetLayer(widths[0], h=1.0, act.softplusActivation()),
-           lay.singleLayer(widths[0], widths[1], act.quadraticActivation())
+f = net.NN(lay.singleLayer(d, widths[0], act=act.antiTanhActivation()), 
+           lay.resnetLayer(widths[0], h=1.0, act=act.softplusActivation()),
+           lay.singleLayer(widths[0], widths[1], act=act.quadraticActivation())
            )
 ```
 
