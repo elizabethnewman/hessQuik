@@ -189,7 +189,7 @@ class quadraticICNNLayer(hessQuikLayer):
 
         z = torch.empty(ux.shape[0], 0)
         if self.in_features is not None:
-            z = torch.zeros(ux.shape[0], self.in_features)
+            z = torch.zeros(ux.shape[0], self.in_features, dtype=self.v.dtype, device=self.v.device)
 
         df = wv.unsqueeze(0) + torch.cat((z, x @ AtA), dim=1)
 
