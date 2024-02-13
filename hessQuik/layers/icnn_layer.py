@@ -217,7 +217,7 @@ class ICNNLayer(hessQuikLayer):
             * torch.eye(self.input_dim, dtype=dgdux.dtype, device=dgdux.device).unsqueeze(0)
 
         if self.in_features is not None:
-            Z = torch.zeros(dgdux.shape[0], self.input_dim, self.in_features)
+            Z = torch.zeros(dgdux.shape[0], self.input_dim, self.in_features, dtype=dgdux.dtype, device=dgdux.device)
             M2 = torch.cat((Z, M2), dim=-1).permute(0, 2, 1)
 
         dgdux = torch.cat((dgdux, M2), dim=-1)
