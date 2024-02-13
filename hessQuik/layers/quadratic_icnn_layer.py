@@ -124,9 +124,9 @@ class quadraticICNNLayer(hessQuikLayer):
         # ------------------------------------------------------------------------------------------------------------ #
         if (do_gradient or do_Hessian) and forward_mode is True:
             if self.in_features is None:
-                z = torch.empty(ux.shape[0], 0)
+                z = torch.empty(ux.shape[0], 0, dtype=self.v.dtype, device=self.v.device)
             else:
-                z = torch.zeros(ux.shape[0], self.in_features)
+                z = torch.zeros(ux.shape[0], self.in_features, dtype=self.v.dtype, device=self.v.device)
 
             df = wv.unsqueeze(0) + torch.cat((z, x @ AtA), dim=1)
 
