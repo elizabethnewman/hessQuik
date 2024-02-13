@@ -12,7 +12,7 @@ docs_extras = [
 
 setup(
     name='hessQuik',
-    version='0.0.3',
+    version='0.0.6',
     packages=find_packages(),
     url='https://github.com/elizabethnewman/hessQuik',
     license='MIT',

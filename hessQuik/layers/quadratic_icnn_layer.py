@@ -136,7 +136,7 @@ class quadraticICNNLayer(hessQuikLayer):
 
                 if d2ud2x is not None:
                     d2f = dudx[:, :, -self.input_dim:] @ d2f @ dudx[:, :, -self.input_dim:].permute(0, 2, 1)
-                    z = torch.zeros(x.shape[0], self.in_features)
+                    z = torch.zeros(x.shape[0], self.in_features, dtype=self.v.dtype, device=self.v.device)
                     d2f += (d2ud2x @ (torch.cat((w, self.v), dim=0).unsqueeze(0)
                                       + torch.cat((z, x @ AtA), dim=1)).unsqueeze(1).unsqueeze(-1)).squeeze()
 
@@ -187,7 +187,7 @@ class quadraticICNNLayer(hessQuikLayer):
         if self.w is not None:
             wv = torch.cat((self.nonneg(self.w), wv), dim=0)
 
-        z = torch.empty(ux.shape[0], 0)
+        z = torch.empty(ux.shape[0], 0, dtype=self.v.dtype, device=self.v.device)
         if self.in_features is not None:
             z = torch.zeros(ux.shape[0], self.in_features, dtype=self.v.dtype, device=self.v.device)
 
@@ -195,7 +195,7 @@ class quadraticICNNLayer(hessQuikLayer):
 
         if do_Hessian:
             e = torch.ones(x.shape[0], 1, 1, dtype=AtA.dtype, device=AtA.device)
-            d2f = torch.zeros(x.shape[0], ux.shape[1], ux.shape[1])
+            d2f = torch.zeros(x.shape[0], ux.shape[1], ux.shape[1], dtype=AtA.dtype, device=AtA.device)
             d2f[:, -self.input_dim:, -self.input_dim:] = e * AtA
             d2f = d2f.unsqueeze(-1)
 
